@@ -11,6 +11,7 @@ plt.ioff()
 
 import numpy as np
 from PIL import Image
+import pathlib
 
 logging.basicConfig(format='%(message)s', level=logging.INFO)
 logger = logging.getLogger('plot_surface')
@@ -74,7 +75,7 @@ def render_surface(data, outfile, clim=None, vlim=[None, None], cmap='turbo_r', 
                 view = plot.split('_')[-1]
 
                 # Create Brain Object
-                b_obj = BrainObj(f'/public/lama/data/surface/mni_icbm152_t1_tal_nlin_sym_09c_{hemisphere}_smooth.gii', hemisphere='both', translucent=False)
+                b_obj = BrainObj(f'{pathlib.Path(__file__).parent.resolve()}/surface_data/mni_icbm152_t1_tal_nlin_sym_09c_{hemisphere}_smooth.gii', hemisphere='both', translucent=False)
 
                 # Add activation to Brain Object
                 b_obj.add_activation(data=plot_data[hemisphere], cmap=cmap, clim=clim, vmin=vlim[0],
