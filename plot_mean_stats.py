@@ -1,14 +1,13 @@
-import copy
 import logging
 import os
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
-import surface_rendering as sr
 import plot_stats as ps
+import surface_rendering as sr
 
 logging.basicConfig(format='%(message)s', level=logging.INFO)
-logger = logging.getLogger('plot_mean_stats')
+logger = logging.getLogger(__name__)
 
 def plot_mean_stats(mean_group1, mean_group2, pval, tval, output, p_threshold=0.05, vlim_mean=[0,1], mean_titles=None, stats_titles=None, cb_mean_title='Mean', plot_tvalue=False, t_lim=None, clobber=False):
     """Plot mean and statistics on surface

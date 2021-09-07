@@ -1,13 +1,7 @@
-import logging
-from tempfile import TemporaryDirectory
-from pathlib import Path
-
 import numpy as np
 
 import plot_stats
 import plot_mean_stats
-
-logger = logging.getLogger('test')
 
 def main():
 

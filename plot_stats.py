@@ -8,8 +8,8 @@ import numpy as np
 
 import surface_rendering as sr
 
-logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)
-logger = logging.getLogger('plot_stats')
+logging.basicConfig(format='%(message)s', level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 import warnings
 

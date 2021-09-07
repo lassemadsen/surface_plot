@@ -1,20 +1,21 @@
-
 import gc
 import logging
 import os
 from tempfile import TemporaryDirectory
-import matplotlib.pyplot as plt
 
+import matplotlib.pyplot as plt
 from visbrain.gui import Figure
 from visbrain.objects import BrainObj, SceneObj
+
 plt.ioff()
+
+import pathlib
 
 import numpy as np
 from PIL import Image
-import pathlib
 
 logging.basicConfig(format='%(message)s', level=logging.INFO)
-logger = logging.getLogger('plot_surface')
+logger = logging.getLogger(__name__)
 
 def render_surface(data, outfile, clim=None, vlim=[None, None], cmap='turbo_r', views='standard', clobber=False):
     """Render surface with given input data
