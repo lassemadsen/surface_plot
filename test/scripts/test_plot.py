@@ -17,7 +17,7 @@ def main():
 
 def correlation_plot():
     outdir = '../data/correlation/test_figures'
-    clobber = True
+    clobber = False
 
     pval_left = np.loadtxt('../data/correlation/left.pval', skiprows=1)
     pval_right = np.loadtxt('../data/correlation/right.pval', skiprows=1)
@@ -35,10 +35,7 @@ def correlation_plot():
         # T value test plots
         for cbar_loc in ['left', 'bottom', None]:
             output = '{}/tval_cbar_{}_p{}.png'.format(outdir, cbar_loc, p_threshold)
-            plot_stats.plot_stats(pval, tval, output, plot_tvalue=True, p_threshold=p_threshold, titles='Change', cbar_loc=cbar_loc, clobber=clobber)
-
-            output = '{}/tval_cbar_{}_p{}notitle.png'.format(outdir, cbar_loc, p_threshold)
-            plot_stats.plot_stats(pval, tval, output, plot_tvalue=True, p_threshold=p_threshold, titles='Change', cbar_loc=cbar_loc, clobber=clobber)
+            plot_stats.plot_stats(pval, tval, output, plot_tvalue=True, p_threshold=p_threshold, cbar_loc=cbar_loc, clobber=clobber)
 
         # P value test plots
         for cbar_loc in ['left', 'bottom', None]:
@@ -50,7 +47,7 @@ def correlation_plot():
 
 def ttest_plot():
     outdir = '../data/paired_ttest/test_figures'
-    clobber = True
+    clobber = False
 
     pval_left = np.loadtxt('../data/paired_ttest/left.pval', skiprows=1)
     pval_right = np.loadtxt('../data/paired_ttest/right.pval', skiprows=1)
