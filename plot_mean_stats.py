@@ -4,7 +4,7 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 
 import plot_stats as ps
-import surface_rendering as sr
+import surface_rendering
 
 logging.basicConfig(format='%(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -54,6 +54,7 @@ def plot_mean_stats(mean_group1, mean_group2, pval, tval, output, p_threshold=0.
     Functionallity suggestions
     --------------------------
     """
+    sr = surface_rendering
     if not clobber:
         if os.path.isfile(output):
             logger.info('{} already exists... Skipping'.format(output))

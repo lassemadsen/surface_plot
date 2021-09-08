@@ -6,7 +6,7 @@ from tempfile import TemporaryDirectory
 
 import numpy as np
 
-import surface_rendering as sr
+import surface_rendering
 
 logging.basicConfig(format='%(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -53,6 +53,7 @@ def plot_stats(pval, tval, output, p_threshold=0.05, plot_tvalue=False, t_lim=No
     --------------------------
      - Plot only positive or negative t values
     """
+    sr = surface_rendering
     if not clobber:
         if os.path.isfile(output):
             logger.info('{} already exists... Skipping'.format(output))

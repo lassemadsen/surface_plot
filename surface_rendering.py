@@ -1,4 +1,3 @@
-import gc
 import logging
 import os
 from tempfile import TemporaryDirectory
@@ -94,7 +93,6 @@ def render_surface(data, outfile, clim=None, vlim=[None, None], cmap='turbo_r', 
             else:
                 sc.screenshot(tmp_file, print_size=(10,10), dpi=300, autocrop=True)
             del sc
-            gc.collect()  # Clean memory
 
         append_images(img_files, outfile, direction='vertical', scale='width')
 
@@ -334,5 +332,3 @@ def combine_figures(files, outfile, direction='horizontal', cbArgs=None, titles=
                     vmax=cbArgs['clim'][1], clim=cbArgs['clim'], ticks=ticks)
 
     f.save(outfile, dpi=dpi)
-    del f
-    gc.collect()
