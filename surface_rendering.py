@@ -1,17 +1,12 @@
 import logging
 import os
-from tempfile import TemporaryDirectory
-
-import matplotlib.pyplot as plt
-from visbrain.gui import Figure
-from visbrain.objects import BrainObj, SceneObj
-
-plt.ioff()
-
 import pathlib
+from tempfile import TemporaryDirectory
 
 import numpy as np
 from PIL import Image
+from visbrain.gui import Figure
+from visbrain.objects import BrainObj, SceneObj
 
 logging.basicConfig(format='%(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -83,7 +78,6 @@ def render_surface(data, outfile, clim=None, vlim=[None, None], cmap='turbo_r', 
                                      smoothing_steps=None)
 
                 sc.add_to_subplot(b_obj, row=plot_dict[plot][0], col=plot_dict[plot][1], zoom=zoom, rotate=view)
-                b_obj = None
 
             tmp_file = '{0}/{1}.png'.format(tmp_dir, plot_view)
             img_files.append(tmp_file)

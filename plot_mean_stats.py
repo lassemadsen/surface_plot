@@ -3,8 +3,8 @@ import os
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
-import plot_stats as ps
-import surface_rendering
+from .plot_stats import plot_stats
+from .surface_rendering import render_surface, combine_figures, append_images
 
 logging.basicConfig(format='%(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -54,7 +54,6 @@ def plot_mean_stats(mean_group1, mean_group2, pval, tval, output, p_threshold=0.
     Functionallity suggestions
     --------------------------
     """
-    sr = surface_rendering
     if not clobber:
         if os.path.isfile(output):
             logger.info('{} already exists... Skipping'.format(output))
@@ -71,17 +70,17 @@ def plot_mean_stats(mean_group1, mean_group2, pval, tval, output, p_threshold=0.
     with TemporaryDirectory() as tmp_dir:
         # Plot mean group1
         tmp_mean1 = '{}/mean1.png'.format(tmp_dir)
-        sr.render_surface(mean_group1, tmp_mean1, vlim=vlim_mean, clim=vlim_mean)
+        render_surface(mean_group1, tmp_mean1, vlim=vlim_mean, clim=vlim_mean)
 
         # Plot mean group2
         tmp_mean2 = '{}/mean2.png'.format(tmp_dir)
-        sr.render_surface(mean_group2, tmp_mean2, vlim=vlim_mean, clim=vlim_mean)
+        render_surface(mean_group2, tmp_mean2, vlim=vlim_mean, clim=vlim_mean)
 
         # Combine means with shared colorbar - Setup colorbar
         cbar_args = {'clim': vlim_mean, 'title': cb_mean_title, 'fz_title': 14, 'fz_ticks': 14, 'cmap': 'turbo', 'position': 'bottom'}
 
         tmp_mean = '{}/mean.png'.format(tmp_dir)
-        sr.combine_figures([tmp_mean1, tmp_mean2], tmp_mean, cbArgs=cbar_args, titles=mean_titles)
+        combine_figures([tmp_mean1, tmp_mean2], tmp_mean, cbArgs=cbar_args, titles=mean_titles)
 
         # Plot stats
         tmp_stats = '{}/stats.png'.format(tmp_dir)
@@ -92,10 +91,10 @@ def plot_mean_stats(mean_group1, mean_group2, pval, tval, output, p_threshold=0.
         else:
             cbar_loc = 'bottom'
 
-        ps.plot_stats(pval, tval, tmp_stats, p_threshold=p_threshold, plot_tvalue=plot_tvalue, t_lim=t_lim, cbar_loc=cbar_loc, titles=stats_titles)
+        plot_stats(pval, tval, tmp_stats, p_threshold=p_threshold, plot_tvalue=plot_tvalue, t_lim=t_lim, cbar_loc=cbar_loc, titles=stats_titles)
 
         # Combine to one plot 
-        sr.append_images([tmp_mean, tmp_stats], output, direction='horizontal', scale='height', clobber=True)
+        append_images([tmp_mean, tmp_stats], output, direction='horizontal', scale='height', clobber=True)
     
     logger.info(f'{output} saved')
 

@@ -6,7 +6,7 @@ from tempfile import TemporaryDirectory
 
 import numpy as np
 
-import surface_rendering
+from .surface_rendering import render_surface, combine_figures
 
 logging.basicConfig(format='%(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -53,7 +53,6 @@ def plot_stats(pval, tval, output, p_threshold=0.05, plot_tvalue=False, t_lim=No
     --------------------------
      - Plot only positive or negative t values
     """
-    sr = surface_rendering
     if not clobber:
         if os.path.isfile(output):
             logger.info('{} already exists... Skipping'.format(output))
@@ -94,10 +93,10 @@ def plot_stats(pval, tval, output, p_threshold=0.05, plot_tvalue=False, t_lim=No
 
         with TemporaryDirectory() as tmp_dir:
             tmp_file = '{}/tval.png'.format(tmp_dir)
-            sr.render_surface(tval, tmp_file, clim=clim, vlim=clim, cmap=cmap)
+            render_surface(tval, tmp_file, clim=clim, vlim=clim, cmap=cmap)
 
             # Add colorbar
-            sr.combine_figures(tmp_file, output, titles=titles, cbArgs=cbar_args, clobber=clobber)
+            combine_figures(tmp_file, output, titles=titles, cbArgs=cbar_args, clobber=clobber)
 
     else:
         # -- Plot p-values  --
@@ -123,11 +122,11 @@ def plot_stats(pval, tval, output, p_threshold=0.05, plot_tvalue=False, t_lim=No
                 outfile_posneg = '{}/{}.png'.format(tmp_dir, posneg)
                 pval_files.append(outfile_posneg)
 
-                sr.render_surface(posneg_pval[posneg], outfile_posneg, clim=clim_plot, vlim=clim, cmap=cmap)
+                render_surface(posneg_pval[posneg], outfile_posneg, clim=clim_plot, vlim=clim, cmap=cmap)
                 posneg_figs.append(outfile_posneg)
 
             # Combine pos and neg figure and add title and combined colorbar
-            sr.combine_figures(posneg_figs, output, titles=titles, cbArgs=cbar_args, clobber=clobber)
+            combine_figures(posneg_figs, output, titles=titles, cbArgs=cbar_args, clobber=clobber)
     
     if 'tmp' not in output:
         logger.info(f'{output} saved.')

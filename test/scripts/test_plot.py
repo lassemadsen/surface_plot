@@ -1,7 +1,6 @@
 import numpy as np
 
-import plot_stats
-import plot_mean_stats
+from surface_plot import plot_stats, plot_mean_stats
 
 def main():
 
@@ -11,7 +10,7 @@ def main():
 
 def correlation_plot():
     outdir = '../data/correlation/test_figures'
-    clobber = False
+    clobber = True
 
     pval_left = np.loadtxt('../data/correlation/left.pval', skiprows=1)
     pval_right = np.loadtxt('../data/correlation/right.pval', skiprows=1)
@@ -41,7 +40,7 @@ def correlation_plot():
 
 def ttest_plot():
     outdir = '../data/paired_ttest/test_figures'
-    clobber = False
+    clobber = True
 
     pval_left = np.loadtxt('../data/paired_ttest/left.pval', skiprows=1)
     pval_right = np.loadtxt('../data/paired_ttest/right.pval', skiprows=1)
