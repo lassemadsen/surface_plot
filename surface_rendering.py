@@ -1,3 +1,4 @@
+import gc
 import logging
 import os
 import pathlib
@@ -78,6 +79,7 @@ def render_surface(data, outfile, clim=None, vlim=[None, None], cmap='turbo_r', 
                                      smoothing_steps=None)
 
                 sc.add_to_subplot(b_obj, row=plot_dict[plot][0], col=plot_dict[plot][1], zoom=zoom, rotate=view)
+                del b_obj 
 
             tmp_file = '{0}/{1}.png'.format(tmp_dir, plot_view)
             img_files.append(tmp_file)
@@ -87,6 +89,7 @@ def render_surface(data, outfile, clim=None, vlim=[None, None], cmap='turbo_r', 
             else:
                 sc.screenshot(tmp_file, print_size=(10,10), dpi=300, autocrop=True)
             del sc
+            gc.collect()
 
         append_images(img_files, outfile, direction='vertical', scale='width')
 
