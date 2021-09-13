@@ -213,8 +213,8 @@ def append_images(image_files, outfile, direction='horizontal', bg_color=(255, 2
 
     new_im.save(outfile, dpi=(dpi, dpi))
 
-def combine_figures(files, outfile, direction='horizontal', cbArgs=None, titles=None, ylabels=None, views='standard', 
-                    discrete=False, dpi=300, clobber=False):
+def combine_figures(files, outfile, direction='horizontal', cbArgs=None, titles=None, ylabels=None,
+                    fz_ylabel=14, fz_title=14, discrete=False, dpi=300, clobber=False):
     """Combine figures to one plot with possibility of adding colorbar, labels and titles
     Can also be used to add colorbar to one figure
 
@@ -244,6 +244,10 @@ def combine_figures(files, outfile, direction='horizontal', cbArgs=None, titles=
         If ylabels is a string, the same label will be applied to all figures. 
         If ylabels is a list/tuple of strings, the strings inside will be used to set
         the label of each picture independently (must have the same length as files.)
+    fz_title : int | 14
+        Font size of titles (if added)
+    fz_ylabel : int | 14
+        Font size of ylabels (if added)
     discrete : boolean | False
         Plot discrete
         NOT IMPLEMENTED
@@ -277,13 +281,11 @@ def combine_figures(files, outfile, direction='horizontal', cbArgs=None, titles=
     # Determine font sizes:
     # The following settings has been optimized to the specific number of images 
     # If another number of images or another number of "views" is plottet, a specific option may need to be added.
+    # NB: If only one figure, the fz_title and fz_ylabel is currently 24 no matter the input.
     
     if n_fig == 1:
         fz_title = 24
         fz_ylabel = 24
-    else: 
-        fz_title = 14
-        fz_ylabel = 14
 
     if cbArgs is not None:
         if cbArgs['position'] == 'left':
