@@ -25,7 +25,7 @@ def render_surface(data, outfile, mask=None, vlim=[None, None], clim=None, cmap=
         The threshold limits.
         Values under vmin is set to darkgrey
         Values over vmax is set to white
-        If None, the limits are scaled automatically 
+        If None, (data.min(), data.max()) will be used
     mask : dict
         Dictionary with keys "left" and "right", containing 1 inside mask and 0 outside mask
         Vertices outside mask will plottet as darkgrey
@@ -50,17 +50,16 @@ def render_surface(data, outfile, mask=None, vlim=[None, None], clim=None, cmap=
         logging.info('{} exists... Use clobber=True to overwrite'.format(outfile))
         return
     
+    data['left'] = data['left'].ravel()
+    data['right'] = data['right'].ravel()
+    
     if mask is not None: # Set vertices outside mask less than vmin
         data['left'][~mask['left']] = vlim[0]-1
         data['right'][~mask['right']] = vlim[0]-1
-    
-    # Make sure value limits has one decimal (optimal for the plot)
-    vlim[0] = round(vlim[0], 1)
-    vlim[1] = round(vlim[1], 1)
 
-    plot_data = {'left': data['left'].ravel(),
-                'right': data['right'].ravel(),
-                'both': np.concatenate((data['left'].ravel(), data['right'].ravel()))}
+    plot_data = {'left': data['left'],
+                'right': data['right'],
+                'both': np.concatenate((data['left'], data['right']))}
 
     if views == 'standard':
         views = ['fb', 'lr', 'lr_inv']
