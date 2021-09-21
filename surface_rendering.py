@@ -12,7 +12,7 @@ from visbrain.objects import BrainObj, SceneObj
 logging.basicConfig(format='%(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-def render_surface(data, outfile, clim=None, vlim=[None, None], cmap='turbo_r', views='standard', clobber=False):
+def render_surface(data, outfile, mask=None, vlim=[None, None], clim=None, cmap='turbo_r', views='standard', clobber=False):
     """Render surface with given input data
 
     Parameters
@@ -21,13 +21,18 @@ def render_surface(data, outfile, clim=None, vlim=[None, None], cmap='turbo_r', 
         Dictionary with keys "left" and "right", containing data array to plot for left and right hemisphere (without header, i.e. number of vertices)
     outfile : string
         Location of output file
-    clim : tuple [cmin, cmax] | None
-        The colorbar limits. If None, (data.min(), data.max()) will be used
-        instead.
-    vlim : tuple [vmin, vmax]| None
+    vlim : tuple [vmin, vmax] | [None, None]
         The threshold limits.
         Values under vmin is set to darkgrey
         Values over vmax is set to white
+        If None, the limits are scaled automatically 
+    mask : dict
+        Dictionary with keys "left" and "right", containing 1 inside mask and 0 outside mask
+        Vertices outside mask will plottet as darkgrey
+    clim : tuple [cmin, cmax] | None
+        The colorbar limits. If None, (data.min(), data.max()) will be used
+        instead.
+
     cmap : string | 'turbo_r'
         The colormap to use.
         Can be a cmap supported by matplotlib:
@@ -44,10 +49,18 @@ def render_surface(data, outfile, clim=None, vlim=[None, None], cmap='turbo_r', 
     if clobber == False and os.path.exists(outfile):
         logging.info('{} exists... Use clobber=True to overwrite'.format(outfile))
         return
+    
+    if mask is not None: # Set vertices outside mask less than vmin
+        data['left'][~mask['left']] = vlim[0]-1
+        data['right'][~mask['right']] = vlim[0]-1
+    
+    # Make sure value limits has one decimal (optimal for the plot)
+    vlim[0] = round(vlim[0], 1)
+    vlim[1] = round(vlim[1], 1)
 
-    plot_data = {'left': data['left'],
-                'right': data['right'],
-                'both': np.concatenate((data['left'], data['right']))}
+    plot_data = {'left': data['left'].ravel(),
+                'right': data['right'].ravel(),
+                'both': np.concatenate((data['left'].ravel(), data['right'].ravel()))}
 
     if views == 'standard':
         views = ['fb', 'lr', 'lr_inv']
@@ -317,6 +330,11 @@ def combine_figures(files, outfile, direction='horizontal', cbArgs=None, titles=
                 pltmargin = -.3
                 height = .4
                 width = .008
+        if n_fig == 3:
+            if cbArgs['position'] == 'bottom':
+                pltmargin = -.45
+                height = .5
+                width = .004
 
         ticks='complete'
 

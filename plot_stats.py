@@ -70,9 +70,9 @@ def plot_stats(pval, tval, output, p_threshold=0.05, plot_tvalue=False, t_lim=No
             t_limit = round(np.max([t_min_abs, t_max]),1)
 
             t_lim = [-t_limit, t_limit]
-            clim = t_lim
+            vlim = t_lim
         else:
-            clim = t_lim
+            vlim = t_lim
 
         cmap = 'RdYlBu_r'
 
@@ -82,9 +82,9 @@ def plot_stats(pval, tval, output, p_threshold=0.05, plot_tvalue=False, t_lim=No
         if cbar_loc == None:
             cbar_args = None
         elif cbar_loc == 'bottom_tval_scaled': # Special scenario were tval is plottet alongside two mean images combined to one (e.g. baseline, followup, tval). Scale cbar accordingly
-            cbar_args = {'clim': clim, 'title': 'T-value', 'fz_title': 24, 'fz_ticks': 24, 'cmap': cmap, 'position': cbar_loc}
+            cbar_args = {'clim': vlim, 'title': 'T-value', 'fz_title': 24, 'fz_ticks': 24, 'cmap': cmap, 'position': cbar_loc}
         else:
-            cbar_args = {'clim': clim, 'title': 'T-value', 'fz_title': 16, 'fz_ticks': 16, 'cmap': cmap, 'position': cbar_loc}
+            cbar_args = {'clim': vlim, 'title': 'T-value', 'fz_title': 16, 'fz_ticks': 16, 'cmap': cmap, 'position': cbar_loc}
 
         if titles is not None and len(titles) == 1:
             titles = titles
@@ -93,14 +93,14 @@ def plot_stats(pval, tval, output, p_threshold=0.05, plot_tvalue=False, t_lim=No
 
         with TemporaryDirectory() as tmp_dir:
             tmp_file = '{}/tval.png'.format(tmp_dir)
-            render_surface(tval, tmp_file, clim=clim, vlim=clim, cmap=cmap)
+            render_surface(tval, tmp_file, vlim=vlim, clim=vlim, cmap=cmap)
 
             # Add colorbar
             combine_figures(tmp_file, output, titles=titles, cbArgs=cbar_args, clobber=clobber)
 
     else:
         # -- Plot p-values  --
-        clim = [0, p_threshold]
+        vlim = [0, p_threshold]
         clim_plot = [-(p_threshold / 15), p_threshold] # -(p_threshold/15) to avoid very dark red (jet_r) and get a better looking surface
         cmap = 'turbo_r'
 
@@ -112,9 +112,9 @@ def plot_stats(pval, tval, output, p_threshold=0.05, plot_tvalue=False, t_lim=No
         if cbar_loc == None:
             cbar_args = None
         elif cbar_loc == 'left':
-            cbar_args = {'clim': clim, 'title': 'P-value', 'fz_title': 11, 'fz_ticks': 11, 'cmap': cmap, 'position': cbar_loc}
+            cbar_args = {'clim': vlim, 'title': 'P-value', 'fz_title': 11, 'fz_ticks': 11, 'cmap': cmap, 'position': cbar_loc}
         else:
-            cbar_args = {'clim': clim, 'title': 'P-value', 'fz_title': 14, 'fz_ticks': 14, 'cmap': cmap, 'position': cbar_loc}
+            cbar_args = {'clim': vlim, 'title': 'P-value', 'fz_title': 14, 'fz_ticks': 14, 'cmap': cmap, 'position': cbar_loc}
 
         with TemporaryDirectory() as tmp_dir:
             posneg_figs = []
@@ -122,7 +122,7 @@ def plot_stats(pval, tval, output, p_threshold=0.05, plot_tvalue=False, t_lim=No
                 outfile_posneg = '{}/{}.png'.format(tmp_dir, posneg)
                 pval_files.append(outfile_posneg)
 
-                render_surface(posneg_pval[posneg], outfile_posneg, clim=clim_plot, vlim=clim, cmap=cmap)
+                render_surface(posneg_pval[posneg], outfile_posneg, vlim=vlim, clim=clim_plot, cmap=cmap)
                 posneg_figs.append(outfile_posneg)
 
             # Combine pos and neg figure and add title and combined colorbar
