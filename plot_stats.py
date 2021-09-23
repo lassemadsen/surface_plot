@@ -107,7 +107,7 @@ def plot_pval(pval, output, tval=None, p_threshold=0.01, mask=None, cbar_loc='le
         logger.info(f'{output} saved.')
 
 
-def plot_tval(tval, output, t_lim=None, t_threshold=2.5, mask=None, p_threshold=None, pval=None, df=None, two_sided=True, title=None, cbar_loc='left', clobber=False):
+def plot_tval(tval, output, t_lim=None, t_threshold=2.5, mask=None, p_threshold=None, pval=None, df=None, two_tailed=True, title=None, cbar_loc='left', clobber=False):
     """Plot tval statistics on surface
     Will plot t-values between thresholds
     If p_threshold and df is set, the thresholds are calculated based on the corresponding p-value. 
@@ -138,8 +138,8 @@ def plot_tval(tval, output, t_lim=None, t_threshold=2.5, mask=None, p_threshold=
         Only used if p_threshold is set to calculate conversion between t-values and p-values
         If pval is not None, df is ignored.
         Ignored if p_threshold is None
-    two_sided : boolean | True
-        Determines two- or one-side t-test. Only used when p_threhold and df is set.
+    two_tailed : boolean | True
+        Determines two- or one-tailed t-test. Only used when p_threhold and df is set.
         Ignored if p_threshold or df is None
     title : str | None
         Title of plot
@@ -184,7 +184,7 @@ def plot_tval(tval, output, t_lim=None, t_threshold=2.5, mask=None, p_threshold=
         if pval is not None:
             tval_thresholded = threshold_tmap(tval, vlim, p_threshold=p_threshold, pval=pval)
         elif df is not None:
-            tval_thresholded = threshold_tmap(tval, vlim, p_threshold=p_threshold, df=df, two_sided=two_sided)
+            tval_thresholded = threshold_tmap(tval, vlim, p_threshold=p_threshold, df=df, two_tailed=two_tailed)
         else:
             logger.error('pval or df is not set!')
             raise Exception('pval or df is not set!')
@@ -210,7 +210,7 @@ def plot_tval(tval, output, t_lim=None, t_threshold=2.5, mask=None, p_threshold=
         logger.info(f'{output} saved.')
 
 
-def threshold_tmap(tval, t_lim, t_threshold=None, p_threshold=None, pval=None, df=None, two_sided=None):
+def threshold_tmap(tval, t_lim, t_threshold=None, p_threshold=None, pval=None, df=None, two_tailed=None):
     """Threshold t-map
     Differet options (listed in order of priority it mulitple options are given):
 
@@ -221,7 +221,7 @@ def threshold_tmap(tval, t_lim, t_threshold=None, p_threshold=None, pval=None, d
 
         pval : array of pval to threshold 
         df : degrees of freedom. Used to caluculate critical t-value 
-            Two-sided is used to determine the critical t-value
+            two_tailed is used to determine the critical t-value
         
     """
     tval = copy.deepcopy(tval) # Copy to avoid overwritting existing tval
@@ -235,7 +235,7 @@ def threshold_tmap(tval, t_lim, t_threshold=None, p_threshold=None, pval=None, d
             if pval is not None:
                 tval[hemisphere][pval[hemisphere] > p_threshold] = 1e3 # Set to 1e3 to avoid over being in range of other t values. Plottet as white
             elif df is not None:
-                if two_sided:
+                if two_tailed:
                     t_critical = scipy.stats.t.ppf(1-p_threshold/2, df)
                 else:
                     t_critical = scipy.stats.t.ppf(1-p_threshold, df)
