@@ -3,13 +3,13 @@ import os
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
-from .plot_stats import plot_stats
+from .plot_stats import plot_pval, plot_tval
 from .surface_rendering import render_surface, combine_figures, append_images
 
 logging.basicConfig(format='%(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-def plot_mean_stats(mean_group1, mean_group2, pval, tval, output, p_threshold=0.05, vlim_mean=[0,1], mean_titles=None, stats_titles=None, cb_mean_title='Mean', plot_tvalue=False, t_lim=None, clobber=False):
+def plot_mean_stats(mean_group1, mean_group2, pval, tval, output, p_threshold=0.05, mask=None, vlim_mean=[0,1], mean_titles=None, stats_titles=None, cb_mean_title='Mean', plot_tvalue=False, t_lim=None, clobber=False):
     """Plot mean and statistics on surface
     Will plot mean of group 1 and mean of group 2 along with p-values or t-values.
     Will plot p-values below p_threshold with positive t-values and p-values below p_threshold with negative t-values.
@@ -30,6 +30,9 @@ def plot_mean_stats(mean_group1, mean_group2, pval, tval, output, p_threshold=0.
         Location to save output
     p_threshold : float | 0.05
         P value to threshold the statistical map. Default is p<0.05
+    mask : dict
+        Dictionary with keys "left" and "right", containing 1 inside mask and 0 outside mask
+        Vertices outside mask will plottet as darkgrey
     vlim_mean : tuple [min, max] | [0,1]
         Limits of the mean plots 
     mean_titles : list | None
@@ -70,11 +73,11 @@ def plot_mean_stats(mean_group1, mean_group2, pval, tval, output, p_threshold=0.
     with TemporaryDirectory() as tmp_dir:
         # Plot mean group1
         tmp_mean1 = '{}/mean1.png'.format(tmp_dir)
-        render_surface(mean_group1, tmp_mean1, vlim=vlim_mean, clim=vlim_mean)
+        render_surface(mean_group1, tmp_mean1, vlim=vlim_mean, clim=vlim_mean, mask=mask)
 
         # Plot mean group2
         tmp_mean2 = '{}/mean2.png'.format(tmp_dir)
-        render_surface(mean_group2, tmp_mean2, vlim=vlim_mean, clim=vlim_mean)
+        render_surface(mean_group2, tmp_mean2, vlim=vlim_mean, clim=vlim_mean, mask=mask)
 
         # Combine means with shared colorbar - Setup colorbar
         cbar_args = {'clim': vlim_mean, 'title': cb_mean_title, 'fz_title': 14, 'fz_ticks': 14, 'cmap': 'turbo', 'position': 'bottom'}
@@ -88,10 +91,10 @@ def plot_mean_stats(mean_group1, mean_group2, pval, tval, output, p_threshold=0.
         # Setup colorbar
         if plot_tvalue:
             cbar_loc = 'bottom_tval_scaled' # Special scenario were tval is plottet alongside two mean images combined to one (e.g. baseline, followup, tval). Scale cbar accordingly
+            plot_tval(tval, tmp_stats, pval=pval, t_lim=t_lim, p_threshold=p_threshold, cbar_loc=cbar_loc, mask=mask, title=stats_titles)
         else:
             cbar_loc = 'bottom'
-
-        plot_stats(pval, tval, tmp_stats, p_threshold=p_threshold, plot_tvalue=plot_tvalue, t_lim=t_lim, cbar_loc=cbar_loc, titles=stats_titles)
+            plot_pval(pval, tmp_stats, tval=tval, p_threshold=p_threshold, cbar_loc=cbar_loc, mask=mask, titles=stats_titles)
 
         # Combine to one plot 
         append_images([tmp_mean, tmp_stats], output, direction='horizontal', scale='height', clobber=True)
