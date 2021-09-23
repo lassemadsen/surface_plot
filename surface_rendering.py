@@ -50,8 +50,8 @@ def render_surface(data, outfile, mask=None, vlim=[None, None], clim=None, cmap=
         logging.info('{} exists... Use clobber=True to overwrite'.format(outfile))
         return
     
-    data['left'] = data['left'].ravel()
-    data['right'] = data['right'].ravel()
+    data['left'] = np.round(data['left'].ravel(),6)
+    data['right'] = np.round(data['right'].ravel(),6)
     
     if mask is not None: # Set vertices outside mask less than vmin
         data['left'][~mask['left']] = vlim[0]-1
@@ -307,8 +307,7 @@ def combine_figures(files, outfile, direction='horizontal', cbArgs=None, titles=
 
         if n_fig == 1:
             if cbArgs['position'] == 'left':
-                ycb = -25
-                pltmargin = -.10
+                pltmargin = -.07
                 height = .5
                 width = .007
             elif cbArgs['position'] == 'bottom':
