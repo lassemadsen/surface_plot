@@ -27,6 +27,10 @@ def data_plot():
     output = f'{outdir}/simple_withlim.png'
     plot_surface.plot_surface(data, output, vlim=[0, 2.5], cbar_loc='bottom')
 
+    # Plot mean data - predetermined limits with title
+    output = f'{outdir}/simple_withlim_title.png'
+    plot_surface.plot_surface(data, output, vlim=[0.5, 3], cbar_loc='bottom', title='PiB uptake', cbar_title='Mean SUVR')
+
 def correlation_plot():
     outdir = '../data/correlation/test_figures'
     clobber = False
