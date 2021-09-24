@@ -12,7 +12,7 @@ from visbrain.objects import BrainObj, SceneObj
 logging.basicConfig(format='%(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-def render_surface(data, outfile, mask=None, vlim=[None, None], clim=None, cmap='turbo_r', views='standard', clobber=False):
+def render_surface(data, outfile, mask=None, vlim=None, clim=None, cmap='turbo_r', views='standard', clobber=False):
     """Render surface with given input data
 
     Parameters
@@ -21,7 +21,7 @@ def render_surface(data, outfile, mask=None, vlim=[None, None], clim=None, cmap=
         Dictionary with keys "left" and "right", containing data array to plot for left and right hemisphere (without header, i.e. number of vertices)
     outfile : string
         Location of output file
-    vlim : tuple [vmin, vmax] | [None, None]
+    vlim : tuple [vmin, vmax] | None
         The threshold limits.
         Values under vmin is set to darkgrey
         Values over vmax is set to white
@@ -50,12 +50,17 @@ def render_surface(data, outfile, mask=None, vlim=[None, None], clim=None, cmap=
         logging.info('{} exists... Use clobber=True to overwrite'.format(outfile))
         return
     
-    data['left'] = np.round(data['left'].ravel(),6)
-    data['right'] = np.round(data['right'].ravel(),6)
-    
-    if mask is not None: # Set vertices outside mask less than vmin
-        data['left'][~mask['left']] = vlim[0]-1
-        data['right'][~mask['right']] = vlim[0]-1
+    if vlim is None:
+        vmin = np.round(np.min([np.min(data['left']), np.min(data['right'])]),2)
+        vmax = np.round(np.max([np.max(data['left']), np.max(data['right'])]),2)
+
+        vlim = [vmin, vmax]
+
+    for hemisphere in ['left', 'right']:
+        data[hemisphere] = data[hemisphere].ravel()
+        
+        if mask is not None: # Set vertices outside mask less than vmin
+            data[hemisphere][~mask[hemisphere]] = vlim[0]-1
 
     plot_data = {'left': data['left'],
                 'right': data['right'],
