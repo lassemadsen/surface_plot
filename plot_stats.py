@@ -120,7 +120,7 @@ def plot_tval(tval, output, t_lim=None, t_threshold=2.5, mask=None, p_threshold=
         Location to save output
     t_lim : [float, float] | None
         Color lmits of tmap. If None, the min and max values are used (symmetrical around zero)
-    t_threshold : float | 2
+    t_threshold : float | 2.5
         Treshold of tmap. Values between -threshold;threshold are displayed as white. 
         If 0, entire tmap is plottet
     mask : dict
@@ -154,7 +154,6 @@ def plot_tval(tval, output, t_lim=None, t_threshold=2.5, mask=None, p_threshold=
     Colormap could be changed to colormaps found in matplotlib:
     https://matplotlib.org/3.1.0/tutorials/colors/colormaps.html
     """
-    pass
     if not clobber:
         if os.path.isfile(output):
             logger.info('{} already exists... Skipping'.format(output))
@@ -164,8 +163,8 @@ def plot_tval(tval, output, t_lim=None, t_threshold=2.5, mask=None, p_threshold=
     Path(outdir).mkdir(parents=True, exist_ok=True)
 
     if t_lim is None:
-        t_min_abs = np.abs(np.min([np.min(tval['left']), np.min(tval['right'])]))
-        t_max = np.max([np.max(tval['left']), np.max(tval['right'])])
+        t_min_abs = np.abs(np.min([np.nanmin(tval['left']), np.nanmin(tval['right'])]))
+        t_max = np.max([np.nanmax(tval['left']), np.nanmax(tval['right'])])
 
         t_limit = round(np.max([t_min_abs, t_max]),1)
 
@@ -227,19 +226,19 @@ def threshold_tmap(tval, t_lim, t_threshold=None, p_threshold=None, pval=None, d
     tval = copy.deepcopy(tval) # Copy to avoid overwritting existing tval
 
     for hemisphere in ['left', 'right']:
-        tval[hemisphere] = np.clip(tval[hemisphere], t_lim[0], t_lim[1])
+        tval[hemisphere] = np.clip(tval[hemisphere], t_lim[0]+1e-3, t_lim[1]-1e-3) # +/- 1e-3 to avoid limits being plottet as "above"/"under" (see render_surface)
 
         if t_threshold is not None:
-            tval[hemisphere][abs(tval[hemisphere]) < t_threshold] = 1e3 # Set to 1e3 to avoid over being in range of other t values. Plottet as white
+            tval[hemisphere][abs(tval[hemisphere]) < t_threshold] = t_lim[1]+1 # Set above t_lim[1] (vmax) to be plottet as white
         elif p_threshold is not None:
             if pval is not None:
-                tval[hemisphere][pval[hemisphere] > p_threshold] = 1e3 # Set to 1e3 to avoid over being in range of other t values. Plottet as white
+                tval[hemisphere][pval[hemisphere] > p_threshold] = t_lim[1]+1 # Set above t_lim[1] (vmax) to be plottet as white
             elif df is not None:
                 if two_tailed:
                     t_critical = scipy.stats.t.ppf(1-p_threshold/2, df)
                 else:
                     t_critical = scipy.stats.t.ppf(1-p_threshold, df)
-                tval[hemisphere][abs(tval[hemisphere]) < t_critical] = 1e3 # Set to 1e3 to avoid over being in range of other t values. Plottet as white
+                tval[hemisphere][abs(tval[hemisphere]) < t_critical] = t_lim[1]+1 # Set above t_lim[1] (vmax) to be plottet as white
 
     return tval
 
