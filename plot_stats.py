@@ -5,6 +5,7 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 
 import numpy as np
+import pandas as pd
 import scipy
 
 from .surface_rendering import render_surface, combine_figures
@@ -107,7 +108,7 @@ def plot_pval(pval, output, tval=None, p_threshold=0.01, mask=None, cbar_loc='le
         logger.info(f'{output} saved.')
 
 
-def plot_tval(tval, output, t_lim=None, t_threshold=2.5, mask=None, p_threshold=None, pval=None, df=None, two_tailed=True, title=None, cbar_loc='left', clobber=False):
+def plot_tval(tval, output, t_lim=None, t_threshold=2.5, mask=None, p_threshold=None, pval=None, df=None, two_tailed=True, title=None, cbar_loc='left', second_threshold_mask=None, surf=None, clobber=False):
     """Plot tval statistics on surface
     Will plot t-values between thresholds
     If p_threshold and df is set, the thresholds are calculated based on the corresponding p-value. 
@@ -190,6 +191,9 @@ def plot_tval(tval, output, t_lim=None, t_threshold=2.5, mask=None, p_threshold=
     else:
         tval_thresholded = threshold_tmap(tval, vlim, t_threshold=t_threshold)
 
+    if second_threshold_mask is not None:
+        tval_thresholded = find_edges(tval_thresholded, second_threshold_mask, surf, vlim[0]-1) # Set edge_val above vmax to display as white
+
     # Setup colorbar and titles
     if cbar_loc == None:
         cbar_args = None
@@ -255,3 +259,38 @@ def threshold_pmap(pval, tval):
             posneg['neg'][hemisphere][tval[hemisphere] > 0] = 1
     
     return posneg
+
+def find_edges(data, mask, surf, edge_val):
+    """Find edges
+    
+    Parameters
+    ----------
+    
+    """
+    for hemisphere in ['left', 'right']:
+
+        edge_index = [] 
+
+        # Copy data for current hemisphere and convert to np.ndarray
+        tmp_mask = copy.deepcopy(mask[hemisphere]+0).ravel()
+
+        faces = surf[hemisphere].polys2D 
+        vert_idx = np.arange(faces.max() + 1)
+
+        # --- Threshold data ---
+        not_used_indexes = set(vert_idx[tmp_mask == 1])
+
+        # --- Only use faces containing not_used indexes ---
+        faces = faces[np.isin(faces, list(not_used_indexes)).any(axis=1)]
+
+        # --- Find edges ---
+        while not_used_indexes:
+            current_index = not_used_indexes.pop()
+            neighbours = set(faces[(faces == current_index).any(axis=1)].ravel())
+
+            if (tmp_mask[list(neighbours)] == 0).any(axis=0):
+                edge_index.append(current_index)
+
+        data[hemisphere][0][edge_index] = edge_val
+
+    return data
