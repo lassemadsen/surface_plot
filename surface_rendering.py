@@ -92,7 +92,7 @@ def render_surface(data, outfile, mask=None, vlim=None, clim=None, cmap='turbo_r
 
                 # Add activation to Brain Object
                 b_obj.add_activation(data=plot_data[hemisphere], cmap=cmap, clim=clim, vmin=vlim[0],
-                                     vmax=vlim[1], over='#EEEEEE', under='darkgrey', hemisphere='both',
+                                     vmax=vlim[1], over='#dee2e6', under='darkgrey', hemisphere='both',
                                      smoothing_steps=None)
 
                 sc.add_to_subplot(b_obj, row=plot_dict[plot][0], col=plot_dict[plot][1], zoom=zoom, rotate=view)

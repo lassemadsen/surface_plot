@@ -39,7 +39,7 @@ def plot_surface(data, output, vlim=None, mask=None, cbar_loc='left', cbar_title
     cmap: str | 'RdYlBu_r'
         Colormap used for plotting
         Recommendations:
-        'RdYlBu_r' is good for t values
+        'RdBu_r' is good for t values
         'turbo' otherwise
     clobber : Boolean | False
         If true, existing files will be overwritten 

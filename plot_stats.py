@@ -5,7 +5,6 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 
 import numpy as np
-import pandas as pd
 import scipy
 
 from .surface_rendering import render_surface, combine_figures
@@ -178,7 +177,7 @@ def plot_tval(tval, output, t_lim=None, t_threshold=2.5, mask=None, p_threshold=
     vlim[0] = vlim[0] + 0.0
     vlim[1] = vlim[1] + 0.0
 
-    cmap = 'RdYlBu_r'
+    cmap = 'RdBu_r'
 
     if p_threshold is not None:
         if pval is not None:
@@ -192,7 +191,7 @@ def plot_tval(tval, output, t_lim=None, t_threshold=2.5, mask=None, p_threshold=
         tval_thresholded = threshold_tmap(tval, vlim, t_threshold=t_threshold)
 
     if second_threshold_mask is not None:
-        tval_thresholded = find_edges(tval_thresholded, second_threshold_mask, surf, vlim[0]-1) # Set edge_val above vmax to display as white
+        tval_thresholded = find_edges(tval_thresholded, second_threshold_mask, surf, 0) # Set edge_val above vmax to display as white
 
     # Setup colorbar and titles
     if cbar_loc == None:
