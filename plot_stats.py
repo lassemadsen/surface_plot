@@ -59,6 +59,8 @@ def plot_pval(pval, output, tval=None, p_threshold=0.01, mask=None, cbar_loc='le
     cmap = 'turbo_r'
 
     if tval is None:
+        pval_plot = threshold_pmap(pval, p_threshold, tval)
+
         # Setup colorbar and titles
         if cbar_loc == None:
             cbar_args = None
@@ -73,13 +75,13 @@ def plot_pval(pval, output, tval=None, p_threshold=0.01, mask=None, cbar_loc='le
 
         with TemporaryDirectory() as tmp_dir:
             tmp_file = '{}/pval.png'.format(tmp_dir)
-            render_surface(pval, tmp_file, vlim=vlim, clim=clim_plot, cmap=cmap)
+            render_surface(pval_plot, tmp_file, vlim=vlim, clim=clim_plot, cmap=cmap)
 
             # Add colorbar
             combine_figures(tmp_file, output, titles=titles, cbArgs=cbar_args, clobber=clobber)
 
     else:
-        posneg_pval = threshold_pmap(pval, tval)
+        posneg_pval = threshold_pmap(pval, p_threshold, tval)
 
         pval_files = []
 
@@ -191,7 +193,7 @@ def plot_tval(tval, output, t_lim=None, t_threshold=2.5, mask=None, p_threshold=
         tval_thresholded = threshold_tmap(tval, vlim, t_threshold=t_threshold)
 
     if second_threshold_mask is not None:
-        tval_thresholded = find_edges(tval_thresholded, second_threshold_mask, surf, 0) # Set edge_val above vmax to display as white
+        tval_thresholded = find_edges(tval_thresholded, second_threshold_mask, surf, vlim[0]-0.5) # Set edge_val below vmin but above vmin-1 (this will be displayed as white on plot)
 
     # Setup colorbar and titles
     if cbar_loc == None:
@@ -232,32 +234,39 @@ def threshold_tmap(tval, t_lim, t_threshold=None, p_threshold=None, pval=None, d
         tval[hemisphere] = np.clip(tval[hemisphere], t_lim[0]+1e-3, t_lim[1]-1e-3) # +/- 1e-3 to avoid limits being plottet as "above"/"under" (see render_surface)
 
         if t_threshold is not None:
-            tval[hemisphere][abs(tval[hemisphere]) < t_threshold] = t_lim[1]+1 # Set above t_lim[1] (vmax) to be plottet as white
+            tval[hemisphere][abs(tval[hemisphere]) < t_threshold] = t_lim[0]-1 # Set above t_lim[1] (vmax) to be plottet as white
         elif p_threshold is not None:
             if pval is not None:
-                tval[hemisphere][pval[hemisphere] > p_threshold] = t_lim[1]+1 # Set above t_lim[1] (vmax) to be plottet as white
+                tval[hemisphere][pval[hemisphere] > p_threshold] = t_lim[0]-1 # Set above t_lim[1] (vmax) to be plottet as white
             elif df is not None:
                 if two_tailed:
                     t_critical = scipy.stats.t.ppf(1-p_threshold/2, df)
                 else:
                     t_critical = scipy.stats.t.ppf(1-p_threshold, df)
-                tval[hemisphere][abs(tval[hemisphere]) < t_critical] = t_lim[1]+1 # Set above t_lim[1] (vmax) to be plottet as white
+                tval[hemisphere][abs(tval[hemisphere]) < t_critical] = t_lim[0]-1 # Set above t_lim[1] (vmax) to be plottet as white
 
     return tval
 
 
-def threshold_pmap(pval, tval):
+def threshold_pmap(pval, p_threshold, tval):
     """Threshold p-map
     """
+    if tval is None:
+        pval_return = {'left': copy.deepcopy(pval['left']), 'right': copy.deepcopy(pval['right'])}
 
-    posneg = {'pos': {'left': copy.deepcopy(pval['left']), 'right': copy.deepcopy(pval['right'])},
-              'neg': {'left': copy.deepcopy(pval['left']), 'right': copy.deepcopy(pval['right'])}} # Copy to aviod overwritting existing pval
+        for hemisphere in ['left', 'right']:
+            pval_return[hemisphere][pval[hemisphere] > p_threshold] = -1
+    else:
+        pval_return = {'pos': {'left': copy.deepcopy(pval['left']), 'right': copy.deepcopy(pval['right'])},
+                       'neg': {'left': copy.deepcopy(pval['left']), 'right': copy.deepcopy(pval['right'])}} # Copy to aviod overwritting existing pval
+        for hemisphere in ['left', 'right']:
+            pval_return['pos'][hemisphere][tval[hemisphere] < 0] = -1
+            pval_return['pos'][hemisphere][pval_return['pos'][hemisphere] > p_threshold] = -1
 
-    for hemisphere in ['left', 'right']:
-            posneg['pos'][hemisphere][tval[hemisphere] < 0] = 1
-            posneg['neg'][hemisphere][tval[hemisphere] > 0] = 1
+            pval_return['neg'][hemisphere][tval[hemisphere] > 0] = -1
+            pval_return['neg'][hemisphere][pval_return['neg'][hemisphere] > p_threshold] = -1
     
-    return posneg
+    return pval_return
 
 def find_edges(data, mask, surf, edge_val):
     """Find edges
@@ -290,6 +299,15 @@ def find_edges(data, mask, surf, edge_val):
             if (tmp_mask[list(neighbours)] == 0).any(axis=0):
                 edge_index.append(current_index)
 
-        data[hemisphere][0][edge_index] = edge_val
+        # --- Expand edge ---
+        cluster_indexes = set(vert_idx[tmp_mask == 1])
+        expand = set()
+        for idx in edge_index:
+            neighbours = set(faces[(faces == idx).any(axis=1)].ravel())
+            expand.update(neighbours & cluster_indexes)
+
+        edge_index.extend(list(expand))
+
+        data[hemisphere][edge_index] = edge_val
 
     return data

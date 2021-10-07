@@ -1,5 +1,7 @@
 from surface_plot import plot_stats, plot_mean_stats, plot_surface
 import numpy as np
+import pandas as pd
+from brainstat.mesh.interpolate import read_surface_gz
 
 def main():
 
@@ -8,6 +10,8 @@ def main():
     correlation_plot()
  
     ttest_plot()
+
+    second_level()
 
 def data_plot():
     outdir = '../data/simple_plot/test_figures'
@@ -84,7 +88,6 @@ def correlation_plot():
     output = f'{outdir}/tval_withdf_onetailed_cbar_{cbar_loc}_p{p_threshold}.png'
     plot_stats.plot_tval(tval, output, p_threshold=p_threshold, df=df, two_tailed=False, cbar_loc=cbar_loc, clobber=clobber)
 
-
 def ttest_plot():
     outdir = '../data/paired_ttest/test_figures'
     clobber = False
@@ -127,6 +130,35 @@ def ttest_plot():
     output = f'{outdir}/ttest_tval_notitle_p{p_threshold}.png'
     plot_mean_stats.plot_mean_stats(mean1, mean2, pval, tval, output, vlim_mean=[0, 4], p_threshold=p_threshold, plot_tvalue=True, clobber=clobber)
 
+def second_level():
+    outdir = '../data/second_level/test_figures'
+    clobber = True
+    mask = {'left': [], 'right': []}
+
+    surf = {'left': read_surface_gz('/Users/au483096/data/atlas/surface/mni_icbm152_t1_tal_nlin_sym_09c_left_smooth.gii'),
+            'right': read_surface_gz('/Users/au483096/data/atlas/surface/mni_icbm152_t1_tal_nlin_sym_09c_right_smooth.gii')}
+
+    tval_left = np.loadtxt('../data/second_level/tval_left.csv')
+    tval_right = np.loadtxt('../data/second_level/tval_right.csv')
+    second_level_left = np.loadtxt('../data/second_level/second_level_left.csv')
+    second_level_right = np.loadtxt('../data/second_level/second_level_right.csv')
+
+    tval = {'left': tval_left,
+            'right': tval_right}
+
+    second_level = {'left': second_level_left,
+                    'right': second_level_right}
+
+    df = 19
+    p_threshold = 0.01 
+    t_lim = [-5, 5]
+
+    mask['left'] = ~np.isnan(tval['left'])
+    mask['right'] = ~np.isnan(tval['right'])
+
+    output = f'{outdir}/second_level.png'
+
+    plot_stats.plot_tval(tval, output, mask=mask, t_lim=t_lim, second_threshold_mask=second_level, surf=surf, clobber=clobber)
 
 if __name__ == "__main__":
     main()

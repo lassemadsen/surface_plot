@@ -60,7 +60,7 @@ def render_surface(data, outfile, mask=None, vlim=None, clim=None, cmap='turbo_r
         data[hemisphere] = data[hemisphere].ravel()
         
         if mask is not None: # Set vertices outside mask less than vmin
-            data[hemisphere][~mask[hemisphere]] = vlim[0]-1
+            data[hemisphere][~mask[hemisphere]] = vlim[1]+1
 
     plot_data = {'left': data['left'],
                 'right': data['right'],
@@ -92,8 +92,8 @@ def render_surface(data, outfile, mask=None, vlim=None, clim=None, cmap='turbo_r
 
                 # Add activation to Brain Object
                 b_obj.add_activation(data=plot_data[hemisphere], cmap=cmap, clim=clim, vmin=vlim[0],
-                                     vmax=vlim[1], over='#dee2e6', under='darkgrey', hemisphere='both',
-                                     smoothing_steps=None)
+                                     vmax=vlim[1], under='white', over='darkgrey', hemisphere='both',
+                                     smoothing_steps=None, hide_under=vlim[0]-0.5)
 
                 sc.add_to_subplot(b_obj, row=plot_dict[plot][0], col=plot_dict[plot][1], zoom=zoom, rotate=view)
                 del b_obj 
