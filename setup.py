@@ -43,7 +43,6 @@ setup(
     include_package_data=True,
     platforms='any',
     install_requires=[
-        "https://github.com/lassemadsen/visbrain/tarball/master#egg=visbrain",
         "numpy>=1.13",
         "pandas",
         "brainstat>=0.2.7",
@@ -51,7 +50,7 @@ setup(
         "matplotlib>=1.5.5",
         "pillow"
     ],
-    dependency_links=[],
+    dependency_links=["https://github.com/lassemadsen/visbrain/tarball/master#egg=visbrain"],
     classifiers=["Development Status :: 3 - Alpha",
                  'Intended Audience :: Science/Research',
                  'Intended Audience :: Education',
