@@ -1,4 +1,3 @@
-========
 surface_plot
 ========
 Python module to plot cortical surface maps from CFIN, AU.
@@ -12,8 +11,8 @@ Important links
 Installation
 ------------
 
-Dependencies
-++++++++++++
+### Dependencies
+
 
 Visbrain requires :
 
@@ -25,11 +24,10 @@ Visbrain requires :
 * Matplotlib >= 1.5.5
 * Pillow
 
-User installation
-+++++++++++++++++
+### User installation
 
 Install surface_plot :
 
-.. code-block:: console
-
-    pip install git+https://github.com/lassemadsen/surface_plot#egg=surface_plot
+```
+pip install git+https://github.com/lassemadsen/surface_plot#egg=surface_plot
+```
