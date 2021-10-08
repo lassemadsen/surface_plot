@@ -19,7 +19,7 @@ PACKAGE_DATA = {}
 
 
 def read(fname):
-    """Read README and LICENSE."""
+    """Read README"""
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
 
 
@@ -28,7 +28,7 @@ setup(
     name=NAME,
     version=__version__,
     description=DESCRIPTION,
-    long_description=read('README.rst'),
+    long_description=read('README.md'),
     keywords=KEYWORDS,
     license="BSD 3-Clause License",
     author=AUTHOR,
