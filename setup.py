@@ -3,7 +3,7 @@
 import os
 from setuptools import setup, find_packages
 
-__version__ = "0.1.0"
+__version__ = "1.0.0"
 NAME = 'surface_plot'
 AUTHOR = "Center of Functionally Integrative Neuroscience"
 MAINTAINER = "Lasse Stensvig Madsen"
@@ -43,6 +43,7 @@ setup(
     include_package_data=True,
     platforms='any',
     install_requires=[
+        "git+git+https://github.com/lassemadsen/visbrain#egg=visbrain"
         "numpy>=1.13",
         "pandas",
         "brainstat>=0.2.7",
