@@ -15,7 +15,7 @@ DOWNLOAD_URL = "https://github.com/lassemadsen/surface_plot/archive/" + \
                "v" + __version__ + ".tar.gz"
 # Data path :
 HERE = os.path.abspath(os.path.dirname(__file__))
-PACKAGE_DATA = {}
+PACKAGE_DATA = {'surface_plot': ['surface_data/*']}
 
 
 def read(fname):
