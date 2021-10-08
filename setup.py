@@ -43,7 +43,6 @@ setup(
     include_package_data=True,
     platforms='any',
     install_requires=[
-        "git+https://github.com/lassemadsen/visbrain#egg=visbrain",
         "numpy>=1.13",
         "pandas",
         "brainstat>=0.2.7",
