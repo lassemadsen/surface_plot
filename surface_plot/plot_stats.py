@@ -109,7 +109,7 @@ def plot_pval(pval, output, tval=None, p_threshold=0.01, mask=None, cbar_loc='le
         logger.info(f'{output} saved.')
 
 
-def plot_tval(tval, output, t_lim=None, t_threshold=2.5, mask=None, p_threshold=None, pval=None, df=None, two_tailed=True, title=None, cbar_loc='left', second_threshold_mask=None, surf=None, clobber=False):
+def plot_tval(tval, output, t_lim=None, t_threshold=2.5, mask=None, p_threshold=None, pval=None, df=None, two_tailed=True, title=None, cbar_loc='left', second_threshold_mask=None, expand_edge=True, surf=None, clobber=False):
     """Plot tval statistics on surface
     Will plot t-values between thresholds
     If p_threshold and df is set, the thresholds are calculated based on the corresponding p-value. 
@@ -148,6 +148,13 @@ def plot_tval(tval, output, t_lim=None, t_threshold=2.5, mask=None, p_threshold=
         If None, no title is added.
     cbar_loc : 'left', 'bottom' or None | 'left'
         Location of colorbar
+    second_threshold_mask : dict or None | None
+        If dict: Dictionary with keys "left" and "right", containing data array of cluster mask at 2nd threshold level (e.g. p<0.001)
+        Clusters are outlined with a white line on the plot.
+    expand_edge : boolean | True
+        If True, the white 2nd threshold cluster line is expanded by one vertices for better visuzaliation
+    surf : dict or None | None
+        If second_threshold_mask is set, surface data for both hemispeheres needs to be included. 
     clobber : Boolean | False
         If true, existing files will be overwritten 
 
@@ -193,7 +200,11 @@ def plot_tval(tval, output, t_lim=None, t_threshold=2.5, mask=None, p_threshold=
         tval_thresholded = threshold_tmap(tval, vlim, t_threshold=t_threshold)
 
     if second_threshold_mask is not None:
-        tval_thresholded = find_edges(tval_thresholded, second_threshold_mask, surf, vlim[0]-0.5) # Set edge_val below vmin but above vmin-1 (this will be displayed as white on plot)
+        if surf is None:
+            logger.error('ERROR: Surface data needs to be set when plotting 2nd threshold.')
+            return
+        else:
+            tval_thresholded = find_edges(tval_thresholded, second_threshold_mask, surf, vlim[0]-0.5, expand_edge) # Set edge_val below vmin but above vmin-1 (this will be displayed as white on plot)
 
     # Setup colorbar and titles
     if cbar_loc == None:
@@ -268,7 +279,7 @@ def threshold_pmap(pval, p_threshold, tval):
     
     return pval_return
 
-def find_edges(data, mask, surf, edge_val):
+def find_edges(data, mask, surf, edge_val, expand_edge=True):
     """Find edges
     
     Parameters
@@ -299,14 +310,15 @@ def find_edges(data, mask, surf, edge_val):
             if (tmp_mask[list(neighbours)] == 0).any(axis=0):
                 edge_index.append(current_index)
 
-        # --- Expand edge ---
-        cluster_indexes = set(vert_idx[tmp_mask == 1])
-        expand = set()
-        for idx in edge_index:
-            neighbours = set(faces[(faces == idx).any(axis=1)].ravel())
-            expand.update(neighbours & cluster_indexes)
+        # # --- Expand edge ---
+        if expand_edge:
+            cluster_indexes = set(vert_idx[tmp_mask == 0])
+            expand = set()
+            for idx in edge_index:
+                neighbours = set(faces[(faces == idx).any(axis=1)].ravel())
+                expand.update(neighbours & cluster_indexes)
 
-        edge_index.extend(list(expand))
+            edge_index.extend(list(expand))
 
         data[hemisphere][edge_index] = edge_val
 
