@@ -22,6 +22,7 @@ Check out the :doc:`usage` section for further information, including :ref:`inst
 
    usage
    tutorials/index
+   api
 
 
 Indices and tables

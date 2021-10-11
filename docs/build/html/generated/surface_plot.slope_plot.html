@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Tutorials &mdash; surface_plot 0.1.0 documentation</title>
+  <title>surface_plot.slope_plot &mdash; surface_plot 0.1.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -18,8 +18,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="API" href="../api.html" />
-    <link rel="prev" title="Usage" href="../usage.html" /> 
+    <link rel="next" title="surface_plot.surface_rendering" href="surface_plot.surface_rendering.html" />
+    <link rel="prev" title="surface_plot.plot_surface" href="surface_plot.plot_surface.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -40,14 +40,18 @@
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../usage.html">Usage</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Tutorials</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#plot-simple-data">Plot simple data</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#plot-statistics">Plot statistics</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#plot-statistics-t-test">Plot statistics: T-test</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#plot-2nd-level-statistics">Plot 2nd level statistics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../api.html">API</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="surface_plot.html">surface_plot</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="surface_plot.plot_mean_stats.html">surface_plot.plot_mean_stats</a></li>
+<li class="toctree-l3"><a class="reference internal" href="surface_plot.plot_stats.html">surface_plot.plot_stats</a></li>
+<li class="toctree-l3"><a class="reference internal" href="surface_plot.plot_surface.html">surface_plot.plot_surface</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">surface_plot.slope_plot</a></li>
+<li class="toctree-l3"><a class="reference internal" href="surface_plot.surface_rendering.html">surface_plot.surface_rendering</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../api.html">API</a></li>
+</ul>
+</li>
 </ul>
 
         </div>
@@ -64,9 +68,11 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>Tutorials</li>
+          <li><a href="../api.html">API</a> &raquo;</li>
+          <li><a href="surface_plot.html">surface_plot</a> &raquo;</li>
+      <li>surface_plot.slope_plot</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../_sources/tutorials/index.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/generated/surface_plot.slope_plot.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -74,40 +80,56 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="tutorials">
-<h1>Tutorials<a class="headerlink" href="#tutorials" title="Permalink to this headline"></a></h1>
-<section id="plot-simple-data">
-<span id="plot-data"></span><h2>Plot simple data<a class="headerlink" href="#plot-simple-data" title="Permalink to this headline"></a></h2>
-<ul class="simple">
-<li><p>Location of python script</p></li>
-</ul>
-</section>
-<section id="plot-statistics">
-<span id="id1"></span><h2>Plot statistics<a class="headerlink" href="#plot-statistics" title="Permalink to this headline"></a></h2>
-<ul class="simple">
-<li><p>Location of python script</p></li>
-</ul>
-</section>
-<section id="plot-statistics-t-test">
-<span id="plot-ttest"></span><h2>Plot statistics: T-test<a class="headerlink" href="#plot-statistics-t-test" title="Permalink to this headline"></a></h2>
-<ul class="simple">
-<li><p>Location of python script</p></li>
-</ul>
-</section>
-<section id="plot-2nd-level-statistics">
-<span id="plot-2nd-level"></span><h2>Plot 2nd level statistics<a class="headerlink" href="#plot-2nd-level-statistics" title="Permalink to this headline"></a></h2>
-<ul class="simple">
-<li><p>Location of python script</p></li>
-</ul>
-</section>
+  <section id="module-surface_plot.slope_plot">
+<span id="surface-plot-slope-plot"></span><h1>surface_plot.slope_plot<a class="headerlink" href="#module-surface_plot.slope_plot" title="Permalink to this headline"></a></h1>
+<p class="rubric">Functions</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">newline</span></code>(p1, p2[, color, linewidth, linestyle])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">slope_plot</span></code>(data1, data2, cluster_mask, ...)</p></td>
+<td><p>Parameters
+
+data1
+
+pd.DataFrame
+
+Dataframe of first data
+
+data2
+
+pd.DataFrame
+
+Dataframe of second data
+
+cluster_mask
+
+array
+
+Array defining the cluster to be plottet (mean value within cluster is plottet)
+
+categories
+
+list of str
+
+Names of [data1, data2] in correct order
+I.e ['baseline', 'followup'] if paired t-test or ['pib_pos', 'control'] if independent t-test</p></td>
+</tr>
+</tbody>
+</table>
 </section>
 
 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="../usage.html" class="btn btn-neutral float-left" title="Usage" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="../api.html" class="btn btn-neutral float-right" title="API" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="surface_plot.plot_surface.html" class="btn btn-neutral float-left" title="surface_plot.plot_surface" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="surface_plot.surface_rendering.html" class="btn btn-neutral float-right" title="surface_plot.surface_rendering" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
