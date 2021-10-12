@@ -46,7 +46,7 @@ setup(
         "visbrain @ https://github.com/lassemadsen/visbrain/archive/master.zip#egg=visbrain",
         "numpy>=1.13",
         "pandas",
-        "brainstat>=0.2.7",
+        "brainspace>=0.1.2",
         "scipy",
         "matplotlib>=1.5.5",
         "pillow"
