@@ -6,7 +6,6 @@ Is used together with an edited version of Visbrain.
 
 Important links
 ---------------
---
 
 Documentation: https://surface-plot.readthedocs.io/en/latest/
 
