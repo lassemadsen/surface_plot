@@ -20,10 +20,10 @@ surf = {'left': read_surface('/Users/au483096/data/atlas/surface/mni_icbm152_t1_
         'right': read_surface('/Users/au483096/data/atlas/surface/mni_icbm152_t1_tal_nlin_sym_09c_right_smooth.gii')}
 
 # Load data
-tval_left = np.loadtxt('https://www.dropbox.com/s/y93z65g2jx0zs2x/tval_left.csv?dl=1')
-tval_right = np.loadtxt('https://www.dropbox.com/s/y93z65g2jx0zs2x/tval_right.csv?dl=1')
+tval_left = np.loadtxt('https://www.dropbox.com/s/5ek63zf5l2iwd8f/tval_left.csv?dl=1')
+tval_right = np.loadtxt('https://www.dropbox.com/s/def320uevw5ivsb/tval_right.csv?dl=1')
 second_level_left = np.loadtxt('https://www.dropbox.com/s/y93z65g2jx0zs2x/second_level_left.csv?dl=1')
-second_level_right = np.loadtxt('https://www.dropbox.com/s/y93z65g2jx0zs2x/second_level_right.csv?dl=1')
+second_level_right = np.loadtxt('https://www.dropbox.com/s/wgp0j0gp35oe41g/second_level_right.csv?dl=1')
 
 tval = {'left': tval_left,
         'right': tval_right}

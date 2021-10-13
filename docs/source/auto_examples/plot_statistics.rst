@@ -39,10 +39,10 @@ Example script to plot statistical maps, e.g. from correlation analysis
     clobber = False
 
     # Load data
-    pval_left = np.loadtxt('data/correlation/left.pval', skiprows=1)
-    pval_right = np.loadtxt('data/correlation/right.pval', skiprows=1)
-    tval_left = np.loadtxt('data/correlation/left.tval', skiprows=1)
-    tval_right = np.loadtxt('data/correlation/right.tval', skiprows=1)
+    pval_left = np.loadtxt('https://www.dropbox.com/s/re39ocqymw63gqo/left.pval?dl=1', skiprows=1)
+    pval_right = np.loadtxt('https://www.dropbox.com/s/a73z66wmori6vtj/right.pval?dl=1', skiprows=1)
+    tval_left = np.loadtxt('https://www.dropbox.com/s/tv5fei9w37x7lw5/left.tval?dl=1', skiprows=1)
+    tval_right = np.loadtxt('https://www.dropbox.com/s/as9hfcezvfm9ux8/right.tval?dl=1', skiprows=1)
 
     tval = {'left': tval_left,
             'right': tval_right}
@@ -94,7 +94,7 @@ Example script to plot statistical maps, e.g. from correlation analysis
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  1.002 seconds)
+   **Total running time of the script:** ( 5 minutes  1.979 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_statistics.py:

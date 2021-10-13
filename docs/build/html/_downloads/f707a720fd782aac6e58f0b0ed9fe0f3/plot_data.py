@@ -10,8 +10,8 @@ outdir = 'data/simple_plot/test_figures'
 clobber = False
 
 # Load data
-data_left = np.loadtxt('data/simple_plot/data_left.mean', skiprows=1)
-data_right = np.loadtxt('data/simple_plot/data_right.mean', skiprows=1)
+data_left = np.loadtxt('https://www.dropbox.com/s/lezvpw14iw13d9r/data_left.mean?dl=1', skiprows=1)
+data_right = np.loadtxt('https://www.dropbox.com/s/lm3e6ykjm7rhdi5/data_right.mean?dl=1', skiprows=1)
 
 data = {'left': data_left,
         'right': data_right}

@@ -11,9 +11,9 @@ clobber = False
 
 # Load data
 pval_left = np.loadtxt('https://www.dropbox.com/s/re39ocqymw63gqo/left.pval?dl=1', skiprows=1)
-pval_right = np.loadtxt('https://www.dropbox.com/s/re39ocqymw63gqo/right.pval?dl=1', skiprows=1)
-tval_left = np.loadtxt('https://www.dropbox.com/s/re39ocqymw63gqo/left.tval?dl=1', skiprows=1)
-tval_right = np.loadtxt('https://www.dropbox.com/s/re39ocqymw63gqo/right.tval?dl=1', skiprows=1)
+pval_right = np.loadtxt('https://www.dropbox.com/s/a73z66wmori6vtj/right.pval?dl=1', skiprows=1)
+tval_left = np.loadtxt('https://www.dropbox.com/s/tv5fei9w37x7lw5/left.tval?dl=1', skiprows=1)
+tval_right = np.loadtxt('https://www.dropbox.com/s/as9hfcezvfm9ux8/right.tval?dl=1', skiprows=1)
 
 tval = {'left': tval_left,
         'right': tval_right}

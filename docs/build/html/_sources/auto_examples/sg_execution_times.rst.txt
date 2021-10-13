@@ -5,14 +5,14 @@
 
 Computation times
 =================
-**00:31.809** total execution time for **auto_examples** files:
+**05:01.979** total execution time for **auto_examples** files:
 
 +-----------------------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_auto_examples_plot_statistic_2nd_threshold.py` (``plot_statistic_2nd_threshold.py``) | 00:28.320 | 0.0 MB |
+| :ref:`sphx_glr_auto_examples_plot_statistics.py` (``plot_statistics.py``)                           | 05:01.979 | 0.0 MB |
 +-----------------------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_auto_examples_plot_ttest.py` (``plot_ttest.py``)                                     | 00:02.033 | 0.0 MB |
+| :ref:`sphx_glr_auto_examples_plot_data.py` (``plot_data.py``)                                       | 00:00.000 | 0.0 MB |
 +-----------------------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_auto_examples_plot_statistics.py` (``plot_statistics.py``)                           | 00:01.002 | 0.0 MB |
+| :ref:`sphx_glr_auto_examples_plot_statistic_2nd_threshold.py` (``plot_statistic_2nd_threshold.py``) | 00:00.000 | 0.0 MB |
 +-----------------------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_auto_examples_plot_data.py` (``plot_data.py``)                                       | 00:00.454 | 0.0 MB |
+| :ref:`sphx_glr_auto_examples_plot_ttest.py` (``plot_ttest.py``)                                     | 00:00.000 | 0.0 MB |
 +-----------------------------------------------------------------------------------------------------+-----------+--------+

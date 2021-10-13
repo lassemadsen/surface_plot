@@ -39,15 +39,15 @@ Example script to plot both mean data and statistics, e.g. from paired or unpaie
     clobber = False
 
     # Load data
-    pval_left = np.loadtxt('data/paired_ttest/left.pval', skiprows=1)
-    pval_right = np.loadtxt('data/paired_ttest/right.pval', skiprows=1)
-    tval_left = np.loadtxt('data/paired_ttest/left.tval', skiprows=1)
-    tval_right = np.loadtxt('data/paired_ttest/right.tval', skiprows=1)
+    pval_left = np.loadtxt('https://www.dropbox.com/s/5g3sopvolf0qnot/left.pval?dl=1', skiprows=1)
+    pval_right = np.loadtxt('https://www.dropbox.com/s/282xfgqk4wx2pka/right.pval?dl=1', skiprows=1)
+    tval_left = np.loadtxt('https://www.dropbox.com/s/ku6wdm4nd8690rg/left.tval?dl=1', skiprows=1)
+    tval_right = np.loadtxt('https://www.dropbox.com/s/oci987u02nwtgxf/right.tval?dl=1', skiprows=1)
 
-    mean1_left = np.loadtxt('data/paired_ttest/baseline_left.mean', skiprows=1)
-    mean1_right = np.loadtxt('data/paired_ttest/baseline_right.mean', skiprows=1)
-    mean2_left = np.loadtxt('data/paired_ttest/followup_left.mean', skiprows=1)
-    mean2_right = np.loadtxt('data/paired_ttest/followup_right.mean', skiprows=1)
+    mean1_left = np.loadtxt('https://www.dropbox.com/s/htx0q2lm87nnlf1/baseline_left.mean?dl=1', skiprows=1)
+    mean1_right = np.loadtxt('https://www.dropbox.com/s/mbe1a3v8vtgrlsx/baseline_right.mean?dl=1', skiprows=1)
+    mean2_left = np.loadtxt('https://www.dropbox.com/s/f71pewt2748dag7/followup_left.mean?dl=1', skiprows=1)
+    mean2_right = np.loadtxt('https://www.dropbox.com/s/8r8jfkqz9rxjrr3/followup_right.mean?dl=1', skiprows=1)
 
     tval = {'left': tval_left,
             'right': tval_right}
@@ -81,7 +81,7 @@ Example script to plot both mean data and statistics, e.g. from paired or unpaie
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  2.033 seconds)
+   **Total running time of the script:** ( 5 minutes  42.315 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_ttest.py:

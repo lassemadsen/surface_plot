@@ -39,8 +39,8 @@ Example script to plot simple data to cortical surface
     clobber = False
 
     # Load data
-    data_left = np.loadtxt('data/simple_plot/data_left.mean', skiprows=1)
-    data_right = np.loadtxt('data/simple_plot/data_right.mean', skiprows=1)
+    data_left = np.loadtxt('https://www.dropbox.com/s/lezvpw14iw13d9r/data_left.mean?dl=1', skiprows=1)
+    data_right = np.loadtxt('https://www.dropbox.com/s/lm3e6ykjm7rhdi5/data_right.mean?dl=1', skiprows=1)
 
     data = {'left': data_left,
             'right': data_right}
@@ -60,7 +60,7 @@ Example script to plot simple data to cortical surface
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  0.454 seconds)
+   **Total running time of the script:** ( 1 minutes  23.620 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_data.py:
