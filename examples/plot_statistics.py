@@ -10,10 +10,10 @@ outdir = 'data/correlation/test_figures'
 clobber = False
 
 # Load data
-pval_left = np.loadtxt('data/correlation/left.pval', skiprows=1)
-pval_right = np.loadtxt('data/correlation/right.pval', skiprows=1)
-tval_left = np.loadtxt('data/correlation/left.tval', skiprows=1)
-tval_right = np.loadtxt('data/correlation/right.tval', skiprows=1)
+pval_left = np.loadtxt('https://www.dropbox.com/s/re39ocqymw63gqo/left.pval?dl=1', skiprows=1)
+pval_right = np.loadtxt('https://www.dropbox.com/s/re39ocqymw63gqo/right.pval?dl=1', skiprows=1)
+tval_left = np.loadtxt('https://www.dropbox.com/s/re39ocqymw63gqo/left.tval?dl=1', skiprows=1)
+tval_right = np.loadtxt('https://www.dropbox.com/s/re39ocqymw63gqo/right.tval?dl=1', skiprows=1)
 
 tval = {'left': tval_left,
         'right': tval_right}
