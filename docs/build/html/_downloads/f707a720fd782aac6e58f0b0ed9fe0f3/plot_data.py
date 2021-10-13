@@ -1,14 +1,17 @@
-"""Example script to plot simple data to cortical surface
+"""
+Tutorial 01: Simple plot of cortical surface data
+=================================================
+Example script to plot simple data to cortical surface
 """
 from surface_plot import plot_surface
 import numpy as np
 
-outdir = '../data/simple_plot/test_figures'
+outdir = 'data/simple_plot/test_figures'
 clobber = False
 
 # Load data
-data_left = np.loadtxt('../data/simple_plot/data_left.mean', skiprows=1)
-data_right = np.loadtxt('../data/simple_plot/data_right.mean', skiprows=1)
+data_left = np.loadtxt('data/simple_plot/data_left.mean', skiprows=1)
+data_right = np.loadtxt('data/simple_plot/data_right.mean', skiprows=1)
 
 data = {'left': data_left,
         'right': data_right}

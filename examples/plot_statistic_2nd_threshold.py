@@ -1,4 +1,7 @@
-"""Example script to plot statistical maps with two different statistical thresholds.
+"""
+Tutorial 04: Plot of statistical maps with two thresholds
+=========================================================
+Example script to plot statistical maps with two different statistical thresholds.
 The first threshold is plottet as normal, the second threshold is outlined by a white line.
 
 The second_level data is defined by a mask containing e.g. surviving clusters (1's)

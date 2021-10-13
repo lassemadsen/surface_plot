@@ -1,4 +1,7 @@
-"""Example script to plot statistical maps, e.g. from correlation analysis
+"""
+Tutorial 02: Plot of statistical data
+=========================================
+Example script to plot statistical maps, e.g. from correlation analysis
 """
 from surface_plot import plot_stats
 import numpy as np

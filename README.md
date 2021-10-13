@@ -8,6 +8,8 @@ Important links
 ---------------
 --
 
+Documentation: https://surface-plot.readthedocs.io/en/latest/
+
 Installation
 ------------
 
@@ -19,7 +21,7 @@ Visbrain requires :
 * Visbrain from lassemadsen
 * NumPy >= 1.13
 * Pandas
-* Brainstat >= 0.2.7
+* Brainspace >= 0.1.2
 * SciPy
 * Matplotlib >= 1.5.5
 * Pillow

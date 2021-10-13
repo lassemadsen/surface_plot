@@ -1,21 +1,24 @@
-"""Example script to plot both mean data and statistics, e.g. from paired or unpaied t-test with two groups.
+"""
+Tutorial 03: Plot of mean and statistical data (t-test)
+=======================================================
+Example script to plot both mean data and statistics, e.g. from paired or unpaied t-test with two groups.
 """
 from surface_plot import plot_mean_stats
 import numpy as np
 
-outdir = '../data/paired_ttest/test_figures'
+outdir = 'data/paired_ttest/test_figures'
 clobber = False
 
 # Load data
-pval_left = np.loadtxt('../data/paired_ttest/left.pval', skiprows=1)
-pval_right = np.loadtxt('../data/paired_ttest/right.pval', skiprows=1)
-tval_left = np.loadtxt('../data/paired_ttest/left.tval', skiprows=1)
-tval_right = np.loadtxt('../data/paired_ttest/right.tval', skiprows=1)
+pval_left = np.loadtxt('data/paired_ttest/left.pval', skiprows=1)
+pval_right = np.loadtxt('data/paired_ttest/right.pval', skiprows=1)
+tval_left = np.loadtxt('data/paired_ttest/left.tval', skiprows=1)
+tval_right = np.loadtxt('data/paired_ttest/right.tval', skiprows=1)
 
-mean1_left = np.loadtxt('../data/paired_ttest/baseline_left.mean', skiprows=1)
-mean1_right = np.loadtxt('../data/paired_ttest/baseline_right.mean', skiprows=1)
-mean2_left = np.loadtxt('../data/paired_ttest/followup_left.mean', skiprows=1)
-mean2_right = np.loadtxt('../data/paired_ttest/followup_right.mean', skiprows=1)
+mean1_left = np.loadtxt('data/paired_ttest/baseline_left.mean', skiprows=1)
+mean1_right = np.loadtxt('data/paired_ttest/baseline_right.mean', skiprows=1)
+mean2_left = np.loadtxt('data/paired_ttest/followup_left.mean', skiprows=1)
+mean2_right = np.loadtxt('data/paired_ttest/followup_right.mean', skiprows=1)
 
 tval = {'left': tval_left,
         'right': tval_right}

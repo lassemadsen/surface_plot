@@ -1,6 +1,11 @@
 Tutorials
 =========
 
+.. toctree::
+   :maxdepth: 2
+   :caption: Contents:
+
+
 
 .. _plot_data:
 

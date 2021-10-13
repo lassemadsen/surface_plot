@@ -1,16 +1,19 @@
-"""Example script to plot statistical maps, e.g. from correlation analysis
+"""
+Tutorial 02: Plot of statistical data
+=========================================
+Example script to plot statistical maps, e.g. from correlation analysis
 """
 from surface_plot import plot_stats
 import numpy as np
 
-outdir = '../data/correlation/test_figures'
+outdir = 'data/correlation/test_figures'
 clobber = False
 
 # Load data
-pval_left = np.loadtxt('../data/correlation/left.pval', skiprows=1)
-pval_right = np.loadtxt('../data/correlation/right.pval', skiprows=1)
-tval_left = np.loadtxt('../data/correlation/left.tval', skiprows=1)
-tval_right = np.loadtxt('../data/correlation/right.tval', skiprows=1)
+pval_left = np.loadtxt('data/correlation/left.pval', skiprows=1)
+pval_right = np.loadtxt('data/correlation/right.pval', skiprows=1)
+tval_left = np.loadtxt('data/correlation/left.tval', skiprows=1)
+tval_right = np.loadtxt('data/correlation/right.tval', skiprows=1)
 
 tval = {'left': tval_left,
         'right': tval_right}

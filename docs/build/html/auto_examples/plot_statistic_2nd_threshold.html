@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tutorial 04: Plot of statistical maps with two thresholds &mdash; surface_plot 0.1.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/sg_gallery.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/sg_gallery-binder.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/sg_gallery-dataframe.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/sg_gallery-rendered-html.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Tutorial 03: Plot of mean and statistical data (t-test)" href="plot_ttest.html" />
+    <link rel="prev" title="Tutorial 01: Simple plot of cortical surface data" href="plot_data.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> surface_plot
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../usage.html">Usage</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Tutorials</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="plot_data.html">Tutorial 01: Simple plot of cortical surface data</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Tutorial 04: Plot of statistical maps with two thresholds</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_ttest.html">Tutorial 03: Plot of mean and statistical data (t-test)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_statistics.html">Tutorial 02: Plot of statistical data</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">surface_plot</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="index.html">Tutorials</a> &raquo;</li>
+      <li>Tutorial 04: Plot of statistical maps with two thresholds</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/auto_examples/plot_statistic_2nd_threshold.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="sphx-glr-download-link-note admonition note">
+<p class="admonition-title">Note</p>
+<p>Click <a class="reference internal" href="#sphx-glr-download-auto-examples-plot-statistic-2nd-threshold-py"><span class="std std-ref">here</span></a>
+to download the full example code</p>
+</div>
+<section class="sphx-glr-example-title" id="tutorial-04-plot-of-statistical-maps-with-two-thresholds">
+<span id="sphx-glr-auto-examples-plot-statistic-2nd-threshold-py"></span><h1>Tutorial 04: Plot of statistical maps with two thresholds<a class="headerlink" href="#tutorial-04-plot-of-statistical-maps-with-two-thresholds" title="Permalink to this headline"></a></h1>
+<p>Example script to plot statistical maps with two different statistical thresholds.
+The first threshold is plottet as normal, the second threshold is outlined by a white line.</p>
+<p>The second_level data is defined by a mask containing e.g. surviving clusters (1’s)</p>
+<p>Note: the cortical surface template is needed to segment the clusters.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">surface_plot</span> <span class="kn">import</span> <span class="n">plot_stats</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">brainspace.mesh.mesh_io</span> <span class="kn">import</span> <span class="n">read_surface</span>
+
+<span class="n">outdir</span> <span class="o">=</span> <span class="s1">&#39;data/second_level/test_figures&#39;</span>
+<span class="n">clobber</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">mask</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;left&#39;</span><span class="p">:</span> <span class="p">[],</span> <span class="s1">&#39;right&#39;</span><span class="p">:</span> <span class="p">[]}</span>
+
+<span class="n">surf</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;left&#39;</span><span class="p">:</span> <span class="n">read_surface</span><span class="p">(</span><span class="s1">&#39;/Users/au483096/data/atlas/surface/mni_icbm152_t1_tal_nlin_sym_09c_left_smooth.gii&#39;</span><span class="p">),</span>
+        <span class="s1">&#39;right&#39;</span><span class="p">:</span> <span class="n">read_surface</span><span class="p">(</span><span class="s1">&#39;/Users/au483096/data/atlas/surface/mni_icbm152_t1_tal_nlin_sym_09c_right_smooth.gii&#39;</span><span class="p">)}</span>
+
+<span class="c1"># Load data</span>
+<span class="n">tval_left</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="s1">&#39;data/second_level/tval_left.csv&#39;</span><span class="p">)</span>
+<span class="n">tval_right</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="s1">&#39;data/second_level/tval_right.csv&#39;</span><span class="p">)</span>
+<span class="n">second_level_left</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="s1">&#39;data/second_level/second_level_left.csv&#39;</span><span class="p">)</span>
+<span class="n">second_level_right</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="s1">&#39;data/second_level/second_level_right.csv&#39;</span><span class="p">)</span>
+
+<span class="n">tval</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;left&#39;</span><span class="p">:</span> <span class="n">tval_left</span><span class="p">,</span>
+        <span class="s1">&#39;right&#39;</span><span class="p">:</span> <span class="n">tval_right</span><span class="p">}</span>
+
+<span class="n">second_level</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;left&#39;</span><span class="p">:</span> <span class="n">second_level_left</span><span class="p">,</span>
+                <span class="s1">&#39;right&#39;</span><span class="p">:</span> <span class="n">second_level_right</span><span class="p">}</span>
+
+<span class="n">t_lim</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">]</span>
+
+<span class="n">mask</span><span class="p">[</span><span class="s1">&#39;left&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">tval</span><span class="p">[</span><span class="s1">&#39;left&#39;</span><span class="p">])</span>
+<span class="n">mask</span><span class="p">[</span><span class="s1">&#39;right&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">tval</span><span class="p">[</span><span class="s1">&#39;right&#39;</span><span class="p">])</span>
+
+<span class="n">output</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">outdir</span><span class="si">}</span><span class="s1">/second_level.png&#39;</span>
+
+<span class="n">plot_stats</span><span class="o">.</span><span class="n">plot_tval</span><span class="p">(</span><span class="n">tval</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="n">mask</span><span class="p">,</span> <span class="n">t_lim</span><span class="o">=</span><span class="n">t_lim</span><span class="p">,</span> <span class="n">second_threshold_mask</span><span class="o">=</span><span class="n">second_level</span><span class="p">,</span> <span class="n">surf</span><span class="o">=</span><span class="n">surf</span><span class="p">,</span> <span class="n">expand_edge</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">clobber</span><span class="o">=</span><span class="n">clobber</span><span class="p">)</span>
+</pre></div>
+</div>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  28.320 seconds)</p>
+<div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-statistic-2nd-threshold-py">
+<div class="sphx-glr-download sphx-glr-download-python docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/fe64cdabd0a1d6145873cbe1020c3966/plot_statistic_2nd_threshold.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_statistic_2nd_threshold.py</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/6494abc452d36f86d3d14926cc2da619/plot_statistic_2nd_threshold.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_statistic_2nd_threshold.ipynb</span></code></a></p>
+</div>
+</div>
+<p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="plot_data.html" class="btn btn-neutral float-left" title="Tutorial 01: Simple plot of cortical surface data" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="plot_ttest.html" class="btn btn-neutral float-right" title="Tutorial 03: Plot of mean and statistical data (t-test)" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Lasse Stensvig Madsen.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

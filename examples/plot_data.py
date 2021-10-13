@@ -1,4 +1,7 @@
-"""Example script to plot simple data to cortical surface
+"""
+Tutorial 01: Simple plot of cortical surface data
+=================================================
+Example script to plot simple data to cortical surface
 """
 from surface_plot import plot_surface
 import numpy as np

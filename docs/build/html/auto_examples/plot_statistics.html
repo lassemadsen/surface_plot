@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tutorial 02: Plot of statistical data &mdash; surface_plot 0.1.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/sg_gallery.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/sg_gallery-binder.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/sg_gallery-dataframe.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/sg_gallery-rendered-html.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="API" href="../api.html" />
+    <link rel="prev" title="Tutorial 03: Plot of mean and statistical data (t-test)" href="plot_ttest.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> surface_plot
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../usage.html">Usage</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Tutorials</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="plot_data.html">Tutorial 01: Simple plot of cortical surface data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_statistic_2nd_threshold.html">Tutorial 04: Plot of statistical maps with two thresholds</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_ttest.html">Tutorial 03: Plot of mean and statistical data (t-test)</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Tutorial 02: Plot of statistical data</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">surface_plot</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="index.html">Tutorials</a> &raquo;</li>
+      <li>Tutorial 02: Plot of statistical data</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/auto_examples/plot_statistics.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="sphx-glr-download-link-note admonition note">
+<p class="admonition-title">Note</p>
+<p>Click <a class="reference internal" href="#sphx-glr-download-auto-examples-plot-statistics-py"><span class="std std-ref">here</span></a>
+to download the full example code</p>
+</div>
+<section class="sphx-glr-example-title" id="tutorial-02-plot-of-statistical-data">
+<span id="sphx-glr-auto-examples-plot-statistics-py"></span><h1>Tutorial 02: Plot of statistical data<a class="headerlink" href="#tutorial-02-plot-of-statistical-data" title="Permalink to this headline"></a></h1>
+<p>Example script to plot statistical maps, e.g. from correlation analysis</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">surface_plot</span> <span class="kn">import</span> <span class="n">plot_stats</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="n">outdir</span> <span class="o">=</span> <span class="s1">&#39;data/correlation/test_figures&#39;</span>
+<span class="n">clobber</span> <span class="o">=</span> <span class="kc">False</span>
+
+<span class="c1"># Load data</span>
+<span class="n">pval_left</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="s1">&#39;data/correlation/left.pval&#39;</span><span class="p">,</span> <span class="n">skiprows</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">pval_right</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="s1">&#39;data/correlation/right.pval&#39;</span><span class="p">,</span> <span class="n">skiprows</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">tval_left</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="s1">&#39;data/correlation/left.tval&#39;</span><span class="p">,</span> <span class="n">skiprows</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">tval_right</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="s1">&#39;data/correlation/right.tval&#39;</span><span class="p">,</span> <span class="n">skiprows</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="n">tval</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;left&#39;</span><span class="p">:</span> <span class="n">tval_left</span><span class="p">,</span>
+        <span class="s1">&#39;right&#39;</span><span class="p">:</span> <span class="n">tval_right</span><span class="p">}</span>
+
+<span class="n">pval</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;left&#39;</span><span class="p">:</span> <span class="n">pval_left</span><span class="p">,</span>
+        <span class="s1">&#39;right&#39;</span><span class="p">:</span> <span class="n">pval_right</span><span class="p">}</span>
+
+<span class="c1"># Define degrees of freedom (specific to the example data)</span>
+<span class="n">df</span> <span class="o">=</span> <span class="mi">19</span>
+
+<span class="c1"># Define statistic threshold</span>
+<span class="n">p_threshold</span> <span class="o">=</span> <span class="mf">0.01</span>
+
+<span class="c1"># --- Plot p-values ---</span>
+<span class="k">for</span> <span class="n">cbar_loc</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;left&#39;</span><span class="p">,</span> <span class="s1">&#39;bottom&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+    <span class="c1"># Plot two-tailed pval (i.e. without knowing wheter its is right- or left tailed)</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">outdir</span><span class="si">}</span><span class="s1">/pval_twotailed_cbar_</span><span class="si">{</span><span class="n">cbar_loc</span><span class="si">}</span><span class="s1">_p</span><span class="si">{</span><span class="n">p_threshold</span><span class="si">}</span><span class="s1">.png&#39;</span>
+    <span class="n">plot_stats</span><span class="o">.</span><span class="n">plot_pval</span><span class="p">(</span><span class="n">pval</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">p_threshold</span><span class="o">=</span><span class="n">p_threshold</span><span class="p">,</span> <span class="n">cbar_loc</span><span class="o">=</span><span class="n">cbar_loc</span><span class="p">,</span> <span class="n">clobber</span><span class="o">=</span><span class="n">clobber</span><span class="p">)</span>
+
+    <span class="c1"># Plot seperate one-tailed pval (i.e. one plot with right tail (positive) and one plot with left tail (negative))</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">outdir</span><span class="si">}</span><span class="s1">/pval_onetailed_cbar_</span><span class="si">{</span><span class="n">cbar_loc</span><span class="si">}</span><span class="s1">_p</span><span class="si">{</span><span class="n">p_threshold</span><span class="si">}</span><span class="s1">.png&#39;</span>
+    <span class="n">plot_stats</span><span class="o">.</span><span class="n">plot_pval</span><span class="p">(</span><span class="n">pval</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">tval</span><span class="o">=</span><span class="n">tval</span><span class="p">,</span> <span class="n">p_threshold</span><span class="o">=</span><span class="n">p_threshold</span><span class="p">,</span> <span class="n">cbar_loc</span><span class="o">=</span><span class="n">cbar_loc</span><span class="p">,</span> <span class="n">clobber</span><span class="o">=</span><span class="n">clobber</span><span class="p">)</span>
+
+<span class="c1"># --- Plot t-values ---</span>
+<span class="n">t_threshold</span> <span class="o">=</span> <span class="mf">2.5</span>
+<span class="n">p_threshold</span> <span class="o">=</span> <span class="mf">0.01</span>
+<span class="n">cbar_loc</span> <span class="o">=</span> <span class="s1">&#39;left&#39;</span>
+
+<span class="c1"># Plot t-values with automatic limits</span>
+<span class="n">output</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">outdir</span><span class="si">}</span><span class="s1">/tval_autolim_cbar_</span><span class="si">{</span><span class="n">cbar_loc</span><span class="si">}</span><span class="s1">_t</span><span class="si">{</span><span class="n">t_threshold</span><span class="si">}</span><span class="s1">.png&#39;</span>
+<span class="n">plot_stats</span><span class="o">.</span><span class="n">plot_tval</span><span class="p">(</span><span class="n">tval</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">t_threshold</span><span class="o">=</span><span class="n">t_threshold</span><span class="p">,</span> <span class="n">cbar_loc</span><span class="o">=</span><span class="n">cbar_loc</span><span class="p">,</span> <span class="n">clobber</span><span class="o">=</span><span class="n">clobber</span><span class="p">)</span>
+
+<span class="c1"># Plot t-values with predetermined limits</span>
+<span class="n">t_lim</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span>
+<span class="n">output</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">outdir</span><span class="si">}</span><span class="s1">/tval_withlim_cbar_</span><span class="si">{</span><span class="n">cbar_loc</span><span class="si">}</span><span class="s1">_t</span><span class="si">{</span><span class="n">t_threshold</span><span class="si">}</span><span class="s1">.png&#39;</span>
+<span class="n">plot_stats</span><span class="o">.</span><span class="n">plot_tval</span><span class="p">(</span><span class="n">tval</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">t_lim</span><span class="o">=</span><span class="n">t_lim</span><span class="p">,</span> <span class="n">t_threshold</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">cbar_loc</span><span class="o">=</span><span class="n">cbar_loc</span><span class="p">,</span> <span class="n">clobber</span><span class="o">=</span><span class="n">clobber</span><span class="p">)</span>
+
+<span class="c1"># Plot t-values with p_threshold and calculated p-values</span>
+<span class="n">output</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">outdir</span><span class="si">}</span><span class="s1">/tval_withpval_cbar_</span><span class="si">{</span><span class="n">cbar_loc</span><span class="si">}</span><span class="s1">_p</span><span class="si">{</span><span class="n">p_threshold</span><span class="si">}</span><span class="s1">.png&#39;</span>
+<span class="n">plot_stats</span><span class="o">.</span><span class="n">plot_tval</span><span class="p">(</span><span class="n">tval</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">p_threshold</span><span class="o">=</span><span class="n">p_threshold</span><span class="p">,</span> <span class="n">pval</span><span class="o">=</span><span class="n">pval</span><span class="p">,</span> <span class="n">cbar_loc</span><span class="o">=</span><span class="n">cbar_loc</span><span class="p">,</span> <span class="n">clobber</span><span class="o">=</span><span class="n">clobber</span><span class="p">)</span>
+
+<span class="c1"># Plot t-values with p_threshold and df, two-tailed</span>
+<span class="n">output</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">outdir</span><span class="si">}</span><span class="s1">/tval_withdf_twotailed_cbar_</span><span class="si">{</span><span class="n">cbar_loc</span><span class="si">}</span><span class="s1">_p</span><span class="si">{</span><span class="n">p_threshold</span><span class="si">}</span><span class="s1">.png&#39;</span>
+<span class="n">plot_stats</span><span class="o">.</span><span class="n">plot_tval</span><span class="p">(</span><span class="n">tval</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">p_threshold</span><span class="o">=</span><span class="n">p_threshold</span><span class="p">,</span> <span class="n">df</span><span class="o">=</span><span class="n">df</span><span class="p">,</span> <span class="n">cbar_loc</span><span class="o">=</span><span class="n">cbar_loc</span><span class="p">,</span> <span class="n">clobber</span><span class="o">=</span><span class="n">clobber</span><span class="p">)</span>
+
+<span class="c1"># Plot t-values with p_threshold and df, one-tailed</span>
+<span class="n">output</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">outdir</span><span class="si">}</span><span class="s1">/tval_withdf_onetailed_cbar_</span><span class="si">{</span><span class="n">cbar_loc</span><span class="si">}</span><span class="s1">_p</span><span class="si">{</span><span class="n">p_threshold</span><span class="si">}</span><span class="s1">.png&#39;</span>
+<span class="n">plot_stats</span><span class="o">.</span><span class="n">plot_tval</span><span class="p">(</span><span class="n">tval</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">p_threshold</span><span class="o">=</span><span class="n">p_threshold</span><span class="p">,</span> <span class="n">df</span><span class="o">=</span><span class="n">df</span><span class="p">,</span> <span class="n">two_tailed</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">cbar_loc</span><span class="o">=</span><span class="n">cbar_loc</span><span class="p">,</span> <span class="n">clobber</span><span class="o">=</span><span class="n">clobber</span><span class="p">)</span>
+</pre></div>
+</div>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  1.002 seconds)</p>
+<div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-statistics-py">
+<div class="sphx-glr-download sphx-glr-download-python docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/747e0ef246f4049382539c15eaa8a815/plot_statistics.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_statistics.py</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/ee7372f2c53961eb950c8fd4de11ff10/plot_statistics.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">plot_statistics.ipynb</span></code></a></p>
+</div>
+</div>
+<p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="plot_ttest.html" class="btn btn-neutral float-left" title="Tutorial 03: Plot of mean and statistical data (t-test)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../api.html" class="btn btn-neutral float-right" title="API" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Lasse Stensvig Madsen.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

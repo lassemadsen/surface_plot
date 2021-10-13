@@ -21,7 +21,7 @@ Check out the :doc:`usage` section for further information, including :ref:`inst
    :caption: Contents:
 
    usage
-   tutorials/index
+   auto_examples/index
    api
 
 
