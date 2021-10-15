@@ -1,20 +1,17 @@
 import gc
 import logging
 import os
-import pathlib
 from tempfile import TemporaryDirectory
 
 import numpy as np
 from PIL import Image
 from visbrain.gui import Figure
 from visbrain.objects import BrainObj, SceneObj
+from config import SURFACE
 
 logging.basicConfig(format='%(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-SURFACE = {'left': f'{pathlib.Path(__file__).parent.resolve()}/surface_data/mni_icbm152_t1_tal_nlin_sym_09c_left_smooth.gii',
-           'right': f'{pathlib.Path(__file__).parent.resolve()}/surface_data/mni_icbm152_t1_tal_nlin_sym_09c_right_smooth.gii',
-           'both': f'{pathlib.Path(__file__).parent.resolve()}/surface_data/mni_icbm152_t1_tal_nlin_sym_09c_both_smooth.gii',}
 
 def render_surface(data, outfile, mask=None, vlim=None, clim=None, cmap='turbo_r', views='standard', clobber=False):
     """Render surface with given input data

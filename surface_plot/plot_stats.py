@@ -7,9 +7,8 @@ from tempfile import TemporaryDirectory
 import numpy as np
 import scipy
 from brainspace.mesh.mesh_io import read_surface
-from .surface_rendering import render_surface, combine_figures
-
-SURFACE = .surface_rendering.SURFACE
+from surface_rendering import render_surface, combine_figures
+from config import SURFACE
 
 logging.basicConfig(format='%(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
