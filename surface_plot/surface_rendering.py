@@ -7,7 +7,7 @@ import numpy as np
 from PIL import Image
 from visbrain.gui import Figure
 from visbrain.objects import BrainObj, SceneObj
-from config import SURFACE
+from .config import SURFACE
 
 logging.basicConfig(format='%(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
