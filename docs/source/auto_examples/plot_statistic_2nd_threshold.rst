@@ -27,7 +27,7 @@ The second_level data is defined by a mask containing e.g. surviving clusters (1
 
 Note: the cortical surface template is needed to segment the clusters. 
 
-.. GENERATED FROM PYTHON SOURCE LINES 11-42
+.. GENERATED FROM PYTHON SOURCE LINES 11-38
 
 
 
@@ -39,14 +39,10 @@ Note: the cortical surface template is needed to segment the clusters.
 
     from surface_plot import plot_stats
     import numpy as np
-    from brainspace.mesh.mesh_io import read_surface
 
     outdir = 'data/second_level/test_figures'
     clobber = True
     mask = {'left': [], 'right': []}
-
-    surf = {'left': read_surface('/Users/au483096/data/atlas/surface/mni_icbm152_t1_tal_nlin_sym_09c_left_smooth.gii'),
-            'right': read_surface('/Users/au483096/data/atlas/surface/mni_icbm152_t1_tal_nlin_sym_09c_right_smooth.gii')}
 
     # Load data
     tval_left = np.loadtxt('https://www.dropbox.com/s/5ek63zf5l2iwd8f/tval_left.csv?dl=1')
@@ -67,12 +63,12 @@ Note: the cortical surface template is needed to segment the clusters.
 
     output = f'{outdir}/second_level.png'
 
-    plot_stats.plot_tval(tval, output, mask=mask, t_lim=t_lim, second_threshold_mask=second_level, surf=surf, expand_edge=True, clobber=clobber)
+    plot_stats.plot_tval(tval, output, mask=mask, t_lim=t_lim, second_threshold_mask=second_level, expand_edge=True, clobber=clobber)
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  40.564 seconds)
+   **Total running time of the script:** ( 0 minutes  37.989 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_statistic_2nd_threshold.py:

@@ -27,6 +27,7 @@
    :toctree:
    :recursive:
 
+   surface_plot.config
    surface_plot.plot_mean_stats
    surface_plot.plot_stats
    surface_plot.plot_surface
