@@ -58,6 +58,7 @@ def render_surface(data, outfile, mask=None, vlim=None, clim=None, cmap='turbo_r
         vlim = [vmin, vmax]
 
     for hemisphere in ['left', 'right']:
+        np.nan_to_num(data[hemisphere], nan=vlim[0]-1, copy=False)
         data[hemisphere] = data[hemisphere].ravel()
         
         if mask is not None: # Set vertices outside mask less than vmin
