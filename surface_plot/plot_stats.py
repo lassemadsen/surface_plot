@@ -17,7 +17,7 @@ import warnings
 
 warnings.simplefilter(action='ignore', category=FutureWarning) # Ignore FutureWarnings 
 
-def plot_pval(pval, output, tval=None, p_threshold=0.01, mask=None, cbar_loc='left', titles=['Positive', 'Negative'], clobber=False):
+def plot_pval(pval, output, tval=None, p_threshold=0.01, mask=None, cbar_loc='left', titles=['Positive', 'Negative'], second_threshold_mask=None, expand_edge=True, clobber=False):
     """Plot pval statistics on surface
     If tval is given: it will plot p-values below p_threshold with positive t-values and p-values below p_threshold with negative t-values on seperate plots. 
 
@@ -29,6 +29,7 @@ def plot_pval(pval, output, tval=None, p_threshold=0.01, mask=None, cbar_loc='le
         Location to save output
     tval : None or dict | None
         Dictionary with keys "left" and "right", containing data array of t-values to plot for left and right hemisphere (without header, i.e. number of vertices)
+        If None, the p-values are plottet without information about positive or negative t-values
     p_threshold : float | 0.01
         P value to threshold the statistical map. Default is p<0.01
     mask : dict
@@ -39,6 +40,11 @@ def plot_pval(pval, output, tval=None, p_threshold=0.01, mask=None, cbar_loc='le
     titles : tuple | ['Positive', 'Negative']
         Titles of the figures 
         Note: Only used when plotting p-values
+    second_threshold_mask : dict or None | None
+        If dict: Dictionary with keys "left" and "right", containing data array of cluster mask at 2nd threshold level (e.g. p<0.001)
+        Clusters are outlined with a white line on the plot.
+    expand_edge : boolean | True
+        If True, the white 2nd threshold cluster line is expanded by one vertices for better visuzaliation
     clobber : Boolean | False
         If true, existing files will be overwritten 
 
@@ -62,6 +68,9 @@ def plot_pval(pval, output, tval=None, p_threshold=0.01, mask=None, cbar_loc='le
     if tval is None:
         pval_plot = threshold_pmap(pval, p_threshold, tval)
 
+        if second_threshold_mask is not None:
+            pval_plot = find_edges(pval_plot, second_threshold_mask, vlim[0]-0.5, -1, expand_edge) # Set edge_val below vmin but above vmin-1 (this will be displayed as white on plot)
+
         # Setup colorbar and titles
         if cbar_loc == None:
             cbar_args = None
@@ -83,6 +92,11 @@ def plot_pval(pval, output, tval=None, p_threshold=0.01, mask=None, cbar_loc='le
 
     else:
         posneg_pval = threshold_pmap(pval, p_threshold, tval)
+        
+        if second_threshold_mask is not None:
+            for posneg in ['pos', 'neg']:
+                posneg_pval[posneg] = find_edges(posneg_pval[posneg], second_threshold_mask, vlim[0]-0.5, -1, expand_edge) # Set edge_val below vmin but above vmin-1 (this will be displayed as white on plot)
+                # OBS: This will plot threshold mask on both pos and neg. Needs to be fixed! 
 
         pval_files = []
 
@@ -199,7 +213,7 @@ def plot_tval(tval, output, t_lim=None, t_threshold=2.5, mask=None, p_threshold=
         tval_thresholded = threshold_tmap(tval, vlim, t_threshold=t_threshold)
 
     if second_threshold_mask is not None:
-        tval_thresholded = find_edges(tval_thresholded, second_threshold_mask, vlim[0]-0.5, expand_edge) # Set edge_val below vmin but above vmin-1 (this will be displayed as white on plot)
+        tval_thresholded = find_edges(tval_thresholded, second_threshold_mask, vlim[0]-0.5, vlim[0]-1, expand_edge) # Set edge_val below vmin but above vmin-1 (this will be displayed as white on plot)
 
     # Setup colorbar and titles
     if cbar_loc == None:
@@ -256,6 +270,10 @@ def threshold_tmap(tval, t_lim, t_threshold=None, p_threshold=None, pval=None, d
 
 def threshold_pmap(pval, p_threshold, tval):
     """Threshold p-map
+
+    Parameters
+    ----------
+
     """
     if tval is None:
         pval_return = {'left': copy.deepcopy(pval['left']), 'right': copy.deepcopy(pval['right'])}
@@ -274,8 +292,10 @@ def threshold_pmap(pval, p_threshold, tval):
     
     return pval_return
 
-def find_edges(data, mask, edge_val, expand_edge=True):
-    """Find edges
+def find_edges(data, mask, edge_val, bg_val, expand_edge=True):
+    """Find edges of second_threshold mask.
+
+    If edges does not overlap with data (i.e. if egdes are in backgound (bg_val)), they are not displayed.
     
     Parameters
     ----------
@@ -316,6 +336,9 @@ def find_edges(data, mask, edge_val, expand_edge=True):
                 expand.update(neighbours & cluster_indexes)
 
             edge_index.extend(list(expand))
+
+        # Remove edge_indices if data=bg_val
+        edge_index = list(set(np.where(data[hemisphere] != bg_val)[0]) & set(edge_index))
 
         data[hemisphere][edge_index] = edge_val
 
