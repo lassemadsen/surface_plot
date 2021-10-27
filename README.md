@@ -22,7 +22,7 @@ Visbrain requires :
 * Pandas
 * Brainspace >= 0.1.2
 * SciPy
-* Matplotlib >= 1.5.5
+* Matplotlib >= 3.3.0
 * Pillow
 
 ### User installation

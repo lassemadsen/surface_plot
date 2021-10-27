@@ -48,7 +48,7 @@ setup(
         "pandas",
         "brainspace>=0.1.2",
         "scipy",
-        "matplotlib>=1.5.5",
+        "matplotlib>=3.3.0",
         "pillow"
     ],
     classifiers=["Development Status :: 3 - Alpha",
