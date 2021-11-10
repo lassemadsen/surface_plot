@@ -1,5 +1,6 @@
 import logging
 import os
+import numpy as np
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
@@ -9,7 +10,7 @@ from .surface_rendering import render_surface, combine_figures, append_images
 logging.basicConfig(format='%(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-def plot_mean_stats(mean_group1, mean_group2, pval, tval, output, p_threshold=0.05, mask=None, vlim_mean=[0,1], mean_titles=None, stats_titles=None, cb_mean_title='Mean', plot_tvalue=False, t_lim=None, clobber=False):
+def plot_mean_stats(mean_group1, mean_group2, tval, output, plot_tvalue=False, pval=None, t_threshold=2.5, df=None, two_tailed=True, p_threshold=None, mask=None, vlim_mean=None, mean_titles=None, stats_titles=None, cb_mean_title='Mean', t_lim=None, second_threshold_mask=None, expand_edge=True, clobber=False):
     """Plot mean and statistics on surface
     Will plot mean of group 1 and mean of group 2 along with p-values or t-values.
     Will plot p-values below p_threshold with positive t-values and p-values below p_threshold with negative t-values.
@@ -69,6 +70,15 @@ def plot_mean_stats(mean_group1, mean_group2, pval, tval, output, p_threshold=0.
         pass
     else: 
         logger.warning('Titles not given for both mean and stats. Plot might look weird..')
+    
+    if vlim_mean is None:
+        mean_min = round(min(min(mean_group1['left']), min(mean_group1['right']), min(mean_group2['left']), min(mean_group2['right'])),2)
+        mean_max = round(max(max(mean_group1['left']), max(mean_group1['right']), max(mean_group2['left']), max(mean_group2['right'])),2)
+        vlim_mean = [mean_min, mean_max]
+
+    for hemisphere in ['left', 'right']:
+        mean_group1[hemisphere] = np.clip(mean_group1[hemisphere], vlim_mean[0]+1e-3, vlim_mean[1]-1e-3)
+        mean_group2[hemisphere] = np.clip(mean_group2[hemisphere], vlim_mean[0]+1e-3, vlim_mean[1]-1e-3)
 
     with TemporaryDirectory() as tmp_dir:
         # Plot mean group1
@@ -91,10 +101,12 @@ def plot_mean_stats(mean_group1, mean_group2, pval, tval, output, p_threshold=0.
         # Setup colorbar
         if plot_tvalue:
             cbar_loc = 'bottom_tval_scaled' # Special scenario were tval is plottet alongside two mean images combined to one (e.g. baseline, followup, tval). Scale cbar accordingly
-            plot_tval(tval, tmp_stats, pval=pval, t_lim=t_lim, p_threshold=p_threshold, cbar_loc=cbar_loc, mask=mask, title=stats_titles)
+            plot_tval(tval, tmp_stats, t_lim=t_lim, t_threshold=t_threshold, mask=mask, pval=pval, p_threshold=p_threshold, df=df, two_tailed=two_tailed, title=stats_titles, cbar_loc=cbar_loc, second_threshold_mask=second_threshold_mask, expand_edge=expand_edge, clobber=clobber)
+            # plot_tval(tval, tmp_stats, pval=pval, t_lim=t_lim, p_threshold=p_threshold, cbar_loc=cbar_loc, mask=mask, title=stats_titles)
         else:
             cbar_loc = 'bottom'
-            plot_pval(pval, tmp_stats, tval=tval, p_threshold=p_threshold, cbar_loc=cbar_loc, mask=mask, titles=stats_titles)
+            plot_pval(pval, tmp_stats, tval=tval, p_threshold=p_threshold, mask=mask, cbar_loc=cbar_loc, titles=mean_titles, second_threshold_mask=second_threshold_mask, expand_edge=expand_edge, clobber=clobber)
+            # plot_pval(pval, tmp_stats, tval=tval, p_threshold=p_threshold, cbar_loc=cbar_loc, mask=mask, titles=stats_titles)
 
         # Combine to one plot 
         append_images([tmp_mean, tmp_stats], output, direction='horizontal', scale='height', clobber=True)
