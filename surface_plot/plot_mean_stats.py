@@ -1,3 +1,4 @@
+from functools import cmp_to_key
 import logging
 import os
 import numpy as np
@@ -81,16 +82,17 @@ def plot_mean_stats(mean_group1, mean_group2, tval, output, plot_tvalue=False, p
         mean_group2[hemisphere] = np.clip(mean_group2[hemisphere], vlim_mean[0]+1e-3, vlim_mean[1]-1e-3)
 
     with TemporaryDirectory() as tmp_dir:
+        cmap = 'turbo'
         # Plot mean group1
         tmp_mean1 = '{}/mean1.png'.format(tmp_dir)
-        render_surface(mean_group1, tmp_mean1, vlim=vlim_mean, clim=vlim_mean, mask=mask)
+        render_surface(mean_group1, tmp_mean1, vlim=vlim_mean, clim=vlim_mean, mask=mask, cmap=cmap)
 
         # Plot mean group2
         tmp_mean2 = '{}/mean2.png'.format(tmp_dir)
-        render_surface(mean_group2, tmp_mean2, vlim=vlim_mean, clim=vlim_mean, mask=mask)
+        render_surface(mean_group2, tmp_mean2, vlim=vlim_mean, clim=vlim_mean, mask=mask, cmap=cmap)
 
         # Combine means with shared colorbar - Setup colorbar
-        cbar_args = {'clim': vlim_mean, 'title': cb_mean_title, 'fz_title': 14, 'fz_ticks': 14, 'cmap': 'turbo', 'position': 'bottom'}
+        cbar_args = {'clim': vlim_mean, 'title': cb_mean_title, 'fz_title': 14, 'fz_ticks': 14, 'cmap': cmap, 'position': 'bottom'}
 
         tmp_mean = '{}/mean.png'.format(tmp_dir)
         combine_figures([tmp_mean1, tmp_mean2], tmp_mean, cbArgs=cbar_args, titles=mean_titles)
