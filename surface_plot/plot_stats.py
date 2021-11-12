@@ -190,6 +190,9 @@ def plot_tval(tval, output, t_lim=None, t_threshold=2.5, mask=None, p_threshold=
 
         t_limit = round(np.max([t_min_abs, t_max]),1)
 
+        if t_limit == 0:
+            t_limit = 1
+
         t_lim = [-t_limit, t_limit]
         vlim = t_lim
     else:
