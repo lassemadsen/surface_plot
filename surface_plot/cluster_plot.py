@@ -1,27 +1,18 @@
-import logging 
-import matplotlib.pyplot as plt
-import pandas as pd
-import numpy as np
-import matplotlib.lines as mlines
+import logging
 import os
 from pathlib import Path
+
+import matplotlib.lines as mlines
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+import seaborn as sns
+from matplotlib.ticker import FuncFormatter
+import statsmodels.api as sm
 
 logging.basicConfig(format='%(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# draw line
-# https://stackoverflow.com/questions/36470343/how-to-draw-a-line-with-matplotlib/36479941
-def _newline(p1, p2, color=None, linewidth=1, linestyle='-'):
-    ax = plt.gca()
-    if color is None:
-        l = mlines.Line2D([p1[0],p2[0]], [p1[1],p2[1]], color='tab:red' if p1[1]-p2[1] > 0 else 'tab:green', marker='o', markersize=6)
-    else:
-        l = mlines.Line2D([p1[0],p2[0]], [p1[1],p2[1]], color=color, marker='o', markersize=6)
-
-    l.set_linewidth(linewidth)
-    l.set_linestyle(linestyle)
-    ax.add_line(l)
-    return l
 
 def slope_plot(data1, data2, cluster_mask, categories, output, title=None, clobber=False, extra_lines=None):
     """
@@ -104,3 +95,118 @@ def slope_plot(data1, data2, cluster_mask, categories, output, title=None, clobb
     plt.savefig(output, dpi=300)
     plt.close()
     logger.info('{} saved'.format(output))
+
+def correlation_plot(data1, predictor, cluster_mask, categories, output, title=None, clobber=False, plot_simple=True):
+    """
+    
+    Parameters
+    ----------
+    data1 : pd.DataFrame
+        Dataframe of surface data
+    predictor : pd.DataFrame
+        data of predictor 
+    cluster_mask : array
+        Array defining the cluster to be plottet (mean value within cluster is plottet)
+    categories : list of str
+        Names of [data1, data2] in correct order
+        I.e ['PiB suvr', 'MMSE']
+    """
+
+    if not clobber:
+        if os.path.isfile(output):
+            logger.info('{} already exists... Skipping'.format(output))
+            return
+
+    outdir = '/'.join(output.split('/')[:-1])
+    Path(outdir).mkdir(parents=True, exist_ok=True)
+
+    if isinstance(cluster_mask, np.ndarray):
+        mask = pd.DataFrame(cluster_mask.T)
+    else:
+        print('Cluster mask should be np.array')
+
+    mean1 = data1[mask[0]==1].mean()
+
+    title = f'{title}\nSize: {sum(mask[0] == 1)}'
+
+    plot_data = pd.concat([mean1, predictor], axis=1).dropna()
+    plot_data.columns = categories
+
+    if plot_simple:
+        sns.set(font_scale=1.5)
+        plt.subplots(figsize=(10, 8))
+        ax = sns.regplot(x=categories[0], y=categories[1], data=plot_data, ci=None)
+    else:
+        sns.set(font_scale=1.6)
+        plt.subplots(figsize=(10, 8))
+        r2 = _get_r2(plot_data[categories[0]], plot_data[categories[1]])
+        # label = 'Cluster size: {:.2f} $mm^2$, $p_{{mean}}$: {:.4f}, $R^2$: {:.2f}'.format(cluster_size, mean_pval, r2)
+        label = f'$R^2$: {r2:.2}'
+        ax = sns.regplot(x=categories[0], y=categories[1], data=plot_data, ci=None, label=label, truncate=False)
+        ax.legend(loc="best")
+
+    major_formatter = FuncFormatter(__format_values)
+    ax.yaxis.set_major_formatter(major_formatter)
+
+    ax.grid(b=True, which='major', color='w', linewidth=1.0)
+    ax.grid(b=True, which='minor', color='w', linewidth=0.5)
+    ax.set_title(title)
+    # plt.ylim(ylim)
+    # plt.xlim(xlim)
+    plt.tight_layout()
+
+    plt.savefig(output, dpi=300)
+    logger.info('{} saved'.format(output))
+
+
+        # major_formatter = FuncFormatter(my_formatter)
+        # ax.yaxis.set_major_formatter(major_formatter)
+
+        # ax.grid(b=True, which='major', color='w', linewidth=1.0)
+        # ax.grid(b=True, which='minor', color='w', linewidth=0.5)
+        # ax.set_title(title)
+        # plt.ylim(ylim)
+        # plt.xlim(xlim)
+        # plt.tight_layout()
+
+        # plt.savefig(outfile, dpi=300)
+        # logger.info('{} saved'.format(outfile))
+
+
+# --- Helper functions ---
+# draw line
+# https://stackoverflow.com/questions/36470343/how-to-draw-a-line-with-matplotlib/36479941
+def _newline(p1, p2, color=None, linewidth=1, linestyle='-'):
+    ax = plt.gca()
+    if color is None:
+        l = mlines.Line2D([p1[0],p2[0]], [p1[1],p2[1]], color='tab:red' if p1[1]-p2[1] > 0 else 'tab:green', marker='o', markersize=6)
+    else:
+        l = mlines.Line2D([p1[0],p2[0]], [p1[1],p2[1]], color=color, marker='o', markersize=6)
+
+    l.set_linewidth(linewidth)
+    l.set_linestyle(linestyle)
+    ax.add_line(l)
+    return l
+
+def __format_values(x, pos):
+    """Format 1 as 1, 0 as 0, and all values whose absolute values is between
+    0 and 1 without the leading "0." (e.g., 0.7 is formatted as .7 and -0.4 is
+    formatted as -.4)."""
+    val_str = '%.2f' % x
+    if 0 <= np.abs(x) < 1:
+        return val_str.replace('0', '', 1)
+    else:
+        return val_str
+
+def _get_r2(x, y):
+    """Calculate r squared
+
+    Return
+    ------
+    r2 : R squared value
+    """
+    X = sm.add_constant(x)
+    result = sm.OLS(y, X).fit()
+    r2 = result.rsquared
+
+    return r2
