@@ -37,14 +37,14 @@ p_threshold = 0.01
 
 # P value
 output = f'{outdir}/ttest_pval_p{p_threshold}.png'
-plot_mean_stats.plot_mean_stats(mean1, mean2, pval, tval, output, vlim_mean=[0, 4], p_threshold=p_threshold, cb_mean_title='Mean SUVR', mean_titles=['Baseline', 'Follow-up'], stats_titles=['Increase', 'Decrease'], clobber=clobber)
+plot_mean_stats.plot_mean_stats(mean1, mean2, tval, output, pval=pval, vlim_mean=[0, 4], p_threshold=p_threshold, cb_mean_title='Mean SUVR', mean_titles=['Baseline', 'Follow-up'], stats_titles=['Increase', 'Decrease'], clobber=clobber)
 
 output = f'{outdir}/ttest_pval_notitle_p{p_threshold}.png'
-plot_mean_stats.plot_mean_stats(mean1, mean2, pval, tval, output, vlim_mean=[0, 4], p_threshold=p_threshold, clobber=clobber)
+plot_mean_stats.plot_mean_stats(mean1, mean2, tval, output, pval=pval, vlim_mean=[0, 4], p_threshold=p_threshold, clobber=clobber)
 
 # T value
 output = f'{outdir}/ttest_tval_p{p_threshold}.png'
-plot_mean_stats.plot_mean_stats(mean1, mean2, pval, tval, output, vlim_mean=[0, 4], p_threshold=p_threshold, cb_mean_title='Mean SUVR', mean_titles=['Baseline', 'Follow-up'], stats_titles=['Change'], plot_tvalue=True, clobber=clobber)
+plot_mean_stats.plot_mean_stats(mean1, mean2, tval, output, vlim_mean=[0, 4], pval=pval, p_threshold=p_threshold, cb_mean_title='Mean SUVR', mean_titles=['Baseline', 'Follow-up'], stats_titles=['Change'], plot_tvalue=True, clobber=clobber)
 
 output = f'{outdir}/ttest_tval_notitle_p{p_threshold}.png'
-plot_mean_stats.plot_mean_stats(mean1, mean2, pval, tval, output, vlim_mean=[0, 4], p_threshold=p_threshold, plot_tvalue=True, clobber=clobber)
+plot_mean_stats.plot_mean_stats(mean1, mean2, tval, output, pval=pval, vlim_mean=[0, 4], p_threshold=p_threshold, plot_tvalue=True, clobber=clobber)
