@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 # draw line
 # https://stackoverflow.com/questions/36470343/how-to-draw-a-line-with-matplotlib/36479941
-def newline(p1, p2, color=None, linewidth=1, linestyle='-'):
+def _newline(p1, p2, color=None, linewidth=1, linestyle='-'):
     ax = plt.gca()
     if color is None:
         l = mlines.Line2D([p1[0],p2[0]], [p1[1],p2[1]], color='tab:red' if p1[1]-p2[1] > 0 else 'tab:green', marker='o', markersize=6)
@@ -76,7 +76,7 @@ def slope_plot(data1, data2, cluster_mask, categories, output, title=None, clobb
     ax.scatter(y=mean2.values, x=np.repeat(2, mean2.shape[0]), s=10, color='black', alpha=0.7)
 
     for p1, p2, c in zip(mean1.values, mean2.values, data1.index):
-        newline([1,p1], [2,p2])
+        _newline([1,p1], [2,p2])
         # ax.text(1-0.05, p1, c + ', ' + str(round(p1)), horizontalalignment='right', verticalalignment='center', fontdict={'size':14})
         # ax.text(3+0.05, p2, c + ', ' + str(round(p2)), horizontalalignment='left', verticalalignment='center', fontdict={'size':14})
 
@@ -84,7 +84,7 @@ def slope_plot(data1, data2, cluster_mask, categories, output, title=None, clobb
         colors = ['tab:blue', 'deepskyblue', 'steelblue']
         color_idx = 0
         for key in extra_lines:
-            newline([1,extra_lines[key][0]], [2,extra_lines[key][1]], linewidth=3, linestyle='-', color=colors[color_idx])
+            _newline([1,extra_lines[key][0]], [2,extra_lines[key][1]], linewidth=3, linestyle='-', color=colors[color_idx])
             color_idx = (color_idx + 1) % len(colors) # Cycle through colors
             ax.text(0.98, extra_lines[key][0], key, horizontalalignment='right', verticalalignment='center', fontdict={'size':14})
 
