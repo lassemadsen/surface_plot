@@ -101,10 +101,11 @@ def correlation_plot(slm, indep_data, indep_name, subjects, outdir, alpha=0.05, 
     
     Parameters
     ----------
-    slm : brainstat SLM class
-        Results from brainstat SLM
-    indep_data : pd.DataFrame
+    slm : dict['left', 'right']
+        Dictionary with keys "left" and "right", containing results from brainstat SLM
+    indep_data : pd.DataFrame - dict{'left', 'right'}
         Dataframe of surface data
+        Dictionary with keys "left" and "right", containing surface data of the independent variable for left and right hemisphere
     indep_name : str
         Name of independent surface data
     subjects : list
@@ -117,45 +118,45 @@ def correlation_plot(slm, indep_data, indep_name, subjects, outdir, alpha=0.05, 
         If true, existing files will be overwritten 
     """
     Path(outdir).mkdir(parents=True, exist_ok=True)
+    for hemisphere in ['left', 'right']:
+        for posneg in [[0, 'pos'], [1, 'neg']]:
 
-    for posneg in [[0, 'pos'], [1, 'neg']]:
+            cluster_pval = slm[hemisphere].P['clus'][posneg[0]]['P'][0] if not slm[hemisphere].P['clus'][posneg[0]]['P'].empty else 1 # Get pval of largest cluster 
+            if cluster_pval > alpha:
+                continue
 
-        cluster_pval = slm.P['clus'][posneg[0]]['P'][0] if not slm.P['clus'][posneg[0]]['P'].empty else 1 # Get pval of largest cluster 
-        if cluster_pval > alpha:
-            continue
+            cluster_threshold = slm[hemisphere].cluster_threshold # Get primary cluster threshold (used for output naming)
+            cluster_size = slm[hemisphere].P['clus'][posneg[0]]['nverts'][0] # Get nverts for largest cluster 
+            predictor_name = slm[hemisphere].model.matrix.columns[1] # Get predictor name (second column name - first is intercept)
+            output = f'{outdir}/{posneg[1]}_cluster_{hemisphere}_{indep_name}_{predictor_name}_{cluster_threshold}.png'
 
-        cluster_threshold = slm.cluster_threshold # Get primary cluster threshold (used for output naming)
-        cluster_size = slm.P['clus'][posneg[0]]['nverts'][0] # Get nverts for largest cluster 
-        predictor_name = slm.model.matrix.columns[1] # Get predictor name (second column name - first is intercept)
-        output = f'{outdir}/{posneg[1]}_cluster_{indep_name}_{predictor_name}_{cluster_threshold}.png'
+            if not clobber:
+                if os.path.isfile(output):
+                    logger.info('{} already exists... Skipping'.format(output))
+                    return
+                    
+            cluster_mean = indep_data[hemisphere][slm[hemisphere].P['clusid'][posneg[0]][0] == 1].mean()
 
-        if not clobber:
-            if os.path.isfile(output):
-                logger.info('{} already exists... Skipping'.format(output))
-                return
-                
-        cluster_mean = indep_data[slm.P['clusid'][posneg[0]][0] == 1].mean()
+            plot_data = pd.concat([cluster_mean[subjects].reset_index(drop=True), slm[hemisphere].model.matrix[predictor_name]], axis=1).dropna()
+            plot_data.columns = [indep_name, predictor_name]
 
-        plot_data = pd.concat([cluster_mean[subjects].reset_index(drop=True), slm.model.matrix[predictor_name]], axis=1).dropna()
-        plot_data.columns = [indep_name, predictor_name]
+            r2 = _get_r2(plot_data[predictor_name], plot_data[indep_name])
+            title = f'{indep_name} - {predictor_name}, {hemisphere} hemisphere\nN vertices={cluster_size:.0f}, corrected cluster p-value={cluster_pval:.1e}, $R^2$: {r2:.2f}'
 
-        r2 = _get_r2(plot_data[predictor_name], plot_data[indep_name])
-        title = f'{indep_name} - {predictor_name}\nN vertices={cluster_size:.0f}, corrected cluster p-value={cluster_pval:.1e}, $R^2$: {r2:.2f}'
+            sns.set(font_scale=1.6)
+            plt.subplots(figsize=(10, 8))
+            ax = sns.regplot(x=predictor_name, y=indep_name, data=plot_data, ci=None, truncate=False)
 
-        sns.set(font_scale=1.6)
-        plt.subplots(figsize=(10, 8))
-        ax = sns.regplot(x=predictor_name, y=indep_name, data=plot_data, ci=None, truncate=False)
+            major_formatter = FuncFormatter(__format_values)
+            ax.yaxis.set_major_formatter(major_formatter)
 
-        major_formatter = FuncFormatter(__format_values)
-        ax.yaxis.set_major_formatter(major_formatter)
+            ax.grid(b=True, which='major', color='w', linewidth=1.0)
+            ax.grid(b=True, which='minor', color='w', linewidth=0.5)
+            ax.set_title(title)
+            plt.tight_layout()
 
-        ax.grid(b=True, which='major', color='w', linewidth=1.0)
-        ax.grid(b=True, which='minor', color='w', linewidth=0.5)
-        ax.set_title(title)
-        plt.tight_layout()
-
-        plt.savefig(output, dpi=300)
-        logger.info('{} saved'.format(output))
+            plt.savefig(output, dpi=300)
+            logger.info('{} saved'.format(output))
 
 # --- Helper functions ---
 # draw line
