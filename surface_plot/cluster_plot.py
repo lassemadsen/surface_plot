@@ -96,82 +96,65 @@ def slope_plot(data1, data2, cluster_mask, categories, output, title=None, clobb
     plt.close()
     logger.info('{} saved'.format(output))
 
-def correlation_plot(data1, predictor, cluster_mask, categories, output, title=None, clobber=False, plot_simple=True):
+def correlation_plot(slm, indep_data, indep_name, subjects, outdir, clobber=False):
     """
     
     Parameters
     ----------
-    data1 : pd.DataFrame
+    slm : brainstat SLM class
+        Results from brainstat SLM
+    indep_data : pd.DataFrame
         Dataframe of surface data
-    predictor : pd.DataFrame
-        data of predictor 
-    cluster_mask : array
-        Array defining the cluster to be plottet (mean value within cluster is plottet)
-    categories : list of str
-        Names of [data1, data2] in correct order
-        I.e ['PiB suvr', 'MMSE']
+    indep_name : str
+        Name of independent surface data
+    subjects : list
+        List of subjects (same as indices in indep_data)
+    outdir : str
+        Location of ouputs
+    clobber : Boolean | False
+        If true, existing files will be overwritten 
     """
-
-    if not clobber:
-        if os.path.isfile(output):
-            logger.info('{} already exists... Skipping'.format(output))
-            return
-
-    outdir = '/'.join(output.split('/')[:-1])
     Path(outdir).mkdir(parents=True, exist_ok=True)
 
-    if isinstance(cluster_mask, np.ndarray):
-        mask = pd.DataFrame(cluster_mask.T)
-    else:
-        print('Cluster mask should be np.array')
+    cluster_threshold = slm.cluster_threshold
 
-    mean1 = data1[mask[0]==1].mean()
+    for posneg in [[0, 'pos'], [1, 'neg']]:
 
-    title = f'{title}\nSize: {sum(mask[0] == 1)}'
+        cluster_pval = slm.P['clus'][posneg[0]]['P'][0] if not slm.P['clus'][posneg[0]]['P'].empty else 1 # Get pval of largest cluster 
+        if cluster_pval > cluster_threshold:
+            continue
 
-    plot_data = pd.concat([mean1, predictor], axis=1).dropna()
-    plot_data.columns = categories
+        cluster_size = slm.P['clus'][posneg[0]]['nverts'][0] # Get nverts for largest cluster 
+        predictor_name = slm.model.matrix.columns[1] # Get predictor name (second column name - first is intercept)
+        output = f'{outdir}/{posneg[1]}_cluster_{indep_name}_{predictor_name}_{cluster_threshold}.png'
 
-    if plot_simple:
-        sns.set(font_scale=1.5)
-        plt.subplots(figsize=(10, 8))
-        ax = sns.regplot(x=categories[0], y=categories[1], data=plot_data, ci=None)
-    else:
+        if not clobber:
+            if os.path.isfile(output):
+                logger.info('{} already exists... Skipping'.format(output))
+                return
+                
+        cluster_mean = indep_data[slm.P['clusid'][posneg[0]][0] == 1].mean()
+
+        plot_data = pd.concat([cluster_mean[subjects].reset_index(drop=True), slm.model.matrix[predictor_name]], axis=1).dropna()
+        plot_data.columns = [indep_name, predictor_name]
+
+        r2 = _get_r2(plot_data[predictor_name], plot_data[indep_name])
+        title = f'{indep_name} - {predictor_name}\nN vertices={cluster_size:.0f}, mean p-value={cluster_pval:.1e}, $R^2$: {r2:.2f}'
+
         sns.set(font_scale=1.6)
         plt.subplots(figsize=(10, 8))
-        r2 = _get_r2(plot_data[categories[0]], plot_data[categories[1]])
-        # label = 'Cluster size: {:.2f} $mm^2$, $p_{{mean}}$: {:.4f}, $R^2$: {:.2f}'.format(cluster_size, mean_pval, r2)
-        label = f'$R^2$: {r2:.2}'
-        ax = sns.regplot(x=categories[0], y=categories[1], data=plot_data, ci=None, label=label, truncate=False)
-        ax.legend(loc="best")
+        ax = sns.regplot(x=predictor_name, y=indep_name, data=plot_data, ci=None, truncate=False)
 
-    major_formatter = FuncFormatter(__format_values)
-    ax.yaxis.set_major_formatter(major_formatter)
+        major_formatter = FuncFormatter(__format_values)
+        ax.yaxis.set_major_formatter(major_formatter)
 
-    ax.grid(b=True, which='major', color='w', linewidth=1.0)
-    ax.grid(b=True, which='minor', color='w', linewidth=0.5)
-    ax.set_title(title)
-    # plt.ylim(ylim)
-    # plt.xlim(xlim)
-    plt.tight_layout()
+        ax.grid(b=True, which='major', color='w', linewidth=1.0)
+        ax.grid(b=True, which='minor', color='w', linewidth=0.5)
+        ax.set_title(title)
+        plt.tight_layout()
 
-    plt.savefig(output, dpi=300)
-    logger.info('{} saved'.format(output))
-
-
-        # major_formatter = FuncFormatter(my_formatter)
-        # ax.yaxis.set_major_formatter(major_formatter)
-
-        # ax.grid(b=True, which='major', color='w', linewidth=1.0)
-        # ax.grid(b=True, which='minor', color='w', linewidth=0.5)
-        # ax.set_title(title)
-        # plt.ylim(ylim)
-        # plt.xlim(xlim)
-        # plt.tight_layout()
-
-        # plt.savefig(outfile, dpi=300)
-        # logger.info('{} saved'.format(outfile))
-
+        plt.savefig(output, dpi=300)
+        logger.info('{} saved'.format(output))
 
 # --- Helper functions ---
 # draw line
