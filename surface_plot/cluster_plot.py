@@ -96,7 +96,7 @@ def slope_plot(data1, data2, cluster_mask, categories, output, title=None, clobb
     plt.close()
     logger.info('{} saved'.format(output))
 
-def correlation_plot(slm, indep_data, indep_name, subjects, outdir, clobber=False):
+def correlation_plot(slm, indep_data, indep_name, subjects, outdir, alpha=0.05, clobber=False):
     """
     
     Parameters
@@ -111,19 +111,20 @@ def correlation_plot(slm, indep_data, indep_name, subjects, outdir, clobber=Fals
         List of subjects (same as indices in indep_data)
     outdir : str
         Location of ouputs
+    alpha : float | 0.05
+        Corrected p-value threshold on cluster-level (family wise error rate)
     clobber : Boolean | False
         If true, existing files will be overwritten 
     """
     Path(outdir).mkdir(parents=True, exist_ok=True)
 
-    cluster_threshold = slm.cluster_threshold
-
     for posneg in [[0, 'pos'], [1, 'neg']]:
 
         cluster_pval = slm.P['clus'][posneg[0]]['P'][0] if not slm.P['clus'][posneg[0]]['P'].empty else 1 # Get pval of largest cluster 
-        if cluster_pval > cluster_threshold:
+        if cluster_pval > alpha:
             continue
 
+        cluster_threshold = slm.cluster_threshold # Get primary cluster threshold (used for output naming)
         cluster_size = slm.P['clus'][posneg[0]]['nverts'][0] # Get nverts for largest cluster 
         predictor_name = slm.model.matrix.columns[1] # Get predictor name (second column name - first is intercept)
         output = f'{outdir}/{posneg[1]}_cluster_{indep_name}_{predictor_name}_{cluster_threshold}.png'
@@ -139,7 +140,7 @@ def correlation_plot(slm, indep_data, indep_name, subjects, outdir, clobber=Fals
         plot_data.columns = [indep_name, predictor_name]
 
         r2 = _get_r2(plot_data[predictor_name], plot_data[indep_name])
-        title = f'{indep_name} - {predictor_name}\nN vertices={cluster_size:.0f}, mean p-value={cluster_pval:.1e}, $R^2$: {r2:.2f}'
+        title = f'{indep_name} - {predictor_name}\nN vertices={cluster_size:.0f}, corrected cluster p-value={cluster_pval:.1e}, $R^2$: {r2:.2f}'
 
         sns.set(font_scale=1.6)
         plt.subplots(figsize=(10, 8))
