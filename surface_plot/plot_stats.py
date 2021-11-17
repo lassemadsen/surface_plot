@@ -131,7 +131,7 @@ def plot_tval(tval, output, t_lim=None, t_threshold=2.5, mask=None, p_threshold=
 
     Parameters
     ----------
-    tval_left : dict
+    tval : dict
         Dictionary with keys "left" and "right", containing data array of t-values to plot for left and right hemisphere (without header, i.e. number of vertices)
     output : str
         Location to save output
