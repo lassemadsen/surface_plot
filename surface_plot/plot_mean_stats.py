@@ -11,7 +11,7 @@ from .surface_rendering import render_surface, combine_figures, append_images
 logging.basicConfig(format='%(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-def plot_mean_stats(mean_group1, mean_group2, tval, output, plot_tvalue=False, pval=None, t_threshold=2.5, df=None, two_tailed=True, p_threshold=None, mask=None, vlim_mean=None, mean_titles=None, stats_titles=None, cb_mean_title='Mean', t_lim=None, second_threshold_mask=None, expand_edge=True, clobber=False):
+def plot_mean_stats(mean_group1, mean_group2, tval, output, plot_tvalue=False, pval=None, t_threshold=2.5, df=None, p_threshold=None, mask=None, vlim_mean=None, mean_titles=None, stats_titles=None, cb_mean_title='Mean', t_lim=None, second_threshold_mask=None, expand_edge=True, clobber=False):
     """Plot mean and statistics on surface
     Will plot mean of group 1 and mean of group 2 along with p-values or t-values.
     Will plot p-values below p_threshold with positive t-values and p-values below p_threshold with negative t-values.
@@ -24,14 +24,27 @@ def plot_mean_stats(mean_group1, mean_group2, tval, output, plot_tvalue=False, p
         Dictionary with keys "left" and "right", containing data array of the mean data for the first group to plot for left and right hemisphere (without header, i.e. number of vertices)
     mean_group2 : dict
         Dictionary with keys "left" and "right", containing data array of the mean data for the second group to plot for left and right hemisphere (without header, i.e. number of vertices)
-    pval : dict
-        Dictionary with keys "left" and "right", containing data array of p-values to plot for left and right hemisphere (without header, i.e. number of vertices)
     tval_left : dict
         Dictionary with keys "left" and "right", containing data array of t-values to plot for left and right hemisphere (without header, i.e. number of vertices)
     output : str
         Location to save output
-    p_threshold : float | 0.05
-        P value to threshold the statistical map. Default is p<0.05
+    plot_tvalue : Boolean | False
+        If true, a map of the tvalues will be plottet. 
+    pval : dict | None
+        Dictionary with keys "left" and "right", containing data array of p-values to plot for left and right hemisphere (without header, i.e. number of vertices)
+        Only used if p_threshold is set to threshold corresponding t-values.
+        Ignored if p_threshold is None
+    t_threshold : float | 2.5
+        Treshold of tmap. Values between -threshold;threshold are displayed as white. 
+        If 0, entire tmap is plottet
+    df : int | None
+        Degrees of freedom.
+        Only used if p_threshold is set to calculate conversion between t-values and p-values
+        If pval is not None, df is ignored.
+        Ignored if plot_tvalue is true
+    p_threshold : float | None
+        If set, threshold is ignored and the plot is thresholded at the corresponding p-value threshold.
+        Note: Either pval or df needs to be set
     mask : dict
         Dictionary with keys "left" and "right", containing 1 inside mask and 0 outside mask
         Vertices outside mask will plottet as darkgrey
@@ -43,11 +56,14 @@ def plot_mean_stats(mean_group1, mean_group2, tval, output, plot_tvalue=False, p
         Titles of the stats plot. E.g. ['Positive', 'Negative'] or ['Change']
     cb_mean_title : str | 'Mean'
         Title on the colorbar for the mean plots
-    plot_tvalue : Boolean | False
-        If true, a map of the tvalues will be plottet. 
     t_lim : tuple [tmin, tmax] | None
         Range of tvalues.
         If none, min and max tvalues in the data will be used
+    second_threshold_mask : dict or None | None
+        If dict: Dictionary with keys "left" and "right", containing data array of cluster mask at 2nd threshold level (e.g. p<0.001)
+        Clusters are outlined with a white line on the plot.
+    expand_edge : boolean | True
+        If True, the white 2nd threshold cluster line is expanded by one vertices for better visuzaliation
     clobber : Boolean | False
         If true, existing files will be overwritten 
 
@@ -56,8 +72,6 @@ def plot_mean_stats(mean_group1, mean_group2, tval, output, plot_tvalue=False, p
     Colormap could be changed to colormaps found in matplotlib:
     https://matplotlib.org/3.1.0/tutorials/colors/colormaps.html
 
-    Functionallity suggestions
-    --------------------------
     """
     if not clobber:
         if os.path.isfile(output):
@@ -103,7 +117,7 @@ def plot_mean_stats(mean_group1, mean_group2, tval, output, plot_tvalue=False, p
         # Setup colorbar
         if plot_tvalue:
             cbar_loc = 'bottom_tval_scaled' # Special scenario were tval is plottet alongside two mean images combined to one (e.g. baseline, followup, tval). Scale cbar accordingly
-            plot_tval(tval, tmp_stats, t_lim=t_lim, t_threshold=t_threshold, mask=mask, pval=pval, p_threshold=p_threshold, df=df, two_tailed=two_tailed, title=stats_titles, cbar_loc=cbar_loc, second_threshold_mask=second_threshold_mask, expand_edge=expand_edge, clobber=clobber)
+            plot_tval(tval, tmp_stats, t_lim=t_lim, t_threshold=t_threshold, mask=mask, pval=pval, p_threshold=p_threshold, df=df, title=stats_titles, cbar_loc=cbar_loc, second_threshold_mask=second_threshold_mask, expand_edge=expand_edge, clobber=clobber)
             # plot_tval(tval, tmp_stats, pval=pval, t_lim=t_lim, p_threshold=p_threshold, cbar_loc=cbar_loc, mask=mask, title=stats_titles)
         else:
             cbar_loc = 'bottom'
