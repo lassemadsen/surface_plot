@@ -11,7 +11,7 @@ from .surface_rendering import render_surface, combine_figures, append_images
 logging.basicConfig(format='%(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-def plot_mean_stats(mean_group1, mean_group2, tval, output, plot_tvalue=False, pval=None, t_threshold=2.5, df=None, p_threshold=None, mask=None, vlim_mean=None, mean_titles=None, stats_titles=None, cb_mean_title='Mean', t_lim=None, second_threshold_mask=None, expand_edge=True, clobber=False):
+def plot_mean_stats(mean_group1, mean_group2, tval, output, plot_tvalue=False, pval=0.01, t_threshold=2.5, df=None, p_threshold=None, mask=None, vlim_mean=None, mean_titles=None, stats_titles=None, cb_mean_title='Mean', t_lim=None, second_threshold_mask=None, expand_edge=True, clobber=False):
     """Plot mean and statistics on surface
     Will plot mean of group 1 and mean of group 2 along with p-values or t-values.
     Will plot p-values below p_threshold with positive t-values and p-values below p_threshold with negative t-values.
@@ -42,7 +42,7 @@ def plot_mean_stats(mean_group1, mean_group2, tval, output, plot_tvalue=False, p
         Only used if p_threshold is set to calculate conversion between t-values and p-values
         If pval is not None, df is ignored.
         Ignored if plot_tvalue is true
-    p_threshold : float | None
+    p_threshold : float | 0.01
         If set, threshold is ignored and the plot is thresholded at the corresponding p-value threshold.
         Note: Either pval or df needs to be set
     mask : dict
@@ -87,8 +87,8 @@ def plot_mean_stats(mean_group1, mean_group2, tval, output, plot_tvalue=False, p
         logger.warning('Titles not given for both mean and stats. Plot might look weird..')
     
     if vlim_mean is None:
-        mean_min = round(min(min(mean_group1['left']), min(mean_group1['right']), min(mean_group2['left']), min(mean_group2['right'])),2)
-        mean_max = round(max(max(mean_group1['left']), max(mean_group1['right']), max(mean_group2['left']), max(mean_group2['right'])),2)
+        mean_min = round(min(np.nanpercentile(mean_group1['left'], 0.5), np.nanpercentile(mean_group1['right'], 0.5), np.nanpercentile(mean_group2['left'], 0.5), np.nanpercentile(mean_group2['right'], 0.5)),2)
+        mean_max = round(max(np.nanpercentile(mean_group1['left'], 99.5), np.nanpercentile(mean_group1['right'], 99.5), np.nanpercentile(mean_group2['left'], 99.5), np.nanpercentile(mean_group2['right'], 99.5)),2)
         vlim_mean = [mean_min, mean_max]
 
     for hemisphere in ['left', 'right']:
