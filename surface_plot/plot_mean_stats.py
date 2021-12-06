@@ -11,7 +11,7 @@ from .surface_rendering import render_surface, combine_figures, append_images
 logging.basicConfig(format='%(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-def plot_mean_stats(mean_group1, mean_group2, tval, output, plot_tvalue=False, pval=0.01, t_threshold=2.5, df=None, p_threshold=None, mask=None, vlim_mean=None, mean_titles=None, stats_titles=None, cb_mean_title='Mean', t_lim=None, second_threshold_mask=None, expand_edge=True, clobber=False):
+def plot_mean_stats(mean_group1, mean_group2, tval, output, plot_tvalue=False, pval=None, t_threshold=2.5, df=None, p_threshold=0.01, mask=None, vlim_mean=None, mean_titles=None, stats_titles=None, cb_mean_title='Mean', t_lim=None, second_threshold_mask=None, expand_edge=True, clobber=False):
     """Plot mean and statistics on surface
     Will plot mean of group 1 and mean of group 2 along with p-values or t-values.
     Will plot p-values below p_threshold with positive t-values and p-values below p_threshold with negative t-values.

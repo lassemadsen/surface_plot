@@ -233,7 +233,7 @@ def append_images(image_files, outfile, direction='horizontal', bg_color=(255, 2
     new_im.save(outfile, dpi=(dpi, dpi))
 
 def combine_figures(files, outfile, direction='horizontal', cbArgs=None, titles=None, ylabels=None,
-                    fz_ylabel=14, fz_title=14, discrete=False, dpi=300, clobber=False):
+                    fz_ylabel=14, fz_title=14, discrete=False, ticks='complete', dpi=300, clobber=False):
     """Combine figures to one plot with possibility of adding colorbar, labels and titles
     Can also be used to add colorbar to one figure
 
@@ -270,6 +270,14 @@ def combine_figures(files, outfile, direction='horizontal', cbArgs=None, titles=
     discrete : boolean | False
         Plot discrete
         NOT IMPLEMENTED
+    ticks : string/int/float/np.ndarray | 'complete'
+        Ticks of the colorbar. This parameter is only active if clim
+        is defined. Use 'complete' to see only the minimum,
+        maximum, vmin and vmax (if defined). Use 'minmax' to only see
+        the maximum and minimum. If ticks is a float, an linear
+        interpolation between the maximum and minimum will be used.
+        Finally, if ticks is a NumPy array, it will be used as colorbar
+        ticks directly.
     dpi : int | 300
         dpi of output image
         Note: larger dpi will take longer to produce and 
@@ -340,8 +348,6 @@ def combine_figures(files, outfile, direction='horizontal', cbArgs=None, titles=
                 pltmargin = -.45
                 height = .5
                 width = .004
-
-        ticks='complete'
 
     # Plot figure and shared colorbar (if any)
     f = Figure(files, grid=(row, col), fig_bgcolor='white', titles=titles, figsize=(12, 12),

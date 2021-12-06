@@ -203,17 +203,17 @@ def plot_tval(tval, output, t_lim=None, t_threshold=2.5, mask=None, p_threshold=
 
     if p_threshold is not None:
         if pval is not None:
-            tval_thresholded = threshold_tmap(tval, vlim, p_threshold=p_threshold, pval=pval)
+            tval_thresholded, t_threshold = threshold_tmap(tval, vlim, p_threshold=p_threshold, pval=pval)
         elif df is not None:
-            tval_thresholded = threshold_tmap(tval, vlim, p_threshold=p_threshold, df=df)
+            tval_thresholded, t_threshold = threshold_tmap(tval, vlim, p_threshold=p_threshold, df=df)
         else:
             logger.error('pval or df is not set!')
             raise Exception('pval or df is not set!')
     else:
-        tval_thresholded = threshold_tmap(tval, vlim, t_threshold=t_threshold)
+        tval_thresholded, t_threshold = threshold_tmap(tval, vlim, t_threshold=t_threshold)
 
     if second_threshold_mask is not None:
-        tval_thresholded = find_edges(tval_thresholded, second_threshold_mask, vlim[0]-0.5, vlim[0]-1, expand_edge) # Set edge_val below vmin but above vmin-1 (this will be displayed as white on plot)
+        tval_thresholded, t_threshold = find_edges(tval_thresholded, second_threshold_mask, vlim[0]-0.5, vlim[0]-1, expand_edge) # Set edge_val below vmin but above vmin-1 (this will be displayed as white on plot)
 
     # Setup colorbar and titles
     if cbar_loc == None:
@@ -228,7 +228,7 @@ def plot_tval(tval, output, t_lim=None, t_threshold=2.5, mask=None, p_threshold=
         render_surface(tval_thresholded, tmp_file, mask=mask, vlim=vlim, clim=vlim, cmap=cmap)
 
         # Add colorbar
-        combine_figures(tmp_file, output, cbArgs=cbar_args, titles=title, clobber=clobber)
+        combine_figures(tmp_file, output, cbArgs=cbar_args, titles=title, clobber=clobber, ticks=np.array([vlim[0], -t_threshold, t_threshold, vlim[1]]))
 
     if 'tmp' not in output:
         logger.info(f'{output} saved.')
@@ -258,10 +258,10 @@ def threshold_tmap(tval, t_lim, t_threshold=None, p_threshold=None, pval=None, d
             if pval is not None:
                 tval[hemisphere][pval[hemisphere] > p_threshold] = t_lim[0]-1 # Set above t_lim[1] (vmax) to be plottet as white
             elif df is not None:
-                t_critical = scipy.stats.t.ppf(1-p_threshold, df)
-                tval[hemisphere][abs(tval[hemisphere]) < t_critical] = t_lim[0]-1 # Set above t_lim[1] (vmax) to be plottet as white
+                t_threshold = scipy.stats.t.ppf(1-p_threshold, df)
+                tval[hemisphere][abs(tval[hemisphere]) < t_threshold] = t_lim[0]-1 # Set above t_lim[1] (vmax) to be plottet as white
 
-    return tval
+    return tval, round(t_threshold,2)
 
 
 def threshold_pmap(pval, p_threshold, tval):
