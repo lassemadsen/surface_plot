@@ -8,6 +8,7 @@ from PIL import Image
 from visbrain.gui import Figure
 from visbrain.objects import BrainObj, SceneObj
 from .config import SURFACE
+import matplotlib.pyplot as plt
 
 logging.basicConfig(format='%(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -231,6 +232,7 @@ def append_images(image_files, outfile, direction='horizontal', bg_color=(255, 2
             offset += im.size[1]
 
     new_im.save(outfile, dpi=(dpi, dpi))
+    plt.close('all')
 
 def combine_figures(files, outfile, direction='horizontal', cbArgs=None, titles=None, ylabels=None,
                     fz_ylabel=14, fz_title=14, discrete=False, ticks='complete', dpi=300, clobber=False):
@@ -360,3 +362,4 @@ def combine_figures(files, outfile, direction='horizontal', cbArgs=None, titles=
                     vmax=cbArgs['clim'][1], clim=cbArgs['clim'], ticks=ticks)
 
     f.save(outfile, dpi=dpi)
+    plt.close('all')
