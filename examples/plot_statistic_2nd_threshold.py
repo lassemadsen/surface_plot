@@ -32,6 +32,6 @@ t_lim = [-5, 5]
 mask['left'] = ~np.isnan(tval['left'])
 mask['right'] = ~np.isnan(tval['right'])
 
-output = f'{outdir}/second_level.png'
+output = f'{outdir}/second_level.pdf'
 
 plot_stats.plot_tval(tval, output, mask=mask, t_lim=t_lim, second_threshold_mask=second_level, expand_edge=True, clobber=clobber)

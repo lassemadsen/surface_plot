@@ -17,13 +17,13 @@ data = {'left': data_left,
         'right': data_right}
 
 # Plot mean data - automatic limits
-output = f'{outdir}/simple_autolim.png'
+output = f'{outdir}/simple_autolim.pdf'
 plot_surface.plot_surface(data, output, clobber=clobber)
 
 # Plot mean data - predetermined limits
-output = f'{outdir}/simple_withlim.png'
+output = f'{outdir}/simple_withlim.pdf'
 plot_surface.plot_surface(data, output, vlim=[0, 2.5], cbar_loc='bottom', clobber=clobber)
 
 # Plot mean data - predetermined limits with title
-output = f'{outdir}/simple_withlim_title.png'
+output = f'{outdir}/simple_withlim_title.pdf'
 plot_surface.plot_surface(data, output, vlim=[0.5, 3], cbar_loc='bottom', title='PiB uptake', cbar_title='Mean SUVR', clobber=clobber)
