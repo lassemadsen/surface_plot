@@ -14,7 +14,7 @@ logging.basicConfig(format='%(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-def render_surface(data, outfile, mask=None, vlim=None, clim=None, cmap='turbo_r', views='standard', clobber=False):
+def render_surface(data, outfile, mask=None, vlim=None, clim=None, cmap='turbo_r', views='standard', dpi=300, clobber=False):
     """Render surface with given input data
 
     Parameters
@@ -49,7 +49,7 @@ def render_surface(data, outfile, mask=None, vlim=None, clim=None, cmap='turbo_r
     """
 
     if clobber == False and os.path.exists(outfile):
-        logging.info('{} exists... Use clobber=True to overwrite'.format(outfile))
+        logging.info(f'{outfile} exists... Use clobber=True to overwrite')
         return
     
     if vlim is None:
@@ -74,7 +74,7 @@ def render_surface(data, outfile, mask=None, vlim=None, clim=None, cmap='turbo_r
     elif views == 'complete':
         views = ['tb', 'fb', 'lr', 'lr_inv']
     else:
-        logger.error('Views should be "standard" or "all". Given {}'.format(views))
+        logger.error(f'Views should be "standard" or "all". Given {views}')
         return
 
     img_files = []
@@ -101,17 +101,17 @@ def render_surface(data, outfile, mask=None, vlim=None, clim=None, cmap='turbo_r
                 sc.add_to_subplot(b_obj, row=plot_dict[plot][0], col=plot_dict[plot][1], zoom=zoom, rotate=view)
                 del b_obj 
 
-            tmp_file = '{0}/{1}.png'.format(tmp_dir, plot_view)
+            tmp_file = f'{tmp_dir}/{plot_view}.png'
             img_files.append(tmp_file)
 
             if plot_view == 'fb':
-                sc.screenshot(tmp_file, print_size=(10.8,10), dpi=300, autocrop=True)
+                sc.screenshot(tmp_file, print_size=(10.8,10), dpi=dpi, autocrop=True)
             else:
-                sc.screenshot(tmp_file, print_size=(10,10), dpi=300, autocrop=True)
+                sc.screenshot(tmp_file, print_size=(10,10), dpi=dpi, autocrop=True)
             del sc
             gc.collect()
 
-        append_images(img_files, outfile, direction='vertical', scale='width')
+        append_images(img_files, outfile, direction='vertical', scale='width', dpi=dpi)
 
 def _get_plot_dict(plot_view):
     """Return dictionary defining the plot view and zoom
@@ -148,7 +148,7 @@ def _get_plot_dict(plot_view):
                      'left_right': [0, 1]}
         zoom = 1.05
     else:
-        logger.error('Error plotting {}'.format(plot_view))
+        logger.error(f'Error plotting {plot_view}')
         return
 
     return plot_dict, zoom
@@ -181,7 +181,7 @@ def append_images(image_files, outfile, direction='horizontal', bg_color=(255, 2
     """
     if not clobber:
         if os.path.isfile(outfile):
-            logger.info('{} already exists... Skipping'.format(outfile))
+            logger.info(f'{outfile} already exists... Skipping')
             return
 
     images = [Image.open(i) for i in image_files]
@@ -289,7 +289,7 @@ def combine_figures(files, outfile, direction='horizontal', cbArgs=None, titles=
     """
     if not clobber:
         if os.path.isfile(outfile):
-            logger.info('{} already exists... Skipping'.format(outfile))
+            logger.info(f'{outfile} already exists... Skipping')
             return
 
     if isinstance(files, str):
@@ -304,7 +304,7 @@ def combine_figures(files, outfile, direction='horizontal', cbArgs=None, titles=
         col = 1
         row = n_fig
     else:
-        logger.error('Direction parameter is wrong. Should be "vertical" or "horizontal". Got: {}'.format(direction))
+        logger.error(f'Direction parameter is wrong. Should be "vertical" or "horizontal". Got: {direction}')
         return
 
     # Determine font sizes:

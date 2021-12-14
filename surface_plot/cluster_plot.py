@@ -31,7 +31,7 @@ def slope_plot(data1, data2, cluster_mask, categories, output, title=None, clobb
     """
     if not clobber:
         if os.path.isfile(output):
-            logger.info('{} already exists... Skipping'.format(output))
+            logger.info(f'{output} already exists... Skipping')
             return
 
     outdir = '/'.join(output.split('/')[:-1])
@@ -94,7 +94,7 @@ def slope_plot(data1, data2, cluster_mask, categories, output, title=None, clobb
     plt.gca().spines["left"].set_alpha(.0)
     plt.savefig(output, dpi=300)
     plt.close()
-    logger.info('{} saved'.format(output))
+    logger.info(f'{output} saved')
 
 def correlation_plot(slm, indep_data, indep_name, subjects, outdir, alpha=0.05, clobber=False):
     """
@@ -128,11 +128,11 @@ def correlation_plot(slm, indep_data, indep_name, subjects, outdir, alpha=0.05, 
             cluster_threshold = slm[hemisphere].cluster_threshold # Get primary cluster threshold (used for output naming)
             cluster_size = slm[hemisphere].P['clus'][posneg[0]]['nverts'][0] # Get nverts for largest cluster 
             predictor_name = slm[hemisphere].model.matrix.columns[1] # Get predictor name (second column name - first is intercept)
-            output = f'{outdir}/{posneg[1]}_cluster_{hemisphere}_{indep_name}_{predictor_name}_{cluster_threshold}.png'
+            output = f'{outdir}/{posneg[1]}_cluster_{hemisphere}_{indep_name}_{predictor_name}_{cluster_threshold}.pdf'
 
             if not clobber:
                 if os.path.isfile(output):
-                    logger.info('{} already exists... Skipping'.format(output))
+                    logger.info(f'{output} already exists... Skipping')
                     return
                     
             cluster_mean = indep_data[hemisphere][slm[hemisphere].P['clusid'][posneg[0]][0] == 1].mean()
@@ -156,7 +156,7 @@ def correlation_plot(slm, indep_data, indep_name, subjects, outdir, alpha=0.05, 
             plt.tight_layout()
 
             plt.savefig(output, dpi=300)
-            logger.info('{} saved'.format(output))
+            logger.info(f'{output} saved')
 
 # --- Helper functions ---
 # draw line

@@ -52,7 +52,7 @@ def plot_surface(data, output, vlim=None, mask=None, cbar_loc='left', cbar_title
 
     if not clobber:
         if os.path.isfile(output):
-            logger.info('{} already exists... Skipping'.format(output))
+            logger.info(f'{output} already exists... Skipping')
             return
   
     outdir = '/'.join(output.split('/')[:-1])
@@ -81,7 +81,7 @@ def plot_surface(data, output, vlim=None, mask=None, cbar_loc='left', cbar_title
         cbar_args = {'clim': vlim, 'title': cbar_title, 'fz_title': 16, 'fz_ticks': 16, 'cmap': cmap, 'position': cbar_loc}
 
     with TemporaryDirectory() as tmp_dir:
-        tmp_file = '{}/data.png'.format(tmp_dir)
+        tmp_file = f'{tmp_dir}/data.png'
         render_surface(plot_data, tmp_file, mask=mask, vlim=vlim, clim=vlim, cmap=cmap)
 
         # Add colorbar
