@@ -124,7 +124,7 @@ def plot_pval(pval, output, tval=None, p_threshold=0.01, mask=None, cbar_loc='le
         logger.info(f'{output} saved.')
 
 
-def plot_tval(tval, output, t_lim=None, t_threshold=2.5, mask=None, p_threshold=None, pval=None, df=None, title=None, cbar_loc='left', second_threshold_mask=None, expand_edge=True, dpi=300, clobber=False):
+def plot_tval(tval, output, t_lim=None, t_threshold=2.5, mask=None, p_threshold=None, pval=None, df=None, title=None, cbar_loc='left', second_threshold_mask=None, expand_edge=True, ticks='minmax', dpi=300, clobber=False):
     """Plot tval statistics on surface
     Will plot t-values between thresholds
     If p_threshold and df is set, the thresholds are calculated based on the corresponding p-value. 
@@ -227,8 +227,11 @@ def plot_tval(tval, output, t_lim=None, t_threshold=2.5, mask=None, p_threshold=
         tmp_file = f'{tmp_dir}/tval.png'
         render_surface(tval_thresholded, tmp_file, mask=mask, vlim=vlim, clim=vlim, cmap=cmap, dpi=dpi)
 
+        if ticks == 'complete':
+            ticks=np.array([vlim[0], -t_threshold, t_threshold, vlim[1]])
+
         # Add colorbar
-        combine_figures(tmp_file, output, cbArgs=cbar_args, titles=title, clobber=clobber, ticks=np.array([vlim[0], -t_threshold, t_threshold, vlim[1]]), dpi=dpi)
+        combine_figures(tmp_file, output, cbArgs=cbar_args, titles=title, clobber=clobber, ticks=ticks, dpi=dpi)
 
     if 'tmp' not in output:
         logger.info(f'{output} saved.')
