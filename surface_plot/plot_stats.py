@@ -213,7 +213,7 @@ def plot_tval(tval, output, t_lim=None, t_threshold=2.5, mask=None, p_threshold=
         tval_thresholded, t_threshold = threshold_tmap(tval, vlim, t_threshold=t_threshold)
 
     if second_threshold_mask is not None:
-        tval_thresholded, t_threshold = find_edges(tval_thresholded, second_threshold_mask, vlim[0]-0.5, vlim[0]-1, expand_edge) # Set edge_val below vmin but above vmin-1 (this will be displayed as white on plot)
+        tval_thresholded = find_edges(tval_thresholded, second_threshold_mask, vlim[0]-0.5, vlim[0]-1, expand_edge) # Set edge_val below vmin but above vmin-1 (this will be displayed as white on plot)
 
     # Setup colorbar and titles
     if cbar_loc == None:
