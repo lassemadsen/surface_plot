@@ -128,7 +128,11 @@ def correlation_plot(slm, indep_data, indep_name, subjects, outdir, alpha=0.05, 
             cluster_threshold = slm[hemisphere].cluster_threshold # Get primary cluster threshold (used for output naming)
             cluster_size = slm[hemisphere].P['clus'][posneg[0]]['nverts'][0] # Get nverts for largest cluster 
             predictor_name = slm[hemisphere].model.matrix.columns[1] # Get predictor name (second column name - first is intercept)
-            output = f'{outdir}/{posneg[1]}_cluster_{hemisphere}_{indep_name}_{predictor_name}_{cluster_threshold}.pdf'
+            if len(slm[hemisphere].model.matrix.columns) > 2:
+                covars = '+'.join(slm[hemisphere].model.matrix.columns[2:-1])
+                output = f'{outdir}/{posneg[1]}_cluster_{hemisphere}_{indep_name}_{predictor_name}_{covars}_{cluster_threshold}.pdf'
+            else:
+                output = f'{outdir}/{posneg[1]}_cluster_{hemisphere}_{indep_name}_{predictor_name}_{cluster_threshold}.pdf'
 
             if not clobber:
                 if os.path.isfile(output):
