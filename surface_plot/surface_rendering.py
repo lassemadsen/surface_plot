@@ -4,6 +4,7 @@ import os
 from tempfile import TemporaryDirectory
 
 import numpy as np
+import pandas as pd
 from PIL import Image
 from visbrain.gui import Figure
 from visbrain.objects import BrainObj, SceneObj
@@ -60,7 +61,10 @@ def render_surface(data, outfile, mask=None, vlim=None, clim=None, cmap='turbo_r
 
     for hemisphere in ['left', 'right']:
         np.nan_to_num(data[hemisphere], nan=vlim[0]-1, copy=False)
-        data[hemisphere] = data[hemisphere].ravel()
+        if isinstance(data[hemisphere], pd.DataFrame):
+            data[hemisphere] = data[hemisphere].values.ravel()
+        else:
+            data[hemisphere] = data[hemisphere].ravel()
         
         if mask is not None: # Set vertices outside mask less than vmin
             data[hemisphere][~mask[hemisphere]] = vlim[1]+1
