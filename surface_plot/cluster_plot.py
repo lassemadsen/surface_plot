@@ -41,6 +41,7 @@ def slope_plot(data1, data2, cluster_mask, categories, output, title=None, clobb
         mask = pd.DataFrame(cluster_mask.T)
     else:
         print('Cluster mask should be np.array')
+        return
 
     mean1 = data1[mask[0]==1].mean()
     mean2 = data2[mask[0]==1].mean()
@@ -68,7 +69,7 @@ def slope_plot(data1, data2, cluster_mask, categories, output, title=None, clobb
 
     for p1, p2, c in zip(mean1.values, mean2.values, data1.index):
         _newline([1,p1], [2,p2])
-        # ax.text(1-0.05, p1, c + ', ' + str(round(p1)), horizontalalignment='right', verticalalignment='center', fontdict={'size':14})
+        ax.text(1-0.05, p1, c, horizontalalignment='right', verticalalignment='center', fontdict={'size':14})
         # ax.text(3+0.05, p2, c + ', ' + str(round(p2)), horizontalalignment='left', verticalalignment='center', fontdict={'size':14})
 
     if extra_lines is not None:
@@ -137,7 +138,7 @@ def correlation_plot(slm, indep_data, indep_name, subjects, outdir, alpha=0.05, 
             if not clobber:
                 if os.path.isfile(output):
                     logger.info(f'{output} already exists... Skipping')
-                    return
+                    continue
                     
             cluster_mean = indep_data[hemisphere][slm[hemisphere].P['clusid'][posneg[0]][0] == 1].mean()
 

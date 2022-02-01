@@ -119,6 +119,9 @@ def plot_mean_stats(mean_group1, mean_group2, tval, output, plot_tvalue=False, p
             cbar_loc = 'bottom_tval_scaled' # Special scenario were tval is plottet alongside two mean images combined to one (e.g. baseline, followup, tval). Scale cbar accordingly
             plot_tval(tval, tmp_stats, t_lim=t_lim, t_threshold=t_threshold, mask=mask, pval=pval, p_threshold=p_threshold, df=df, title=stats_titles, cbar_loc=cbar_loc, second_threshold_mask=second_threshold_mask, expand_edge=expand_edge, dpi=dpi, clobber=clobber)
         else:
+            if pval is None:
+                logger.error('Pval needs to be set. Otherwise set plot_tvalue=True')
+                return
             cbar_loc = 'bottom'
             plot_pval(pval, tmp_stats, tval=tval, p_threshold=p_threshold, mask=mask, cbar_loc=cbar_loc, titles=mean_titles, second_threshold_mask=second_threshold_mask, expand_edge=expand_edge, dpi=dpi, clobber=clobber)
 
