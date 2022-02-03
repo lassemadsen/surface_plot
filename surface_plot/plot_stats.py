@@ -337,8 +337,8 @@ def find_edges(data, mask, edge_val, bg_val, expand_edge=True):
             edge_index.extend(list(expand))
 
         # Remove edge_indices if data=bg_val
-        edge_index = list(set(np.where(data[hemisphere] != bg_val)[0]) & set(edge_index))
+        edge_index = list(set(np.where((data[hemisphere] != bg_val)[0])[0]) & set(edge_index))
 
-        data[hemisphere][edge_index] = edge_val
+        data[hemisphere][0][edge_index] = edge_val
 
     return data
