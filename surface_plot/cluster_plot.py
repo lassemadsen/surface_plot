@@ -7,11 +7,49 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
+sns.set(style='darkgrid')
 from matplotlib.ticker import FuncFormatter
 import statsmodels.api as sm
 
 logging.basicConfig(format='%(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+def boxplot(data1, data2, slm, outdir, g1_name, g2_name, param, alpha=0.05, clobber=False):
+
+    Path(outdir).mkdir(parents=True, exist_ok=True)
+
+    for hemisphere in ['left', 'right']:
+        for posneg in [[0, 'pos'], [1, 'neg']]:
+            cluster_pval = slm[hemisphere].P['clus'][posneg[0]]['P'][0] if not slm[hemisphere].P['clus'][posneg[0]]['P'].empty else 1 # Get pval of largest cluster 
+            if cluster_pval > alpha:
+                continue
+
+            cluster_threshold = slm[hemisphere].cluster_threshold # Get primary cluster threshold (used for output naming)
+            cluster_size = slm[hemisphere].P['clus'][posneg[0]]['nverts'][0] # Get nverts for largest cluster 
+            title = f'{param}, {g1_name} - {g2_name}, {hemisphere} hemisphere\nN vertices={cluster_size:.0f}, corrected cluster p-value={cluster_pval:.1e}'
+            output = f'{outdir}/{posneg[1]}_cluster_{hemisphere}_{param}_{cluster_threshold}.pdf'
+
+            if not clobber:
+                if os.path.isfile(output):
+                    logger.info(f'{output} already exists... Skipping')
+                    continue
+            
+            output_cluster_mask = f'{output.split(".pdf")[0]}_clusterMask.csv'
+            np.savetxt(output_cluster_mask, slm[hemisphere].P['clusid'][posneg[0]][0])
+
+            cluster_mean_1 = data1[hemisphere][slm[hemisphere].P['clusid'][posneg[0]][0] == 1].mean().to_frame(name=param)
+            cluster_mean_1['group'] = g1_name
+            cluster_mean_2 = data2[hemisphere][slm[hemisphere].P['clusid'][posneg[0]][0] == 1].mean().to_frame(name=param)
+            cluster_mean_2['group'] = g2_name
+
+            plot_data = pd.concat([cluster_mean_1, cluster_mean_2])
+
+            plt.figure()
+            sns.boxplot(y=param, x='group', data=plot_data)
+            plt.title(title)
+            plt.tight_layout()
+            plt.savefig(output)
+            plt.clf()
 
 
 def slope_plot(data1, data2, cluster_mask, categories, output, title=None, clobber=False, extra_lines=None):
@@ -139,6 +177,9 @@ def correlation_plot(slm, indep_data, indep_name, subjects, outdir, alpha=0.05, 
                 if os.path.isfile(output):
                     logger.info(f'{output} already exists... Skipping')
                     continue
+
+            output_cluster_mask = f'{output.split(".pdf")[0]}_clusterMask.csv'
+            np.savetxt(output_cluster_mask, slm[hemisphere].P['clusid'][posneg[0]][0])
                     
             cluster_mean = indep_data[hemisphere][slm[hemisphere].P['clusid'][posneg[0]][0] == 1].mean()
 
@@ -150,7 +191,7 @@ def correlation_plot(slm, indep_data, indep_name, subjects, outdir, alpha=0.05, 
 
             sns.set(font_scale=1.6)
             plt.subplots(figsize=(10, 8))
-            ax = sns.regplot(x=predictor_name, y=indep_name, data=plot_data, ci=None, truncate=False)
+            ax = sns.regplot(x=predictor_name, y=indep_name, data=plot_data, ci=None, truncate=False, scatter_kws={'s':70}, line_kws={'linewidth':5})
 
             major_formatter = FuncFormatter(__format_values)
             ax.yaxis.set_major_formatter(major_formatter)
