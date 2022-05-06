@@ -1,3 +1,4 @@
+from distutils.command.config import config
 import gc
 import logging
 import os
@@ -8,7 +9,7 @@ import pandas as pd
 from PIL import Image
 from visbrain.gui import Figure
 from visbrain.objects import BrainObj, SceneObj
-from .config import SURFACE
+from .config import get_surface
 import matplotlib.pyplot as plt
 
 logging.basicConfig(format='%(message)s', level=logging.INFO)
@@ -52,6 +53,8 @@ def render_surface(data, outfile, mask=None, vlim=None, clim=None, cmap='turbo_r
     if clobber == False and os.path.exists(outfile):
         logging.info(f'{outfile} exists... Use clobber=True to overwrite')
         return
+
+    surface = get_surface(len(data['left']), len(data['right']))
     
     if vlim is None:
         vmin = np.round(np.min([np.min(data['left']), np.min(data['right'])]),2)
@@ -95,7 +98,7 @@ def render_surface(data, outfile, mask=None, vlim=None, clim=None, cmap='turbo_r
                 view = plot.split('_')[-1]
 
                 # Create Brain Object
-                b_obj = BrainObj(SURFACE[hemisphere], hemisphere='both', translucent=False)
+                b_obj = BrainObj(surface[hemisphere], hemisphere='both', translucent=False)
 
                 # Add activation to Brain Object
                 b_obj.add_activation(data=plot_data[hemisphere], cmap=cmap, clim=clim, vmin=vlim[0],

@@ -8,7 +8,7 @@ import numpy as np
 import scipy
 from brainspace.mesh.mesh_io import read_surface
 from .surface_rendering import render_surface, combine_figures
-from .config import SURFACE
+from .config import get_surface
 
 logging.basicConfig(format='%(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -300,6 +300,8 @@ def find_edges(data, mask, edge_val, bg_val, expand_edge=True):
     ----------
     
     """
+    surface = get_surface(len(data['left']), len(data['right']))
+
     for hemisphere in ['left', 'right']:
 
         edge_index = [] 
@@ -307,7 +309,7 @@ def find_edges(data, mask, edge_val, bg_val, expand_edge=True):
         # Copy data for current hemisphere and convert to np.ndarray
         tmp_mask = copy.deepcopy(mask[hemisphere]+0).ravel()
 
-        surf = read_surface(SURFACE[hemisphere])
+        surf = read_surface(surface[hemisphere])
 
         faces = surf.polys2D 
         vert_idx = np.arange(faces.max() + 1)
