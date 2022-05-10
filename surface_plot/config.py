@@ -2,7 +2,6 @@ import pathlib
 import sys
 # Define surface to use
 
-
 SURFACE_MNI = {'left': f'{pathlib.Path(__file__).parent.resolve()}/surface_data/mni_icbm152_t1_tal_nlin_sym_09c_left_smooth.gii',
                'right': f'{pathlib.Path(__file__).parent.resolve()}/surface_data/mni_icbm152_t1_tal_nlin_sym_09c_right_smooth.gii',
                'both': f'{pathlib.Path(__file__).parent.resolve()}/surface_data/mni_icbm152_t1_tal_nlin_sym_09c_both_smooth.gii'}
@@ -36,6 +35,6 @@ def get_surface(nv_left, nv_right):
     elif nv_left == N_VERTEX_FS['left'] and nv_right == N_VERTEX_FS['right']:
         surface = SURFACE_FS
     else:
-        sys.exit('Something wrong')
+        sys.exit('Error: Number of vertices do not match any surface...')
 
     return surface
