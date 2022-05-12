@@ -6,7 +6,7 @@
 Welcome to surface_plot's documentation!
 ========================================
 
-**Surface Plot** is a python libray to plot cortical surface data from CFIN
+**Surface Plot** is a python libray to plot cortical surface data.
 
 Check out the :doc:`usage` section for further information, including :ref:`installation` of the project.
 
