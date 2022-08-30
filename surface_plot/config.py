@@ -27,9 +27,6 @@ def get_surface(nv_left, nv_right):
         Number of vertices in right hemishpere
     """
 
-    print(nv_left)
-    print(nv_right)
-
     if nv_left == N_VERTEX_MNI['left'] and nv_right == N_VERTEX_MNI['right']:
         surface = SURFACE_MNI
     elif nv_left == N_VERTEX_FS['left'] and nv_right == N_VERTEX_FS['right']:
