@@ -4,6 +4,7 @@ import os
 import numpy as np
 from pathlib import Path
 from tempfile import TemporaryDirectory
+import copy
 
 from .plot_stats import plot_pval, plot_tval
 from .surface_rendering import render_surface, combine_figures, append_images
@@ -81,6 +82,9 @@ def plot_mean_stats(mean_group1, mean_group2, tval, output, plot_tvalue=False, p
     outdir = '/'.join(output.split('/')[:-1])
     Path(outdir).mkdir(parents=True, exist_ok=True)
 
+    mean_group1_ = copy.deepcopy(mean_group1)
+    mean_group2_ = copy.deepcopy(mean_group2)
+
     if isinstance(mean_titles, list) & isinstance(stats_titles, list) or mean_titles == stats_titles == None:
         pass
     else: 
@@ -92,18 +96,18 @@ def plot_mean_stats(mean_group1, mean_group2, tval, output, plot_tvalue=False, p
         vlim_mean = [mean_min, mean_max]
 
     for hemisphere in ['left', 'right']:
-        mean_group1[hemisphere] = np.clip(mean_group1[hemisphere], vlim_mean[0]+1e-3, vlim_mean[1]-1e-3)
-        mean_group2[hemisphere] = np.clip(mean_group2[hemisphere], vlim_mean[0]+1e-3, vlim_mean[1]-1e-3)
+        mean_group1_[hemisphere] = np.clip(mean_group1_[hemisphere], vlim_mean[0]+1e-3, vlim_mean[1]-1e-3)
+        mean_group2_[hemisphere] = np.clip(mean_group2_[hemisphere], vlim_mean[0]+1e-3, vlim_mean[1]-1e-3)
 
     with TemporaryDirectory() as tmp_dir:
         cmap = 'turbo'
         # Plot mean group1
         tmp_mean1 = f'{tmp_dir}/mean1.png'
-        render_surface(mean_group1, tmp_mean1, vlim=vlim_mean, clim=vlim_mean, mask=mask, cmap=cmap, dpi=dpi)
+        render_surface(mean_group1_, tmp_mean1, vlim=vlim_mean, clim=vlim_mean, mask=mask, cmap=cmap, dpi=dpi)
 
         # Plot mean group2
         tmp_mean2 = f'{tmp_dir}/mean2.png'
-        render_surface(mean_group2, tmp_mean2, vlim=vlim_mean, clim=vlim_mean, mask=mask, cmap=cmap, dpi=dpi)
+        render_surface(mean_group2_, tmp_mean2, vlim=vlim_mean, clim=vlim_mean, mask=mask, cmap=cmap, dpi=dpi)
 
         # Combine means with shared colorbar - Setup colorbar
         cbar_args = {'clim': vlim_mean, 'title': cb_mean_title, 'fz_title': 14, 'fz_ticks': 14, 'cmap': cmap, 'position': 'bottom'}

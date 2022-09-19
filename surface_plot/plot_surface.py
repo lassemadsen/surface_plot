@@ -15,7 +15,7 @@ import warnings
 
 warnings.simplefilter(action='ignore', category=FutureWarning) # Ignore FutureWarnings 
 
-def plot_surface(data, output, vlim=None, mask=None, cbar_loc='left', cbar_title='Mean', title=None, cmap='turbo', clobber=False):
+def plot_surface(data, output, vlim=None, mask=None, cbar_loc='left', cbar_title='Mean', title=None, cmap='turbo', clobber=False, dpi=300):
     """Plot data on surface
 
     Parameters
@@ -82,10 +82,10 @@ def plot_surface(data, output, vlim=None, mask=None, cbar_loc='left', cbar_title
 
     with TemporaryDirectory() as tmp_dir:
         tmp_file = f'{tmp_dir}/data.png'
-        render_surface(plot_data, tmp_file, mask=mask, vlim=vlim, clim=vlim, cmap=cmap)
+        render_surface(plot_data, tmp_file, mask=mask, vlim=vlim, clim=vlim, cmap=cmap, dpi=dpi)
 
         # Add colorbar
-        combine_figures(tmp_file, output, titles=title, cbArgs=cbar_args, clobber=clobber)
+        combine_figures(tmp_file, output, titles=title, cbArgs=cbar_args, clobber=clobber, dpi=dpi)
 
     if 'tmp' not in output:
         logger.info(f'{output} saved.')
