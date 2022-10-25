@@ -364,9 +364,9 @@ def combine_figures(files, outfile, direction='horizontal', cbArgs=None, titles=
                fz_titles=fz_title, fz_ylabels=fz_ylabel, autocrop=True)
 
     if cbArgs is not None:
-        f.shared_colorbar(height=height, width=width, cmap=cbArgs['cmap'], fz_title=cbArgs['fz_title'], fz_ticks=cbArgs['fz_ticks'],
-                    pltmargin=pltmargin, ycb=ycb, position=cbArgs['position'], title=cbArgs['title'],vmin=cbArgs['clim'][0],
-                    vmax=cbArgs['clim'][1], clim=cbArgs['clim'], ticks=ticks)
+        f.shared_colorbar(height=height, width=width, cmap=cbArgs.get('cmap'), fz_title=cbArgs.get('fz_title'), fz_ticks=cbArgs.get('fz_ticks'),
+                    pltmargin=pltmargin, ycb=ycb, position=cbArgs.get('position'), title=cbArgs.get('title'), vmin=cbArgs.get('clim')[0],
+                    vmax=cbArgs.get('clim')[1], clim=cbArgs.get('clim'), ticks=ticks, n_discrete=cbArgs.get('n_discrete'))
 
     f.save(outfile, dpi=dpi)
     plt.close('all')

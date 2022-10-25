@@ -3,6 +3,7 @@ import logging
 import os
 from pathlib import Path
 from tempfile import TemporaryDirectory
+import seaborn as sns
 
 import numpy as np
 import scipy
@@ -124,7 +125,7 @@ def plot_pval(pval, output, tval=None, p_threshold=0.01, mask=None, cbar_loc='le
         logger.info(f'{output} saved.')
 
 
-def plot_tval(tval, output, t_lim=None, t_threshold=2.5, mask=None, p_threshold=None, pval=None, df=None, title=None, cbar_loc='left', second_threshold_mask=None, expand_edge=True, ticks='minmax', dpi=300, clobber=False):
+def plot_tval(tval, output, t_lim=None, t_threshold=2.5, cluster_mask=None, mask=None, p_threshold=None, pval=None, df=None, title=None, cbar_loc='left', second_threshold_mask=None, expand_edge=False, plot_discrete=False, ticks='minmax', dpi=300, clobber=False):
     """Plot tval statistics on surface
     Will plot t-values between thresholds
     If p_threshold and df is set, the thresholds are calculated based on the corresponding p-value. 
@@ -140,6 +141,9 @@ def plot_tval(tval, output, t_lim=None, t_threshold=2.5, mask=None, p_threshold=
     t_threshold : float | 2.5
         Treshold of tmap. Values between -threshold;threshold are displayed as white. 
         If 0, entire tmap is plottet
+    cluster_mask : dict
+        Dictionary with keys "left" and "right", containing 1 inside mask and 0 outside cluster mask (indicating surviving clusters)
+        Vertices outside cluster_mask will not be marked on the t-value map even if a vertex is above threshold 
     mask : dict
         Dictionary with keys "left" and "right", containing 1 inside mask and 0 outside mask
         Vertices outside mask will plottet as darkgrey
@@ -163,6 +167,8 @@ def plot_tval(tval, output, t_lim=None, t_threshold=2.5, mask=None, p_threshold=
     second_threshold_mask : dict or None | None
         If dict: Dictionary with keys "left" and "right", containing data array of cluster mask at 2nd threshold level (e.g. p<0.001)
         Clusters are outlined with a white line on the plot.
+    plot_discrete : boolean | False
+        Option to plot surviving clusters in a discrete manner. Only used when second_threshold_mask is set. Plots positve and negative suviving clusters in 4 discrete colors (red: positve, blue: negative). 
     expand_edge : boolean | True
         If True, the white 2nd threshold cluster line is expanded by one vertices for better visuzaliation
     clobber : Boolean | False
@@ -181,7 +187,10 @@ def plot_tval(tval, output, t_lim=None, t_threshold=2.5, mask=None, p_threshold=
     outdir = '/'.join(output.split('/')[:-1])
     Path(outdir).mkdir(parents=True, exist_ok=True)
 
-    if t_lim is None:
+    if plot_discrete:
+       t_lim = [-5, 5]
+       vlim = t_lim
+    elif t_lim is None:
         t_min_abs = np.abs(np.min([np.nanmin(tval['left']), np.nanmin(tval['right'])]))
         t_max = np.max([np.nanmax(tval['left']), np.nanmax(tval['right'])])
 
@@ -203,17 +212,29 @@ def plot_tval(tval, output, t_lim=None, t_threshold=2.5, mask=None, p_threshold=
 
     if p_threshold is not None:
         if pval is not None:
-            tval_thresholded, t_threshold = threshold_tmap(tval, vlim, p_threshold=p_threshold, pval=pval)
+            tval_thresholded, t_threshold = threshold_tmap(tval, vlim, p_threshold=p_threshold, pval=pval, cluster_mask=cluster_mask)
         elif df is not None:
-            tval_thresholded, t_threshold = threshold_tmap(tval, vlim, p_threshold=p_threshold, df=df)
+            tval_thresholded, t_threshold = threshold_tmap(tval, vlim, p_threshold=p_threshold, df=df, cluster_mask=cluster_mask)
         else:
             logger.error('pval or df is not set!')
             raise Exception('pval or df is not set!')
     else:
-        tval_thresholded, t_threshold = threshold_tmap(tval, vlim, t_threshold=t_threshold)
+        tval_thresholded, t_threshold = threshold_tmap(tval, vlim, t_threshold=t_threshold, cluster_mask=cluster_mask)
 
     if second_threshold_mask is not None:
-        tval_thresholded = find_edges(tval_thresholded, second_threshold_mask, vlim[0]-0.5, vlim[0]-1, expand_edge) # Set edge_val below vmin but above vmin-1 (this will be displayed as white on plot)
+        if plot_discrete:
+            for hemisphere in ['left', 'right']:
+                # Assign discrete value to clusters surving fist threshold 
+                tval_thresholded[hemisphere][(tval_thresholded[hemisphere] > vlim[0]) & (tval_thresholded[hemisphere] < 0)] = np.linspace(vlim[0],vlim[1],5)[1]
+                tval_thresholded[hemisphere][(tval_thresholded[hemisphere] < vlim[1]) & (tval_thresholded[hemisphere] > 0)] = np.linspace(vlim[0],vlim[1],5)[3]
+
+                # Assign discrete value to clusters surving second threshold 
+                tval_thresholded[hemisphere][(second_threshold_mask[hemisphere]) & (tval[hemisphere] < 0)] = np.linspace(vlim[0],vlim[1],5)[0] + 0.1 # + 0.1 To aviod background
+                tval_thresholded[hemisphere][(second_threshold_mask[hemisphere]) & (tval[hemisphere] > 0)] = np.linspace(vlim[0],vlim[1],5)[4] - 0.1 # - 0.1 To aviod background
+
+            tval_thresholded = find_edges(tval_thresholded, second_threshold_mask, 0, vlim[0]-1, expand_edge=False) # Set edge_val below vmin but above vmin-1 (this will be displayed as white on plot)
+        else:
+            tval_thresholded = find_edges(tval_thresholded, second_threshold_mask, vlim[0]-0.5, vlim[0]-1, expand_edge) # Set edge_val below vmin but above vmin-1 (this will be displayed as white on plot)
 
     # Setup colorbar and titles
     if cbar_loc == None:
@@ -222,6 +243,10 @@ def plot_tval(tval, output, t_lim=None, t_threshold=2.5, mask=None, p_threshold=
         cbar_args = {'clim': vlim, 'title': 'T-value', 'fz_title': 24, 'fz_ticks': 24, 'cmap': cmap, 'position': cbar_loc}
     else:
         cbar_args = {'clim': vlim, 'title': 'T-value', 'fz_title': 16, 'fz_ticks': 16, 'cmap': cmap, 'position': cbar_loc}
+
+    if plot_discrete:
+        cbar_args['n_discrete'] = 4
+        cbar_args['title'] = 'Cluster threshold'
 
     with TemporaryDirectory() as tmp_dir:
         tmp_file = f'{tmp_dir}/tval.png'
@@ -237,7 +262,7 @@ def plot_tval(tval, output, t_lim=None, t_threshold=2.5, mask=None, p_threshold=
         logger.info(f'{output} saved.')
 
 
-def threshold_tmap(tval, t_lim, t_threshold=None, p_threshold=None, pval=None, df=None):
+def threshold_tmap(tval, t_lim, t_threshold=None, p_threshold=None, pval=None, df=None, cluster_mask=None):
     """Threshold t-map
     Differet options (listed in order of priority it mulitple options are given):
 
@@ -245,12 +270,17 @@ def threshold_tmap(tval, t_lim, t_threshold=None, p_threshold=None, pval=None, d
         Threshold tval at +/- t_threshold
     p_threshold:
         Threshold tval at +/- p_threshold given the corresponding p values
-
-        pval : array of pval to threshold 
-        df : degrees of freedom. Used to caluculate critical t-value 
+    pval : array of pval to threshold 
+    df : degrees of freedom. Used to caluculate critical t-value 
+    cluster_mask : dict
+        Dictionary with keys "left" and "right", containing 1 inside mask and 0 outside cluster mask (indicating surviving clusters)
+        Vertices outside cluster_mask will not be marked on the t-value map even if a vertex is above threshold 
         
     """
     tval = copy.deepcopy(tval) # Copy to avoid overwritting existing tval
+    
+    if cluster_mask is not None:
+        tval = {'left': tval['left']*cluster_mask['left'], 'right': tval['right']*cluster_mask['right']}
 
     for hemisphere in ['left', 'right']:
         tval[hemisphere] = np.clip(tval[hemisphere], t_lim[0]+1e-3, t_lim[1]-1e-3) # +/- 1e-3 to avoid limits being plottet as "above"/"under" (see render_surface)
@@ -294,7 +324,7 @@ def threshold_pmap(pval, p_threshold, tval):
 def find_edges(data, mask, edge_val, bg_val, expand_edge=True):
     """Find edges of second_threshold mask.
 
-    If edges does not overlap with data (i.e. if egdes are in backgound (bg_val)), they are not displayed.
+    If edges does not overlap with data (i.e. if edges are in backgound (bg_val)), they are not displayed.
     
     Parameters
     ----------
@@ -339,8 +369,8 @@ def find_edges(data, mask, edge_val, bg_val, expand_edge=True):
             edge_index.extend(list(expand))
 
         # Remove edge_indices if data=bg_val
-        edge_index = list(set(np.where((data[hemisphere] != bg_val)[0])[0]) & set(edge_index))
+        edge_index = list(set(np.where((data[hemisphere] != bg_val))[0]) & set(edge_index))
 
-        data[hemisphere][0][edge_index] = edge_val
+        data[hemisphere][edge_index] = edge_val
 
     return data

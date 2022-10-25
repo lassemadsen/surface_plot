@@ -135,7 +135,7 @@ def slope_plot(data1, data2, cluster_mask, categories, output, title=None, clobb
     plt.close()
     logger.info(f'{output} saved')
 
-def correlation_plot(slm, indep_data, indep_name, subjects, outdir, alpha=0.05, clobber=False):
+def correlation_plot(slm, indep_data, indep_name, subjects, outdir, hue=None, alpha=0.05, clobber=False):
     """
     
     Parameters
@@ -151,17 +151,24 @@ def correlation_plot(slm, indep_data, indep_name, subjects, outdir, alpha=0.05, 
         List of subjects (same as indices in indep_data)
     outdir : str
         Location of ouputs
+    hue : dataframe
+        Dataframe with subject ids as index and group as column
     alpha : float | 0.05
         Corrected p-value threshold on cluster-level (family wise error rate)
     clobber : Boolean | False
-        If true, existing files will be overwritten 
+        If true, existing files will be overwritten
     """
     Path(outdir).mkdir(parents=True, exist_ok=True)
+    if (slm['left'].P is None) or (slm['right'].P is None):
+        print('Error: Cluster correction has to be run to identify largest cluster. Run SLM with correction="rft"')
+        return 
+
     for hemisphere in ['left', 'right']:
         for posneg in [[0, 'pos'], [1, 'neg']]:
 
             cluster_pval = slm[hemisphere].P['clus'][posneg[0]]['P'][0] if not slm[hemisphere].P['clus'][posneg[0]]['P'].empty else 1 # Get pval of largest cluster 
             if cluster_pval > alpha:
+                print(f'No {posneg[1]} clusters surviving on {hemisphere} hemisphere.')
                 continue
 
             cluster_threshold = slm[hemisphere].cluster_threshold # Get primary cluster threshold (used for output naming)
@@ -183,15 +190,24 @@ def correlation_plot(slm, indep_data, indep_name, subjects, outdir, alpha=0.05, 
                     
             cluster_mean = indep_data[hemisphere][slm[hemisphere].P['clusid'][posneg[0]][0] == 1].mean()
 
-            plot_data = pd.concat([cluster_mean[subjects].reset_index(drop=True), slm[hemisphere].model.matrix[predictor_name]], axis=1).dropna()
-            plot_data.columns = [indep_name, predictor_name]
+            if hue is None:
+                plot_data = pd.concat([cluster_mean[subjects].reset_index(drop=True), slm[hemisphere].model.matrix[predictor_name]], axis=1).dropna()
+                plot_data.columns = [indep_name, predictor_name]
+            else:
+                plot_data = pd.concat([cluster_mean[subjects].reset_index(drop=True), slm[hemisphere].model.matrix[predictor_name], hue.loc[subjects, hue.columns[0]].reset_index(drop=True)], axis=1).dropna()
+                plot_data.columns = [indep_name, predictor_name, hue.columns[0]]
 
             r2 = _get_r2(plot_data[predictor_name], plot_data[indep_name])
             title = f'{indep_name} - {predictor_name}, {hemisphere} hemisphere\nN vertices={cluster_size:.0f}, corrected cluster p-value={cluster_pval:.1e}, $R^2$: {r2:.2f}'
 
-            sns.set(font_scale=1.6)
-            plt.subplots(figsize=(10, 8))
-            ax = sns.regplot(x=predictor_name, y=indep_name, data=plot_data, ci=None, truncate=False, scatter_kws={'s':70}, line_kws={'linewidth':5})
+            sns.set(font_scale=2.5)
+
+            if hue is None:
+                ax = plt.subplots(figsize=(10, 8))
+                ax = sns.regplot(x=predictor_name, y=indep_name, data=plot_data, ci=None, truncate=False, scatter_kws={'s':90}, line_kws={'linewidth':5})
+            else:
+                ax = sns.lmplot(x=predictor_name, y=indep_name, hue=hue.columns[0], data=plot_data, ci=None, truncate=False, scatter_kws={'s':140}, fit_reg=False, height=10, aspect=1.2, facet_kws={'legend_out': False})
+                ax = sns.regplot(x=predictor_name, y=indep_name, data=plot_data, scatter=False, ax=ax.axes[0, 0], ci=None, line_kws={'linewidth':5}, color='grey')
 
             major_formatter = FuncFormatter(__format_values)
             ax.yaxis.set_major_formatter(major_formatter)

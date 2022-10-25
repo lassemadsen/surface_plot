@@ -12,7 +12,7 @@ from .surface_rendering import render_surface, combine_figures, append_images
 logging.basicConfig(format='%(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-def plot_mean_stats(mean_group1, mean_group2, tval, output, plot_tvalue=False, pval=None, t_threshold=2.5, df=None, p_threshold=0.01, mask=None, vlim_mean=None, mean_titles=None, stats_titles=None, cb_mean_title='Mean', t_lim=None, second_threshold_mask=None, expand_edge=True, dpi=300, clobber=False):
+def plot_mean_stats(mean_group1, mean_group2, tval, output, plot_tvalue=False, pval=None, t_threshold=2.5, df=None, p_threshold=0.01, cluster_mask=None, mask=None, vlim_mean=None, mean_titles=None, stats_titles=None, cb_mean_title='Mean', t_lim=None, second_threshold_mask=None, plot_discrete=False, expand_edge=True, dpi=300, clobber=False):
     """Plot mean and statistics on surface
     Will plot mean of group 1 and mean of group 2 along with p-values or t-values.
     Will plot p-values below p_threshold with positive t-values and p-values below p_threshold with negative t-values.
@@ -46,6 +46,9 @@ def plot_mean_stats(mean_group1, mean_group2, tval, output, plot_tvalue=False, p
     p_threshold : float | 0.01
         If set, threshold is ignored and the plot is thresholded at the corresponding p-value threshold.
         Note: Either pval or df needs to be set
+    cluster_mask : dict
+        Dictionary with keys "left" and "right", containing 1 inside mask and 0 outside cluster mask (indicating surviving clusters)
+        Vertices outside cluster_mask will not be marked on the t-value map even if a vertex is above threshold 
     mask : dict
         Dictionary with keys "left" and "right", containing 1 inside mask and 0 outside mask
         Vertices outside mask will plottet as darkgrey
@@ -63,6 +66,8 @@ def plot_mean_stats(mean_group1, mean_group2, tval, output, plot_tvalue=False, p
     second_threshold_mask : dict or None | None
         If dict: Dictionary with keys "left" and "right", containing data array of cluster mask at 2nd threshold level (e.g. p<0.001)
         Clusters are outlined with a white line on the plot.
+    plot_discrete : boolean | False
+        Option to plot surviving clusters in a discrete manner. Only used when second_threshold_mask is set. Plots positve and negative suviving clusters in 4 discrete colors (red: positve, blue: negative). 
     expand_edge : boolean | True
         If True, the white 2nd threshold cluster line is expanded by one vertices for better visuzaliation
     clobber : Boolean | False
@@ -121,7 +126,7 @@ def plot_mean_stats(mean_group1, mean_group2, tval, output, plot_tvalue=False, p
         # Setup colorbar
         if plot_tvalue:
             cbar_loc = 'bottom_tval_scaled' # Special scenario were tval is plottet alongside two mean images combined to one (e.g. baseline, followup, tval). Scale cbar accordingly
-            plot_tval(tval, tmp_stats, t_lim=t_lim, t_threshold=t_threshold, mask=mask, pval=pval, p_threshold=p_threshold, df=df, title=stats_titles, cbar_loc=cbar_loc, second_threshold_mask=second_threshold_mask, expand_edge=expand_edge, dpi=dpi, clobber=clobber)
+            plot_tval(tval, tmp_stats, t_lim=t_lim, t_threshold=t_threshold, cluster_mask=cluster_mask, mask=mask, pval=pval, p_threshold=p_threshold, df=df, title=stats_titles, cbar_loc=cbar_loc, second_threshold_mask=second_threshold_mask, plot_discrete=plot_discrete, expand_edge=expand_edge, dpi=dpi, clobber=clobber)
         else:
             if pval is None:
                 logger.error('Pval needs to be set. Otherwise set plot_tvalue=True')
