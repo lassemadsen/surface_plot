@@ -71,8 +71,8 @@ def plot_surface(data, output, vlim=None, mask=None, cbar_loc='left', cbar_title
     vlim[1] = vlim[1] + 0.0
 
     # Clip data to min and max values
-    plot_data['left'] = np.clip(plot_data['left'], vlim[0]+1e-6, vlim[1]-1e-6) # 1e-6 to avoid rounding error when plotting (cliped vertices might be seen as out of range)
-    plot_data['right'] = np.clip(plot_data['right'], vlim[0]+1e-6, vlim[1]-1e-6)
+    plot_data['left'] = np.clip(plot_data['left'], vlim[0]+1e-3, vlim[1]-1e-3) # 1e-6 to avoid rounding error when plotting (cliped vertices might be seen as out of range)
+    plot_data['right'] = np.clip(plot_data['right'], vlim[0]+1e-3, vlim[1]-1e-3)
 
     # Setup colorbar and titles
     if cbar_loc == None:

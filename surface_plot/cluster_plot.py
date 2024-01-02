@@ -175,8 +175,8 @@ def correlation_plot(slm, indep_data, indep_name, subjects, outdir, hue=None, al
             cluster_size = slm[hemisphere].P['clus'][posneg[0]]['nverts'][0] # Get nverts for largest cluster 
             predictor_name = slm[hemisphere].model.matrix.columns[1] # Get predictor name (second column name - first is intercept)
             if len(slm[hemisphere].model.matrix.columns) > 2:
-                covars = '+'.join(slm[hemisphere].model.matrix.columns[2:-1])
-                output = f'{outdir}/{posneg[1]}_cluster_{hemisphere}_{indep_name}_{predictor_name}_{covars}_{cluster_threshold}.pdf'
+                covars = '+'.join(slm[hemisphere].model.matrix.columns[2:])
+                output = f'{outdir}/{posneg[1]}_cluster_{hemisphere}_{indep_name}_{predictor_name}+{covars}_{cluster_threshold}.pdf'
             else:
                 output = f'{outdir}/{posneg[1]}_cluster_{hemisphere}_{indep_name}_{predictor_name}_{cluster_threshold}.pdf'
 
@@ -200,7 +200,7 @@ def correlation_plot(slm, indep_data, indep_name, subjects, outdir, hue=None, al
             r2 = _get_r2(plot_data[predictor_name], plot_data[indep_name])
             title = f'{indep_name} - {predictor_name}, {hemisphere} hemisphere\nN vertices={cluster_size:.0f}, corrected cluster p-value={cluster_pval:.1e}, $R^2$: {r2:.2f}'
 
-            sns.set(font_scale=2.5)
+            sns.set(font_scale=1.2)
 
             if hue is None:
                 ax = plt.subplots(figsize=(10, 8))
