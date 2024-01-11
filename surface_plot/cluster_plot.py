@@ -7,7 +7,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
-sns.set(style='darkgrid')
+sns.set(font_scale=1.2)
+sns.set(style='whitegrid')
 from matplotlib.ticker import FuncFormatter
 import statsmodels.api as sm
 
@@ -52,7 +53,7 @@ def boxplot(data1, data2, slm, outdir, g1_name, g2_name, param, alpha=0.05, clob
             plt.clf()
 
 
-def slope_plot(data1, data2, cluster_mask, categories, output, title=None, clobber=False, extra_lines=None):
+def slope_plot(slm, data1, data2, categories, param_name, outdir, title=None, clobber=False, alpha=0.05, extra_lines=None, print_id=False):
     """
     
     Parameters
@@ -61,79 +62,90 @@ def slope_plot(data1, data2, cluster_mask, categories, output, title=None, clobb
         Dataframe of first data
     data2 : pd.DataFrame
         Dataframe of second data
-    cluster_mask : array
-        Array defining the cluster to be plottet (mean value within cluster is plottet)
+    param_name : str
+        Name of parameter - used for file naming 
     categories : list of str
         Names of [data1, data2] in correct order
         I.e ['baseline', 'followup'] if paired t-test or ['pib_pos', 'control'] if independent t-test
     """
-    if not clobber:
-        if os.path.isfile(output):
-            logger.info(f'{output} already exists... Skipping')
-            return
 
-    outdir = '/'.join(output.split('/')[:-1])
     Path(outdir).mkdir(parents=True, exist_ok=True)
 
-    if isinstance(cluster_mask, np.ndarray):
-        mask = pd.DataFrame(cluster_mask.T)
-    else:
-        print('Cluster mask should be np.array')
-        return
+    if (slm['left'].P is None) or (slm['right'].P is None):
+        print('Error: Cluster correction has to be run to identify largest cluster. Run SLM with correction="rft"')
+        return 
 
-    mean1 = data1[mask[0]==1].mean()
-    mean2 = data2[mask[0]==1].mean()
+    for hemisphere in ['left', 'right']:
+        for posneg in [[0, 'pos'], [1, 'neg']]:
 
-    title = f'{title}\nSize: {sum(mask[0] == 1)}'
+            cluster_pval = slm[hemisphere].P['clus'][posneg[0]]['P'][0] if not slm[hemisphere].P['clus'][posneg[0]]['P'].empty else 1 # Get pval of largest cluster 
+            if cluster_pval > alpha:
+                print(f'No {posneg[1]} clusters surviving on {hemisphere} hemisphere.')
+                continue
 
-    data1 = pd.DataFrame(data={'mean': mean1})
-    data2 = pd.DataFrame(data={'mean': mean2})
+            cluster_threshold = slm[hemisphere].cluster_threshold # Get primary cluster threshold (used for output naming)
+            cluster_size = slm[hemisphere].P['clus'][posneg[0]]['nverts'][0] # Get nverts for largest cluster 
+            output = f'{outdir}/{param_name}_{posneg[1]}_cluster_{hemisphere}_{categories[0]}_{categories[1]}_{cluster_threshold}.png'
 
-    _, ax = plt.subplots(1,1,figsize=(14,14), dpi=80)
+            if not clobber:
+                if os.path.isfile(output):
+                    logger.info(f'{output} already exists... Skipping')
+                    continue
 
-    # Vertical Lines
-    ymin = min(min(mean1.values), min(mean2.values))  
-    ymax = max(max(mean1.values), max(mean2.values))
-    yrange = ymax-ymin
-    ymin = ymin - 0.1*yrange
-    ymax = ymax + 0.1*yrange
+            output_cluster_mask = f'{output.split(".png")[0]}_clusterMask.csv'
+            np.savetxt(output_cluster_mask, slm[hemisphere].P['clusid'][posneg[0]][0])
+                    
+            cluster_mean1 = data1[hemisphere][slm[hemisphere].P['clusid'][posneg[0]][0] == 1].mean()
+            cluster_mean2 = data2[hemisphere][slm[hemisphere].P['clusid'][posneg[0]][0] == 1].mean()
 
-    ax.vlines(x=1, ymin=ymin, ymax=ymax, color='black', alpha=0.7, linewidth=1, linestyles='dotted')
-    ax.vlines(x=2, ymin=ymin, ymax=ymax, color='black', alpha=0.7, linewidth=1, linestyles='dotted')
+            title = f'{param_name}: {categories[0]} - {categories[1]}, {hemisphere} hemisphere\nN vertices={cluster_size:.0f}, corrected cluster p-value={cluster_pval:.1e}'
 
-    # Points
-    ax.scatter(y=mean1.values, x=np.repeat(1, mean1.shape[0]), s=10, color='black', alpha=0.7)
-    ax.scatter(y=mean2.values, x=np.repeat(2, mean2.shape[0]), s=10, color='black', alpha=0.7)
+            _, ax = plt.subplots(1,1,figsize=(14,14), dpi=80)
 
-    for p1, p2, c in zip(mean1.values, mean2.values, data1.index):
-        _newline([1,p1], [2,p2])
-        ax.text(1-0.05, p1, c, horizontalalignment='right', verticalalignment='center', fontdict={'size':14})
-        # ax.text(3+0.05, p2, c + ', ' + str(round(p2)), horizontalalignment='left', verticalalignment='center', fontdict={'size':14})
+            # Vertical Lines
+            ymin = min(min(cluster_mean1.values), min(cluster_mean2.values))  
+            ymax = max(max(cluster_mean1.values), max(cluster_mean2.values))
+            yrange = ymax-ymin
+            ymin = ymin - 0.1*yrange
+            ymax = ymax + 0.1*yrange
 
-    if extra_lines is not None:
-        colors = ['tab:blue', 'deepskyblue', 'steelblue']
-        color_idx = 0
-        for key in extra_lines:
-            _newline([1,extra_lines[key][0]], [2,extra_lines[key][1]], linewidth=3, linestyle='-', color=colors[color_idx])
-            color_idx = (color_idx + 1) % len(colors) # Cycle through colors
-            ax.text(0.98, extra_lines[key][0], key, horizontalalignment='right', verticalalignment='center', fontdict={'size':14})
+            ax.vlines(x=1, ymin=ymin, ymax=ymax, color='black', alpha=0.7, linewidth=1, linestyles='dotted')
+            ax.vlines(x=2, ymin=ymin, ymax=ymax, color='black', alpha=0.7, linewidth=1, linestyles='dotted')
 
-    # Decoration
-    ax.set_title(title, fontdict={'size':22})
-    ax.set(xlim=(.9,2.1), ylim=(ymin,ymax))
-    ax.set_ylabel('Mean', fontsize=18)
-    ax.set_xticks([1,2])
-    ax.set_xticklabels([categories[0], categories[1]], fontdict={'size':20})
-    plt.yticks(fontsize=18)
+            # Points
+            ax.scatter(y=cluster_mean1.values, x=np.repeat(1, cluster_mean1.shape[0]), s=10, color='black', alpha=0.7)
+            ax.scatter(y=cluster_mean2.values, x=np.repeat(2, cluster_mean2.shape[0]), s=10, color='black', alpha=0.7)
 
-    # Lighten borders
-    plt.gca().spines["top"].set_alpha(.0)
-    plt.gca().spines["bottom"].set_alpha(.0)
-    plt.gca().spines["right"].set_alpha(.0)
-    plt.gca().spines["left"].set_alpha(.0)
-    plt.savefig(output, dpi=300)
-    plt.close()
-    logger.info(f'{output} saved')
+            for p1, p2, c in zip(cluster_mean1.values, cluster_mean2.values, data1[hemisphere].columns):
+                _newline([1,p1], [2,p2])
+                if print_id:
+                    ax.text(1-0.05, p1, c, horizontalalignment='right', verticalalignment='center', fontdict={'size':14})
+                # ax.text(3+0.05, p2, c + ', ' + str(round(p2)), horizontalalignment='left', verticalalignment='center', fontdict={'size':14})
+
+            if extra_lines is not None:
+                colors = ['tab:blue', 'deepskyblue', 'steelblue']
+                color_idx = 0
+                for key in extra_lines:
+                    _newline([1,extra_lines[key][0]], [2,extra_lines[key][1]], linewidth=3, linestyle='-', color=colors[color_idx])
+                    color_idx = (color_idx + 1) % len(colors) # Cycle through colors
+                    ax.text(0.98, extra_lines[key][0], key, horizontalalignment='right', verticalalignment='center', fontdict={'size':14})
+
+            # Decoration
+            ax.set_title(title, fontdict={'size':22})
+            ax.set(xlim=(.9,2.1), ylim=(ymin,ymax))
+            ax.set_ylabel('Mean', fontsize=18)
+            ax.set_xticks([1,2])
+            ax.set_xticklabels([categories[0], categories[1]], fontdict={'size':20})
+            plt.yticks(fontsize=18)
+
+            # Lighten borders
+            plt.gca().spines["top"].set_alpha(.0)
+            plt.gca().spines["bottom"].set_alpha(.0)
+            plt.gca().spines["right"].set_alpha(.0)
+            plt.gca().spines["left"].set_alpha(.0)
+            plt.savefig(output, dpi=300)
+            plt.close()
+            logger.info(f'{output} saved')
 
 def correlation_plot(slm, indep_data, indep_name, subjects, outdir, hue=None, alpha=0.05, clobber=False):
     """
@@ -176,9 +188,9 @@ def correlation_plot(slm, indep_data, indep_name, subjects, outdir, hue=None, al
             predictor_name = slm[hemisphere].model.matrix.columns[1] # Get predictor name (second column name - first is intercept)
             if len(slm[hemisphere].model.matrix.columns) > 2:
                 covars = '+'.join(slm[hemisphere].model.matrix.columns[2:])
-                output = f'{outdir}/{posneg[1]}_cluster_{hemisphere}_{indep_name}_{predictor_name}+{covars}_{cluster_threshold}.pdf'
+                output = f'{outdir}/{posneg[1]}_cluster_{hemisphere}_{indep_name}_{predictor_name}+{covars}_{cluster_threshold}.png'
             else:
-                output = f'{outdir}/{posneg[1]}_cluster_{hemisphere}_{indep_name}_{predictor_name}_{cluster_threshold}.pdf'
+                output = f'{outdir}/{posneg[1]}_cluster_{hemisphere}_{indep_name}_{predictor_name}_{cluster_threshold}.png'
 
             if not clobber:
                 if os.path.isfile(output):
@@ -200,8 +212,6 @@ def correlation_plot(slm, indep_data, indep_name, subjects, outdir, hue=None, al
             r2 = _get_r2(plot_data[predictor_name], plot_data[indep_name])
             title = f'{indep_name} - {predictor_name}, {hemisphere} hemisphere\nN vertices={cluster_size:.0f}, corrected cluster p-value={cluster_pval:.1e}, $R^2$: {r2:.2f}'
 
-            sns.set(font_scale=1.2)
-
             if hue is None:
                 ax = plt.subplots(figsize=(10, 8))
                 ax = sns.regplot(x=predictor_name, y=indep_name, data=plot_data, ci=None, truncate=False, scatter_kws={'s':90}, line_kws={'linewidth':5})
@@ -212,8 +222,8 @@ def correlation_plot(slm, indep_data, indep_name, subjects, outdir, hue=None, al
             major_formatter = FuncFormatter(__format_values)
             ax.yaxis.set_major_formatter(major_formatter)
 
-            ax.grid(b=True, which='major', color='w', linewidth=1.0)
-            ax.grid(b=True, which='minor', color='w', linewidth=0.5)
+            # ax.grid(b=True, which='major', color='w', linewidth=1.0)
+            # ax.grid(b=True, which='minor', color='w', linewidth=0.5)
             ax.set_title(title)
             plt.tight_layout()
 
