@@ -113,11 +113,11 @@ def slope_plot(slm, data1, data2, categories, param_name, outdir, title=None, cl
             ax.vlines(x=2, ymin=ymin, ymax=ymax, color='black', alpha=0.7, linewidth=1, linestyles='dotted')
 
             # Points
-            ax.scatter(y=cluster_mean1.values, x=np.repeat(1, cluster_mean1.shape[0]), s=10, color='black', alpha=0.7)
-            ax.scatter(y=cluster_mean2.values, x=np.repeat(2, cluster_mean2.shape[0]), s=10, color='black', alpha=0.7)
+            ax.scatter(y=cluster_mean1.values, x=np.repeat(1, cluster_mean1.shape[0]), s=20, color='black', alpha=0.7)
+            ax.scatter(y=cluster_mean2.values, x=np.repeat(2, cluster_mean2.shape[0]), s=20, color='black', alpha=0.7)
 
             for p1, p2, c in zip(cluster_mean1.values, cluster_mean2.values, data1[hemisphere].columns):
-                _newline([1,p1], [2,p2])
+                _newline([1,p1], [2,p2], linewidth=3)
                 if print_id:
                     ax.text(1-0.05, p1, c, horizontalalignment='right', verticalalignment='center', fontdict={'size':14})
                 # ax.text(3+0.05, p2, c + ', ' + str(round(p2)), horizontalalignment='left', verticalalignment='center', fontdict={'size':14})
@@ -216,8 +216,8 @@ def correlation_plot(slm, indep_data, indep_name, subjects, outdir, hue=None, al
                 ax = plt.subplots(figsize=(10, 8))
                 ax = sns.regplot(x=predictor_name, y=indep_name, data=plot_data, ci=None, truncate=False, scatter_kws={'s':90}, line_kws={'linewidth':5})
             else:
-                ax = sns.lmplot(x=predictor_name, y=indep_name, hue=hue.columns[0], data=plot_data, ci=None, truncate=False, scatter_kws={'s':140}, fit_reg=False, height=10, aspect=1.2, facet_kws={'legend_out': False})
-                ax = sns.regplot(x=predictor_name, y=indep_name, data=plot_data, scatter=False, ax=ax.axes[0, 0], ci=None, line_kws={'linewidth':5}, color='grey')
+                ax = sns.lmplot(x=predictor_name, y=indep_name, hue=hue.columns[0], data=plot_data, ci=None, truncate=False, scatter_kws={'s':200}, fit_reg=False, height=10, aspect=1.2, facet_kws={'legend_out': False})
+                ax = sns.regplot(x=predictor_name, y=indep_name, data=plot_data, scatter=False, ax=ax.axes[0, 0], ci=None, line_kws={'linewidth':8}, color='grey')
 
             major_formatter = FuncFormatter(__format_values)
             ax.yaxis.set_major_formatter(major_formatter)
@@ -236,9 +236,9 @@ def correlation_plot(slm, indep_data, indep_name, subjects, outdir, hue=None, al
 def _newline(p1, p2, color=None, linewidth=1, linestyle='-'):
     ax = plt.gca()
     if color is None:
-        l = mlines.Line2D([p1[0],p2[0]], [p1[1],p2[1]], color='tab:red' if p1[1]-p2[1] > 0 else 'tab:green', marker='o', markersize=6)
+        l = mlines.Line2D([p1[0],p2[0]], [p1[1],p2[1]], color='tab:red' if p1[1]-p2[1] > 0 else 'tab:green', marker='o', markersize=14)
     else:
-        l = mlines.Line2D([p1[0],p2[0]], [p1[1],p2[1]], color=color, marker='o', markersize=6)
+        l = mlines.Line2D([p1[0],p2[0]], [p1[1],p2[1]], color=color, marker='o', markersize=14)
 
     l.set_linewidth(linewidth)
     l.set_linestyle(linestyle)
