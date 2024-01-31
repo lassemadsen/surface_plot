@@ -18,7 +18,7 @@ import warnings
 
 warnings.simplefilter(action='ignore', category=FutureWarning) # Ignore FutureWarnings 
 
-def plot_pval(pval, output, tval=None, p_threshold=0.01, mask=None, cbar_loc='left', titles=['Positive', 'Negative'], second_threshold_mask=None, expand_edge=True, dpi=300, clobber=False):
+def plot_pval(pval, output, tval=None, p_threshold=0.01, mask=None, cbar_loc='left', titles=['Positive', 'Negative'], second_threshold_mask=None, expand_edge=True, views='compact', dpi=300, clobber=False):
     """Plot pval statistics on surface
     If tval is given: it will plot p-values below p_threshold with positive t-values and p-values below p_threshold with negative t-values on seperate plots. 
 
@@ -46,6 +46,8 @@ def plot_pval(pval, output, tval=None, p_threshold=0.01, mask=None, cbar_loc='le
         Clusters are outlined with a white line on the plot.
     expand_edge : boolean | True
         If True, the white 2nd threshold cluster line is expanded by one vertices for better visuzaliation
+    views : str | compact
+        Can be either 'standard', 'compact' or 'complete'.
     clobber : Boolean | False
         If true, existing files will be overwritten 
 
@@ -86,10 +88,10 @@ def plot_pval(pval, output, tval=None, p_threshold=0.01, mask=None, cbar_loc='le
 
         with TemporaryDirectory() as tmp_dir:
             tmp_file = f'{tmp_dir}/pval.png'
-            render_surface(pval_plot, tmp_file, vlim=vlim, clim=clim_plot, cmap=cmap, dpi=dpi)
+            render_surface(pval_plot, tmp_file, vlim=vlim, clim=clim_plot, cmap=cmap, dpi=dpi, views=views)
 
             # Add colorbar
-            combine_figures(tmp_file, output, titles=titles, cbArgs=cbar_args, dpi=dpi, clobber=clobber)
+            combine_figures(tmp_file, output, titles=titles, cbArgs=cbar_args, dpi=dpi, clobber=clobber, views=views)
 
     else:
         posneg_pval = threshold_pmap(pval, p_threshold, tval)
@@ -125,7 +127,7 @@ def plot_pval(pval, output, tval=None, p_threshold=0.01, mask=None, cbar_loc='le
         logger.info(f'{output} saved.')
 
 
-def plot_tval(tval, output, t_lim=None, t_threshold=2.5, cluster_mask=None, mask=None, p_threshold=None, pval=None, df=None, title=None, cbar_loc='left', second_threshold_mask=None, expand_edge=False, plot_discrete=False, ticks='minmax', dpi=300, clobber=False):
+def plot_tval(tval, output, t_lim=None, t_threshold=2.5, cluster_mask=None, mask=None, p_threshold=None, pval=None, df=None, title=None, cbar_loc='left', second_threshold_mask=None, expand_edge=False, plot_discrete=False, ticks='minmax', views='compact', dpi=300, clobber=False):
     """Plot tval statistics on surface
     Will plot t-values between thresholds
     If p_threshold and df is set, the thresholds are calculated based on the corresponding p-value. 
@@ -169,6 +171,8 @@ def plot_tval(tval, output, t_lim=None, t_threshold=2.5, cluster_mask=None, mask
         Clusters are outlined with a white line on the plot.
     plot_discrete : boolean | False
         Option to plot surviving clusters in a discrete manner. Only used when second_threshold_mask is set. Plots positve and negative suviving clusters in 4 discrete colors (red: positve, blue: negative). 
+    views : str | compact
+        Can be either 'standard', 'compact' or 'complete'.
     expand_edge : boolean | True
         If True, the white 2nd threshold cluster line is expanded by one vertices for better visuzaliation
     clobber : Boolean | False
@@ -250,13 +254,13 @@ def plot_tval(tval, output, t_lim=None, t_threshold=2.5, cluster_mask=None, mask
 
     with TemporaryDirectory() as tmp_dir:
         tmp_file = f'{tmp_dir}/tval.png'
-        render_surface(tval_thresholded, tmp_file, mask=mask, vlim=vlim, clim=vlim, cmap=cmap, dpi=dpi)
+        render_surface(tval_thresholded, tmp_file, mask=mask, vlim=vlim, clim=vlim, cmap=cmap, dpi=dpi, views=views)
 
         if ticks == 'complete':
             ticks=np.array([vlim[0], -t_threshold, t_threshold, vlim[1]])
 
         # Add colorbar
-        combine_figures(tmp_file, output, cbArgs=cbar_args, titles=title, clobber=clobber, ticks=ticks, dpi=dpi)
+        combine_figures(tmp_file, output, cbArgs=cbar_args, titles=title, clobber=clobber, ticks=ticks, dpi=dpi, views=views)
 
     if 'tmp' not in output:
         logger.info(f'{output} saved.')

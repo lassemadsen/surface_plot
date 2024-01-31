@@ -78,6 +78,8 @@ def render_surface(data, outfile, mask=None, vlim=None, clim=None, cmap='turbo_r
 
     if views == 'standard':
         views = ['fb', 'lr', 'lr_inv']
+    elif views == 'compact':
+        views = ['lr', 'lr_inv']
     elif views == 'complete':
         views = ['tb', 'fb', 'lr', 'lr_inv']
     else:
@@ -242,7 +244,7 @@ def append_images(image_files, outfile, direction='horizontal', bg_color=(255, 2
     plt.close('all')
 
 def combine_figures(files, outfile, direction='horizontal', cbArgs=None, titles=None, ylabels=None,
-                    fz_ylabel=14, fz_title=14, discrete=False, ticks='complete', dpi=300, clobber=False):
+                    fz_ylabel=14, fz_title=14, discrete=False, ticks='complete', views='standard', dpi=300, clobber=False):
     """Combine figures to one plot with possibility of adding colorbar, labels and titles
     Can also be used to add colorbar to one figure
 
@@ -287,6 +289,9 @@ def combine_figures(files, outfile, direction='horizontal', cbArgs=None, titles=
         interpolation between the maximum and minimum will be used.
         Finally, if ticks is a NumPy array, it will be used as colorbar
         ticks directly.
+    views : str | standard
+        Can be either 'standard', 'compact' or 'complete'.
+        Only important if a colorbar is added to a single plot. 
     dpi : int | 300
         dpi of output image
         Note: larger dpi will take longer to produce and 
@@ -319,6 +324,7 @@ def combine_figures(files, outfile, direction='horizontal', cbArgs=None, titles=
     # If another number of images or another number of "views" is plottet, a specific option may need to be added.
     # NB: If only one figure, the fz_title and fz_ylabel is currently 24 no matter the input.
     
+    
     if n_fig == 1:
         fz_title = 24
         fz_ylabel = 24
@@ -327,31 +333,57 @@ def combine_figures(files, outfile, direction='horizontal', cbArgs=None, titles=
         if cbArgs['position'] == 'left':
             ycb = -25
         else:
-            ycb = -10 
+            ycb = -10
+
+        # Standard setting. Changed in the follwing if statement if specific option is optimized.
+        pltmargin = 0
+        height = .5
+        width = .007
 
         if n_fig == 1:
-            if cbArgs['position'] == 'left':
-                pltmargin = -.07
-                height = .5
-                width = .007
-            elif cbArgs['position'] == 'bottom':
-                pltmargin = 0.02
-                height = .4
-                width = .008
-            elif cbArgs['position'] == 'bottom_tval_scaled': # Special scenario were tval is plottet alongside two mean images combined to one (e.g. baseline, followup, tval). Scale cbar accordingly
-                pltmargin = 0.02
-                height = .4
-                width = .015
-                cbArgs['position'] = 'bottom' # Set position to "correct" position identifiable by f.shared_colorbar 
+            if views == 'standard': 
+                if cbArgs['position'] == 'left':
+                    pltmargin = -.07
+                    height = .5
+                    width = .007
+                elif cbArgs['position'] == 'bottom':
+                    pltmargin = 0.02
+                    height = .4
+                    width = .008
+                elif cbArgs['position'] == 'bottom_tval_scaled': # Special scenario were tval is plottet alongside two mean images combined to one (e.g. baseline, followup, tval). Scale cbar accordingly
+                    pltmargin = 0.02
+                    height = .4
+                    width = .015
+                    cbArgs['position'] = 'bottom' # Set position to "correct" position identifiable by f.shared_colorbar 
+            if views == 'compact':
+                if cbArgs['position'] == 'left':
+                    pltmargin = 0.05
+                    height = .35
+                    width = .009
+                elif cbArgs['position'] == 'bottom': # Special scenario were tval is plottet alongside two mean images combined to one (e.g. baseline, followup, tval). Scale cbar accordingly
+                    pltmargin = -0.15
+                    height = .4
+                    width = .008
+                elif cbArgs['position'] == 'bottom_tval_scaled': # Special scenario were tval is plottet alongside two mean images combined to one (e.g. baseline, followup, tval). Scale cbar accordingly
+                    pltmargin = -0.15
+                    height = .4
+                    width = .015
+                    cbArgs['position'] = 'bottom' # Set position to "correct" position identifiable by f.shared_colorbar 
         if n_fig == 2:
-            if cbArgs['position'] == 'left':
-                pltmargin = .042
-                height = .3
-                width = .007
-            elif cbArgs['position'] == 'bottom':
-                pltmargin = -.3
-                height = .4
-                width = .008
+            if views == 'standard': 
+                if cbArgs['position'] == 'left':
+                    pltmargin = .042
+                    height = .3
+                    width = .007
+                elif cbArgs['position'] == 'bottom':
+                    pltmargin = -.47
+                    height = .4
+                    width = .008
+            elif views == 'compact':
+                if cbArgs['position'] == 'bottom':
+                    pltmargin = -.47
+                    height = .3
+                    width = .007
         if n_fig == 3:
             if cbArgs['position'] == 'bottom':
                 pltmargin = -.45

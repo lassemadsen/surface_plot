@@ -12,7 +12,7 @@ from .surface_rendering import render_surface, combine_figures, append_images
 logging.basicConfig(format='%(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-def plot_mean_stats(mean_group1, mean_group2, tval, output, plot_tvalue=False, pval=None, t_threshold=2.5, df=None, p_threshold=0.01, cluster_mask=None, mask=None, vlim_mean=None, mean_titles=None, stats_titles=None, cb_mean_title='Mean', t_lim=None, second_threshold_mask=None, plot_discrete=False, expand_edge=True, dpi=300, clobber=False):
+def plot_mean_stats(mean_group1, mean_group2, tval, output, plot_tvalue=False, pval=None, t_threshold=2.5, df=None, p_threshold=0.01, cluster_mask=None, mask=None, vlim_mean=None, mean_titles=None, stats_titles=None, cb_mean_title='Mean', t_lim=None, second_threshold_mask=None, plot_discrete=False, expand_edge=True, views='compact', dpi=300, clobber=False):
     """Plot mean and statistics on surface
     Will plot mean of group 1 and mean of group 2 along with p-values or t-values.
     Will plot p-values below p_threshold with positive t-values and p-values below p_threshold with negative t-values.
@@ -70,6 +70,8 @@ def plot_mean_stats(mean_group1, mean_group2, tval, output, plot_tvalue=False, p
         Option to plot surviving clusters in a discrete manner. Only used when second_threshold_mask is set. Plots positve and negative suviving clusters in 4 discrete colors (red: positve, blue: negative). 
     expand_edge : boolean | True
         If True, the white 2nd threshold cluster line is expanded by one vertices for better visuzaliation
+    views : str | compact
+        Can be either 'standard', 'compact' or 'complete'.
     clobber : Boolean | False
         If true, existing files will be overwritten 
 
@@ -108,17 +110,17 @@ def plot_mean_stats(mean_group1, mean_group2, tval, output, plot_tvalue=False, p
         cmap = 'turbo'
         # Plot mean group1
         tmp_mean1 = f'{tmp_dir}/mean1.png'
-        render_surface(mean_group1_, tmp_mean1, vlim=vlim_mean, clim=vlim_mean, mask=mask, cmap=cmap, dpi=dpi)
+        render_surface(mean_group1_, tmp_mean1, vlim=vlim_mean, clim=vlim_mean, mask=mask, cmap=cmap, dpi=dpi, views=views)
 
         # Plot mean group2
         tmp_mean2 = f'{tmp_dir}/mean2.png'
-        render_surface(mean_group2_, tmp_mean2, vlim=vlim_mean, clim=vlim_mean, mask=mask, cmap=cmap, dpi=dpi)
+        render_surface(mean_group2_, tmp_mean2, vlim=vlim_mean, clim=vlim_mean, mask=mask, cmap=cmap, dpi=dpi, views=views)
 
         # Combine means with shared colorbar - Setup colorbar
         cbar_args = {'clim': vlim_mean, 'title': cb_mean_title, 'fz_title': 14, 'fz_ticks': 14, 'cmap': cmap, 'position': 'bottom'}
 
         tmp_mean = f'{tmp_dir}/mean.png'
-        combine_figures([tmp_mean1, tmp_mean2], tmp_mean, cbArgs=cbar_args, titles=mean_titles, dpi=dpi)
+        combine_figures([tmp_mean1, tmp_mean2], tmp_mean, cbArgs=cbar_args, titles=mean_titles, dpi=dpi, views=views)
 
         # Plot stats
         tmp_stats = f'{tmp_dir}/stats.png'
@@ -126,13 +128,13 @@ def plot_mean_stats(mean_group1, mean_group2, tval, output, plot_tvalue=False, p
         # Setup colorbar
         if plot_tvalue:
             cbar_loc = 'bottom_tval_scaled' # Special scenario were tval is plottet alongside two mean images combined to one (e.g. baseline, followup, tval). Scale cbar accordingly
-            plot_tval(tval, tmp_stats, t_lim=t_lim, t_threshold=t_threshold, cluster_mask=cluster_mask, mask=mask, pval=pval, p_threshold=p_threshold, df=df, title=stats_titles, cbar_loc=cbar_loc, second_threshold_mask=second_threshold_mask, plot_discrete=plot_discrete, expand_edge=expand_edge, dpi=dpi, clobber=clobber)
+            plot_tval(tval, tmp_stats, t_lim=t_lim, t_threshold=t_threshold, cluster_mask=cluster_mask, mask=mask, pval=pval, p_threshold=p_threshold, df=df, title=stats_titles, cbar_loc=cbar_loc, second_threshold_mask=second_threshold_mask, plot_discrete=plot_discrete, expand_edge=expand_edge, dpi=dpi, views=views, clobber=clobber)
         else:
             if pval is None:
                 logger.error('Pval needs to be set. Otherwise set plot_tvalue=True')
                 return
             cbar_loc = 'bottom'
-            plot_pval(pval, tmp_stats, tval=tval, p_threshold=p_threshold, mask=mask, cbar_loc=cbar_loc, titles=mean_titles, second_threshold_mask=second_threshold_mask, expand_edge=expand_edge, dpi=dpi, clobber=clobber)
+            plot_pval(pval, tmp_stats, tval=tval, p_threshold=p_threshold, mask=mask, cbar_loc=cbar_loc, titles=mean_titles, second_threshold_mask=second_threshold_mask, expand_edge=expand_edge, dpi=dpi, views=views, clobber=clobber)
 
         # Combine to one plot 
         append_images([tmp_mean, tmp_stats], output, direction='horizontal', scale='height', dpi=dpi, clobber=True)

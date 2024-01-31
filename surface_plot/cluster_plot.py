@@ -46,6 +46,7 @@ def boxplot(data1, data2, slm, outdir, g1_name, g2_name, param, alpha=0.05, clob
             plot_data = pd.concat([cluster_mean_1, cluster_mean_2])
 
             plt.figure()
+            sns.swarmplot(y=param, x='group', data=plot_data, hue='group', edgecolor='black', linewidth=1.5, size=7, legend=False)
             sns.boxplot(y=param, x='group', data=plot_data)
             plt.title(title)
             plt.tight_layout()
@@ -213,10 +214,10 @@ def correlation_plot(slm, indep_data, indep_name, subjects, outdir, hue=None, al
             title = f'{indep_name} - {predictor_name}, {hemisphere} hemisphere\nN vertices={cluster_size:.0f}, corrected cluster p-value={cluster_pval:.1e}, $R^2$: {r2:.2f}'
 
             if hue is None:
-                ax = plt.subplots(figsize=(10, 8))
-                ax = sns.regplot(x=predictor_name, y=indep_name, data=plot_data, ci=None, truncate=False, scatter_kws={'s':90}, line_kws={'linewidth':5})
+                ax = plt.subplots(figsize=(10, 6))
+                ax = sns.regplot(x=predictor_name, y=indep_name, data=plot_data, ci=None, truncate=False, scatter_kws={'s':200}, line_kws={'linewidth':8})
             else:
-                ax = sns.lmplot(x=predictor_name, y=indep_name, hue=hue.columns[0], data=plot_data, ci=None, truncate=False, scatter_kws={'s':200}, fit_reg=False, height=10, aspect=1.2, facet_kws={'legend_out': False})
+                ax = sns.lmplot(x=predictor_name, y=indep_name, hue=hue.columns[0], data=plot_data, ci=None, truncate=False, scatter_kws={'s':200}, fit_reg=False, height=10, aspect=1.4, facet_kws={'legend_out': False})
                 ax = sns.regplot(x=predictor_name, y=indep_name, data=plot_data, scatter=False, ax=ax.axes[0, 0], ci=None, line_kws={'linewidth':8}, color='grey')
 
             major_formatter = FuncFormatter(__format_values)
