@@ -15,7 +15,7 @@ import warnings
 
 warnings.simplefilter(action='ignore', category=FutureWarning) # Ignore FutureWarnings 
 
-def plot_surface(data, output, vlim=None, mask=None, cbar_loc='left', cbar_title='Mean', title=None, cmap='turbo', clobber=False, dpi=300, clip_data=True):
+def plot_surface(data, output, vlim=None, mask=None, cbar_loc='left', cbar_title='Mean', title=None, cmap='turbo', views='compact', clobber=False, dpi=300, clip_data=True):
     """Plot data on surface
 
     Parameters
@@ -41,6 +41,8 @@ def plot_surface(data, output, vlim=None, mask=None, cbar_loc='left', cbar_title
         Recommendations:
         'RdBu_r' is good for t values
         'turbo' otherwise
+    views: str | 'compact'
+        Views setting. Can be 'compact', 'standard' or 'complete'
     clobber : Boolean | False
         If true, existing files will be overwritten
     clip_data : Boolean | True
@@ -85,10 +87,10 @@ def plot_surface(data, output, vlim=None, mask=None, cbar_loc='left', cbar_title
 
     with TemporaryDirectory() as tmp_dir:
         tmp_file = f'{tmp_dir}/data.png'
-        render_surface(plot_data, tmp_file, mask=mask, vlim=vlim, clim=vlim, cmap=cmap, dpi=dpi)
+        render_surface(plot_data, tmp_file, mask=mask, vlim=vlim, clim=vlim, cmap=cmap, views=views, dpi=dpi)
 
         # Add colorbar
-        combine_figures(tmp_file, output, titles=title, cbArgs=cbar_args, clobber=clobber, dpi=dpi)
+        combine_figures(tmp_file, output, titles=title, cbArgs=cbar_args, views=views, clobber=clobber, dpi=dpi)
 
     if 'tmp' not in output:
         logger.info(f'{output} saved.')

@@ -16,7 +16,7 @@ logging.basicConfig(format='%(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-def render_surface(data, outfile, mask=None, vlim=None, clim=None, cmap='turbo_r', views='standard', dpi=300, clobber=False):
+def render_surface(data, outfile, mask=None, vlim=None, clim=None, cmap='turbo_r', views='compact', dpi=300, clobber=False):
     """Render surface with given input data
 
     Parameters
@@ -41,8 +41,9 @@ def render_surface(data, outfile, mask=None, vlim=None, clim=None, cmap='turbo_r
         The colormap to use.
         Can be a cmap supported by matplotlib:
         https://matplotlib.org/3.1.0/tutorials/colors/colormaps.html
-    views : string, 'standard' or 'complete' | 'standard'
+    views : string, 'compact', 'standard' or 'complete' | 'compact'
         Select views to show
+        'compact' : left, right, left_inv, right_inv is plottet.
         'standard' : front, back, left, right, left_inv, right_inv is plottet.
         'complete' : front, back, left, right, left_inv, right_inv, top and bottom is plottet.
 
