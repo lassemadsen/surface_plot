@@ -8,4 +8,6 @@ sphinxcontrib-jsmath
 sphinxcontrib-qthelp
 sphinxcontrib-serializinghtml
 
+git+https://github.com/lassemadsen/surface_plot#egg=surface_plot
+
 -r ../requirements.txt
