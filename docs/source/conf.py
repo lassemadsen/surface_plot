@@ -14,6 +14,17 @@
 # import sys
 # sys.path.insert(0, os.path.abspath('.'))
 
+import vispy
+try:
+    vispy.use(app='osmesa')
+    assert vispy.app.use_app().backend_name == 'osmesa', 'Not using OSMesa'
+    os.environ["QT_QPA_PLATFORM"] = "offscreen" # Set when plotting on headless cluster 
+except:
+    pass
+
+import matplotlib
+matplotlib.use('agg')
+
 # -- Project information -----------------------------------------------------
 
 project = 'surface_plot'
@@ -59,7 +70,4 @@ html_theme = 'sphinx_rtd_theme'
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
 
-
-import matplotlib
-matplotlib.use('agg')
 
