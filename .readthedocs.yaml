@@ -9,5 +9,9 @@ python:
   install:
     - requirements: docs/requirements.txt  # Ensures dependencies are installed from the requirements.txt
     
-env:
+sphinx:
+  configuration: docs/source/conf.py
+  
+envs:
   - QT_QPA_PLATFORM=offscreen  # Disable Qt GUI (forces offscreen mode)
+  - MPLCONFIGDIR=/tmp/matplotlib  # Ensures Matplotlib configuration doesn't attempt to write to user directories
