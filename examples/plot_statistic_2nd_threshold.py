@@ -8,6 +8,8 @@ The second_level data is defined by a mask containing e.g. surviving clusters (1
 
 Note: the cortical surface template is needed to segment the clusters. 
 """
+import matplotlib
+matplotlib.use('agg')
 from surface_plot import plot_stats
 import numpy as np
 
