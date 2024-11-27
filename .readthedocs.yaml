@@ -8,3 +8,6 @@ build:
 python:
   install:
     - requirements: docs/requirements.txt  # Ensures dependencies are installed from the requirements.txt
+    
+env:
+  - QT_QPA_PLATFORM=offscreen  # Disable Qt GUI (forces offscreen mode)
