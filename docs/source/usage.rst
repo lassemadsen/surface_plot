@@ -6,15 +6,7 @@ Usage
 Installation
 ------------
 
-To use surface_plot, you need python 3.7.x
-
-You can install python by using Miniconda:
-
-.. code-block:: console
-
-  wget https://repo.anaconda.com/miniconda/Miniconda3-py37_4.9.2-Linux-x86_64.sh
-
-  bash Miniconda3-py37_4.9.2-Linux-x86_64.s
+To use surface_plot is compatible with python 3.6, 3.7, 3.8 and 3.9
 
 surface_plot can now be installed from git
 
