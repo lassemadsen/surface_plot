@@ -6,12 +6,10 @@ build:
     python: "3.9"
   commands:
     - export QT_QPA_PLATFORM=offscreen  # Set Qt to offscreen mode
-    - export MPLCONFIGDIR=/tmp/matplotlib  # Set Matplotlib config directory to avoid writing to user directories
 
 python:
   install:
     - requirements: docs/requirements.txt  # Ensures dependencies are installed from the requirements.txt
 
-    
 sphinx:
   configuration: docs/source/conf.py
