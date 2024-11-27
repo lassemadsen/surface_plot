@@ -7,8 +7,4 @@ build:
 
 python:
   install:
-    - method: pip
-      path: .
-    - requirements: requirements.txt
-    - pip:
-        - git+https://github.com/lassemadsen/surface_plot#egg=surface_plot
+    - requirements: requirements.txt  # Ensures dependencies are installed from the requirements.txt
