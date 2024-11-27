@@ -4,6 +4,9 @@ build:
   os: ubuntu-22.04
   tools:
     python: "3.8"
+  apt_packages:
+    - libosmesa6
+    - libosmesa6-dev
 
 python:
   install:
