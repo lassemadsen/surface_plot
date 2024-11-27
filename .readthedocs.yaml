@@ -7,4 +7,4 @@ build:
 
 python:
   install:
-    - requirements: requirements.txt  # Ensures dependencies are installed from the requirements.txt
+    - requirements: docs/requirements.txt  # Ensures dependencies are installed from the requirements.txt
