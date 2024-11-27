@@ -44,9 +44,10 @@ setup(
     platforms='any',
     install_requires=[
         "visbrain @ https://github.com/lassemadsen/visbrain/archive/master.zip#egg=visbrain",
-        "numpy>=1.13",
+        "numpy>=1.23, <=1.26.4",
         "pandas",
         "brainspace>=0.1.2",
+        "vtk==9.3.1",
         "scipy",
         "matplotlib>=3.3.0",
         "pillow"
