@@ -15,7 +15,7 @@
 # sys.path.insert(0, os.path.abspath('.'))
 
 import matplotlib
-matplotlib.use('TkAgg')
+matplotlib.use('Qt5Agg')
 
 
 # -- Project information -----------------------------------------------------
