@@ -3,6 +3,8 @@ Tutorial 01: Simple plot of cortical surface data
 =================================================
 Example script to plot simple data to cortical surface
 """
+import matplotlib
+matplotlib.use('agg')
 from surface_plot import plot_surface
 import numpy as np
 
