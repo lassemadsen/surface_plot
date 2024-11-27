@@ -60,10 +60,6 @@ html_theme = 'sphinx_rtd_theme'
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
 
-<<<<<<< HEAD
-#import matplotlib
-#matplotlib.use('agg')
-=======
-import matplotlib
-matplotlib.use('agg')
->>>>>>> 705d0027d78f9e94d88000f5c023006c6c5ca86f
+# import matplotlib
+# matplotlib.use('agg')
+
