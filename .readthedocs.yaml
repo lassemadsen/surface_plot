@@ -10,3 +10,5 @@ python:
     - method: pip
       path: .
     - requirements: requirements.txt
+    - pip:
+        - git+https://github.com/lassemadsen/surface_plot#egg=surface_plot
