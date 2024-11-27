@@ -295,10 +295,10 @@ def threshold_tmap(tval, t_lim, t_threshold=None, p_threshold=None, pval=None, d
             if pval is not None:
                 tval[hemisphere][pval[hemisphere] > p_threshold] = t_lim[0]-1 # Set above t_lim[1] (vmax) to be plottet as white
             elif df is not None:
-                t_threshold = scipy.stats.t.ppf(1-p_threshold, df)
+                t_threshold = round(scipy.stats.t.ppf(1-p_threshold, df), 2)
                 tval[hemisphere][abs(tval[hemisphere]) < t_threshold] = t_lim[0]-1 # Set above t_lim[1] (vmax) to be plottet as white
 
-    return tval, round(t_threshold,2)
+    return tval, t_threshold
 
 
 def threshold_pmap(pval, p_threshold, tval):

@@ -58,7 +58,3 @@ plot_stats.plot_tval(tval, output, p_threshold=p_threshold, pval=pval, cbar_loc=
 # Plot t-values with p_threshold and df, two-tailed
 output = f'{outdir}/tval_withdf_twotailed_cbar_{cbar_loc}_p{p_threshold}.pdf'
 plot_stats.plot_tval(tval, output, p_threshold=p_threshold, df=df, cbar_loc=cbar_loc, clobber=clobber)
-
-# Plot t-values with p_threshold and df, one-tailed
-output = f'{outdir}/tval_withdf_onetailed_cbar_{cbar_loc}_p{p_threshold}.pdf'
-plot_stats.plot_tval(tval, output, p_threshold=p_threshold, df=df, two_tailed=False, cbar_loc=cbar_loc, clobber=clobber)
