@@ -3,6 +3,8 @@ Tutorial 03: Plot of mean and statistical data (t-test)
 =======================================================
 Example script to plot both mean data and statistics, e.g. from paired or unpaied t-test with two groups.
 """
+import matplotlib
+matplotlib.use('agg')
 from surface_plot import plot_mean_stats
 import numpy as np
 
