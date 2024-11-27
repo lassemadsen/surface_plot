@@ -14,6 +14,9 @@
 # import sys
 # sys.path.insert(0, os.path.abspath('.'))
 
+import matplotlib
+matplotlib.use('agg')
+
 
 # -- Project information -----------------------------------------------------
 
@@ -60,6 +63,4 @@ html_theme = 'sphinx_rtd_theme'
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
 
-import matplotlib
-matplotlib.use('agg')
 
