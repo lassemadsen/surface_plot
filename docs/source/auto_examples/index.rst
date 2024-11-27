@@ -1,9 +1,5 @@
 :orphan:
 
-
-
-.. _sphx_glr_auto_examples:
-
 Tutorials
 ==================
 
@@ -13,14 +9,79 @@ Below are examples on how to use surface_plot
 
 .. raw:: html
 
+    <div class="sphx-glr-thumbnails">
+
+.. thumbnail-parent-div-open
+
+.. raw:: html
+
     <div class="sphx-glr-thumbcontainer" tooltip="Tutorial 01: Simple plot of cortical surface data">
 
 .. only:: html
 
- .. figure:: /auto_examples/images/thumb/sphx_glr_plot_data_thumb.png
-     :alt: Tutorial 01: Simple plot of cortical surface data
+  .. image:: /auto_examples/images/thumb/sphx_glr_plot_data_thumb.png
+    :alt:
 
-     :ref:`sphx_glr_auto_examples_plot_data.py`
+  :ref:`sphx_glr_auto_examples_plot_data.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Tutorial 01: Simple plot of cortical surface data</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="The second_level data is defined by a mask containing e.g. surviving clusters (1&#x27;s)">
+
+.. only:: html
+
+  .. image:: /auto_examples/images/thumb/sphx_glr_plot_statistic_2nd_threshold_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_auto_examples_plot_statistic_2nd_threshold.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Tutorial 04: Plot of statistical maps with two thresholds</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Tutorial 03: Plot of mean and statistical data (t-test)">
+
+.. only:: html
+
+  .. image:: /auto_examples/images/thumb/sphx_glr_plot_ttest_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_auto_examples_plot_ttest.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Tutorial 03: Plot of mean and statistical data (t-test)</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Tutorial 02: Plot of statistical data">
+
+.. only:: html
+
+  .. image:: /auto_examples/images/thumb/sphx_glr_plot_statistics_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_auto_examples_plot_statistics.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Tutorial 02: Plot of statistical data</div>
+    </div>
+
+
+.. thumbnail-parent-div-close
 
 .. raw:: html
 
@@ -31,90 +92,22 @@ Below are examples on how to use surface_plot
    :hidden:
 
    /auto_examples/plot_data
-
-.. raw:: html
-
-    <div class="sphx-glr-thumbcontainer" tooltip="The second_level data is defined by a mask containing e.g. surviving clusters (1&#x27;s)">
-
-.. only:: html
-
- .. figure:: /auto_examples/images/thumb/sphx_glr_plot_statistic_2nd_threshold_thumb.png
-     :alt: Tutorial 04: Plot of statistical maps with two thresholds
-
-     :ref:`sphx_glr_auto_examples_plot_statistic_2nd_threshold.py`
-
-.. raw:: html
-
-    </div>
-
-
-.. toctree::
-   :hidden:
-
    /auto_examples/plot_statistic_2nd_threshold
-
-.. raw:: html
-
-    <div class="sphx-glr-thumbcontainer" tooltip="Tutorial 03: Plot of mean and statistical data (t-test)">
-
-.. only:: html
-
- .. figure:: /auto_examples/images/thumb/sphx_glr_plot_ttest_thumb.png
-     :alt: Tutorial 03: Plot of mean and statistical data (t-test)
-
-     :ref:`sphx_glr_auto_examples_plot_ttest.py`
-
-.. raw:: html
-
-    </div>
-
-
-.. toctree::
-   :hidden:
-
    /auto_examples/plot_ttest
+   /auto_examples/plot_statistics
 
-.. raw:: html
-
-    <div class="sphx-glr-thumbcontainer" tooltip="Tutorial 02: Plot of statistical data">
 
 .. only:: html
 
- .. figure:: /auto_examples/images/thumb/sphx_glr_plot_statistics_thumb.png
-     :alt: Tutorial 02: Plot of statistical data
+  .. container:: sphx-glr-footer sphx-glr-footer-gallery
 
-     :ref:`sphx_glr_auto_examples_plot_statistics.py`
+    .. container:: sphx-glr-download sphx-glr-download-python
 
-.. raw:: html
+      :download:`Download all examples in Python source code: auto_examples_python.zip </auto_examples/auto_examples_python.zip>`
 
-    </div>
+    .. container:: sphx-glr-download sphx-glr-download-jupyter
 
-
-.. toctree::
-   :hidden:
-
-   /auto_examples/plot_statistics
-.. raw:: html
-
-    <div class="sphx-glr-clear"></div>
-
-
-
-.. only :: html
-
- .. container:: sphx-glr-footer
-    :class: sphx-glr-footer-gallery
-
-
-  .. container:: sphx-glr-download sphx-glr-download-python
-
-    :download:`Download all examples in Python source code: auto_examples_python.zip </auto_examples/auto_examples_python.zip>`
-
-
-
-  .. container:: sphx-glr-download sphx-glr-download-jupyter
-
-    :download:`Download all examples in Jupyter notebooks: auto_examples_jupyter.zip </auto_examples/auto_examples_jupyter.zip>`
+      :download:`Download all examples in Jupyter notebooks: auto_examples_jupyter.zip </auto_examples/auto_examples_jupyter.zip>`
 
 
 .. only:: html

@@ -10,8 +10,8 @@
     .. note::
         :class: sphx-glr-download-link-note
 
-        Click :ref:`here <sphx_glr_download_auto_examples_plot_statistics.py>`
-        to download the full example code
+        :ref:`Go to the end <sphx_glr_download_auto_examples_plot_statistics.py>`
+        to download the full example code.
 
 .. rst-class:: sphx-glr-example-title
 
@@ -22,7 +22,7 @@ Tutorial 02: Plot of statistical data
 =========================================
 Example script to plot statistical maps, e.g. from correlation analysis
 
-.. GENERATED FROM PYTHON SOURCE LINES 6-64
+.. GENERATED FROM PYTHON SOURCE LINES 6-60
 
 
 
@@ -30,7 +30,7 @@ Example script to plot statistical maps, e.g. from correlation analysis
 
 
 
-.. code-block:: default
+.. code-block:: Python
 
     from surface_plot import plot_stats
     import numpy as np
@@ -59,11 +59,11 @@ Example script to plot statistical maps, e.g. from correlation analysis
     # --- Plot p-values ---
     for cbar_loc in ['left', 'bottom', None]:
         # Plot two-tailed pval (i.e. without knowing wheter its is right- or left tailed)
-        output = f'{outdir}/pval_twotailed_cbar_{cbar_loc}_p{p_threshold}.png'
+        output = f'{outdir}/pval_twotailed_cbar_{cbar_loc}_p{p_threshold}.pdf'
         plot_stats.plot_pval(pval, output, p_threshold=p_threshold, cbar_loc=cbar_loc, clobber=clobber)
 
         # Plot seperate one-tailed pval (i.e. one plot with right tail (positive) and one plot with left tail (negative)) 
-        output = f'{outdir}/pval_onetailed_cbar_{cbar_loc}_p{p_threshold}.png'
+        output = f'{outdir}/pval_onetailed_cbar_{cbar_loc}_p{p_threshold}.pdf'
         plot_stats.plot_pval(pval, output, tval=tval, p_threshold=p_threshold, cbar_loc=cbar_loc, clobber=clobber)
 
     # --- Plot t-values ---
@@ -72,50 +72,44 @@ Example script to plot statistical maps, e.g. from correlation analysis
     cbar_loc = 'left'
 
     # Plot t-values with automatic limits
-    output = f'{outdir}/tval_autolim_cbar_{cbar_loc}_t{t_threshold}.png'
+    output = f'{outdir}/tval_autolim_cbar_{cbar_loc}_t{t_threshold}.pdf'
     plot_stats.plot_tval(tval, output, t_threshold=t_threshold, cbar_loc=cbar_loc, clobber=clobber)
 
     # Plot t-values with predetermined limits
     t_lim = [-3, 3]
-    output = f'{outdir}/tval_withlim_cbar_{cbar_loc}_t{t_threshold}.png'
+    output = f'{outdir}/tval_withlim_cbar_{cbar_loc}_t{t_threshold}.pdf'
     plot_stats.plot_tval(tval, output, t_lim=t_lim, t_threshold=0, cbar_loc=cbar_loc, clobber=clobber)
 
     # Plot t-values with p_threshold and calculated p-values
-    output = f'{outdir}/tval_withpval_cbar_{cbar_loc}_p{p_threshold}.png'
+    output = f'{outdir}/tval_withpval_cbar_{cbar_loc}_p{p_threshold}.pdf'
     plot_stats.plot_tval(tval, output, p_threshold=p_threshold, pval=pval, cbar_loc=cbar_loc, clobber=clobber)
 
     # Plot t-values with p_threshold and df, two-tailed
-    output = f'{outdir}/tval_withdf_twotailed_cbar_{cbar_loc}_p{p_threshold}.png'
+    output = f'{outdir}/tval_withdf_twotailed_cbar_{cbar_loc}_p{p_threshold}.pdf'
     plot_stats.plot_tval(tval, output, p_threshold=p_threshold, df=df, cbar_loc=cbar_loc, clobber=clobber)
-
-    # Plot t-values with p_threshold and df, one-tailed
-    output = f'{outdir}/tval_withdf_onetailed_cbar_{cbar_loc}_p{p_threshold}.png'
-    plot_stats.plot_tval(tval, output, p_threshold=p_threshold, df=df, two_tailed=False, cbar_loc=cbar_loc, clobber=clobber)
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 5 minutes  1.979 seconds)
+   **Total running time of the script:** (1 minutes 19.987 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_statistics.py:
 
+.. only:: html
 
-.. only :: html
+  .. container:: sphx-glr-footer sphx-glr-footer-example
 
- .. container:: sphx-glr-footer
-    :class: sphx-glr-footer-example
+    .. container:: sphx-glr-download sphx-glr-download-jupyter
 
+      :download:`Download Jupyter notebook: plot_statistics.ipynb <plot_statistics.ipynb>`
 
+    .. container:: sphx-glr-download sphx-glr-download-python
 
-  .. container:: sphx-glr-download sphx-glr-download-python
+      :download:`Download Python source code: plot_statistics.py <plot_statistics.py>`
 
-     :download:`Download Python source code: plot_statistics.py <plot_statistics.py>`
+    .. container:: sphx-glr-download sphx-glr-download-zip
 
-
-
-  .. container:: sphx-glr-download sphx-glr-download-jupyter
-
-     :download:`Download Jupyter notebook: plot_statistics.ipynb <plot_statistics.ipynb>`
+      :download:`Download zipped: plot_statistics.zip <plot_statistics.zip>`
 
 
 .. only:: html

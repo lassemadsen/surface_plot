@@ -10,8 +10,8 @@
     .. note::
         :class: sphx-glr-download-link-note
 
-        Click :ref:`here <sphx_glr_download_auto_examples_plot_statistic_2nd_threshold.py>`
-        to download the full example code
+        :ref:`Go to the end <sphx_glr_download_auto_examples_plot_statistic_2nd_threshold.py>`
+        to download the full example code.
 
 .. rst-class:: sphx-glr-example-title
 
@@ -35,7 +35,7 @@ Note: the cortical surface template is needed to segment the clusters.
 
 
 
-.. code-block:: default
+.. code-block:: Python
 
     from surface_plot import plot_stats
     import numpy as np
@@ -61,35 +61,33 @@ Note: the cortical surface template is needed to segment the clusters.
     mask['left'] = ~np.isnan(tval['left'])
     mask['right'] = ~np.isnan(tval['right'])
 
-    output = f'{outdir}/second_level.png'
+    output = f'{outdir}/second_level.pdf'
 
     plot_stats.plot_tval(tval, output, mask=mask, t_lim=t_lim, second_threshold_mask=second_level, expand_edge=True, clobber=clobber)
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  37.989 seconds)
+   **Total running time of the script:** (0 minutes 25.120 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_statistic_2nd_threshold.py:
 
+.. only:: html
 
-.. only :: html
+  .. container:: sphx-glr-footer sphx-glr-footer-example
 
- .. container:: sphx-glr-footer
-    :class: sphx-glr-footer-example
+    .. container:: sphx-glr-download sphx-glr-download-jupyter
 
+      :download:`Download Jupyter notebook: plot_statistic_2nd_threshold.ipynb <plot_statistic_2nd_threshold.ipynb>`
 
+    .. container:: sphx-glr-download sphx-glr-download-python
 
-  .. container:: sphx-glr-download sphx-glr-download-python
+      :download:`Download Python source code: plot_statistic_2nd_threshold.py <plot_statistic_2nd_threshold.py>`
 
-     :download:`Download Python source code: plot_statistic_2nd_threshold.py <plot_statistic_2nd_threshold.py>`
+    .. container:: sphx-glr-download sphx-glr-download-zip
 
-
-
-  .. container:: sphx-glr-download sphx-glr-download-jupyter
-
-     :download:`Download Jupyter notebook: plot_statistic_2nd_threshold.ipynb <plot_statistic_2nd_threshold.ipynb>`
+      :download:`Download zipped: plot_statistic_2nd_threshold.zip <plot_statistic_2nd_threshold.zip>`
 
 
 .. only:: html

@@ -10,8 +10,8 @@
     .. note::
         :class: sphx-glr-download-link-note
 
-        Click :ref:`here <sphx_glr_download_auto_examples_plot_data.py>`
-        to download the full example code
+        :ref:`Go to the end <sphx_glr_download_auto_examples_plot_data.py>`
+        to download the full example code.
 
 .. rst-class:: sphx-glr-example-title
 
@@ -30,7 +30,7 @@ Example script to plot simple data to cortical surface
 
 
 
-.. code-block:: default
+.. code-block:: Python
 
     from surface_plot import plot_surface
     import numpy as np
@@ -46,42 +46,40 @@ Example script to plot simple data to cortical surface
             'right': data_right}
 
     # Plot mean data - automatic limits
-    output = f'{outdir}/simple_autolim.png'
+    output = f'{outdir}/simple_autolim.pdf'
     plot_surface.plot_surface(data, output, clobber=clobber)
 
     # Plot mean data - predetermined limits
-    output = f'{outdir}/simple_withlim.png'
+    output = f'{outdir}/simple_withlim.pdf'
     plot_surface.plot_surface(data, output, vlim=[0, 2.5], cbar_loc='bottom', clobber=clobber)
 
     # Plot mean data - predetermined limits with title
-    output = f'{outdir}/simple_withlim_title.png'
+    output = f'{outdir}/simple_withlim_title.pdf'
     plot_surface.plot_surface(data, output, vlim=[0.5, 3], cbar_loc='bottom', title='PiB uptake', cbar_title='Mean SUVR', clobber=clobber)
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 1 minutes  23.620 seconds)
+   **Total running time of the script:** (0 minutes 33.157 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_data.py:
 
+.. only:: html
 
-.. only :: html
+  .. container:: sphx-glr-footer sphx-glr-footer-example
 
- .. container:: sphx-glr-footer
-    :class: sphx-glr-footer-example
+    .. container:: sphx-glr-download sphx-glr-download-jupyter
 
+      :download:`Download Jupyter notebook: plot_data.ipynb <plot_data.ipynb>`
 
+    .. container:: sphx-glr-download sphx-glr-download-python
 
-  .. container:: sphx-glr-download sphx-glr-download-python
+      :download:`Download Python source code: plot_data.py <plot_data.py>`
 
-     :download:`Download Python source code: plot_data.py <plot_data.py>`
+    .. container:: sphx-glr-download sphx-glr-download-zip
 
-
-
-  .. container:: sphx-glr-download sphx-glr-download-jupyter
-
-     :download:`Download Jupyter notebook: plot_data.ipynb <plot_data.ipynb>`
+      :download:`Download zipped: plot_data.zip <plot_data.zip>`
 
 
 .. only:: html

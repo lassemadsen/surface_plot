@@ -9,6 +9,12 @@ surface\_plot.config
 
    
    
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      get_surface
+   
    
 
    

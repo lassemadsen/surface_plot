@@ -10,8 +10,8 @@
     .. note::
         :class: sphx-glr-download-link-note
 
-        Click :ref:`here <sphx_glr_download_auto_examples_plot_ttest.py>`
-        to download the full example code
+        :ref:`Go to the end <sphx_glr_download_auto_examples_plot_ttest.py>`
+        to download the full example code.
 
 .. rst-class:: sphx-glr-example-title
 
@@ -30,7 +30,7 @@ Example script to plot both mean data and statistics, e.g. from paired or unpaie
 
 
 
-.. code-block:: default
+.. code-block:: Python
 
     from surface_plot import plot_mean_stats
     import numpy as np
@@ -65,44 +65,42 @@ Example script to plot both mean data and statistics, e.g. from paired or unpaie
     p_threshold = 0.01
 
     # P value
-    output = f'{outdir}/ttest_pval_p{p_threshold}.png'
+    output = f'{outdir}/ttest_pval_p{p_threshold}.pdf'
     plot_mean_stats.plot_mean_stats(mean1, mean2, tval, output, pval=pval, vlim_mean=[0, 4], p_threshold=p_threshold, cb_mean_title='Mean SUVR', mean_titles=['Baseline', 'Follow-up'], stats_titles=['Increase', 'Decrease'], clobber=clobber)
 
-    output = f'{outdir}/ttest_pval_notitle_p{p_threshold}.png'
+    output = f'{outdir}/ttest_pval_notitle_p{p_threshold}.pdf'
     plot_mean_stats.plot_mean_stats(mean1, mean2, tval, output, pval=pval, vlim_mean=[0, 4], p_threshold=p_threshold, clobber=clobber)
 
     # T value
-    output = f'{outdir}/ttest_tval_p{p_threshold}.png'
+    output = f'{outdir}/ttest_tval_p{p_threshold}.pdf'
     plot_mean_stats.plot_mean_stats(mean1, mean2, tval, output, vlim_mean=[0, 4], pval=pval, p_threshold=p_threshold, cb_mean_title='Mean SUVR', mean_titles=['Baseline', 'Follow-up'], stats_titles=['Change'], plot_tvalue=True, clobber=clobber)
 
-    output = f'{outdir}/ttest_tval_notitle_p{p_threshold}.png'
+    output = f'{outdir}/ttest_tval_notitle_p{p_threshold}.pdf'
     plot_mean_stats.plot_mean_stats(mean1, mean2, tval, output, pval=pval, vlim_mean=[0, 4], p_threshold=p_threshold, plot_tvalue=True, clobber=clobber)
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 6 minutes  13.468 seconds)
+   **Total running time of the script:** (1 minutes 57.929 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_ttest.py:
 
+.. only:: html
 
-.. only :: html
+  .. container:: sphx-glr-footer sphx-glr-footer-example
 
- .. container:: sphx-glr-footer
-    :class: sphx-glr-footer-example
+    .. container:: sphx-glr-download sphx-glr-download-jupyter
 
+      :download:`Download Jupyter notebook: plot_ttest.ipynb <plot_ttest.ipynb>`
 
+    .. container:: sphx-glr-download sphx-glr-download-python
 
-  .. container:: sphx-glr-download sphx-glr-download-python
+      :download:`Download Python source code: plot_ttest.py <plot_ttest.py>`
 
-     :download:`Download Python source code: plot_ttest.py <plot_ttest.py>`
+    .. container:: sphx-glr-download sphx-glr-download-zip
 
-
-
-  .. container:: sphx-glr-download sphx-glr-download-jupyter
-
-     :download:`Download Jupyter notebook: plot_ttest.ipynb <plot_ttest.ipynb>`
+      :download:`Download zipped: plot_ttest.zip <plot_ttest.zip>`
 
 
 .. only:: html
