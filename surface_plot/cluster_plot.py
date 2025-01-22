@@ -12,6 +12,8 @@ sns.set(style='whitegrid')
 from matplotlib.ticker import FuncFormatter
 import statsmodels.api as sm
 
+from plot_surface import plot_surface
+
 logging.basicConfig(format='%(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -19,8 +21,11 @@ def boxplot(data1, data2, slm, outdir, g1_name, g2_name, param, alpha=0.05, clob
 
     Path(outdir).mkdir(parents=True, exist_ok=True)
 
-    for hemisphere in ['left', 'right']:
-        for posneg in [[0, 'pos'], [1, 'neg']]:
+    cluster_mask = {'pos': {'left': [], 'right': []},
+                    'neg': {'left': [], 'right': []}}
+    
+    for posneg in [[0, 'pos'], [1, 'neg']]:
+        for hemisphere in ['left', 'right']:
             cluster_pval = slm[hemisphere].P['clus'][posneg[0]]['P'][0] if not slm[hemisphere].P['clus'][posneg[0]]['P'].empty else 1 # Get pval of cluster with smallest corrected p-value 
             if cluster_pval > alpha:
                 continue
@@ -28,15 +33,16 @@ def boxplot(data1, data2, slm, outdir, g1_name, g2_name, param, alpha=0.05, clob
             cluster_threshold = slm[hemisphere].cluster_threshold # Get primary cluster threshold (used for output naming)
             cluster_size = slm[hemisphere].P['clus'][posneg[0]]['nverts'][0] # Get nverts for largest cluster 
             title = f'{param}, {g1_name} - {g2_name}, {hemisphere} hemisphere\nN vertices={cluster_size:.0f}, corrected cluster p-value={cluster_pval:.1e}'
-            output = f'{outdir}/{posneg[1]}_cluster_{hemisphere}_{param}_{cluster_threshold}.pdf'
+            output = f'{outdir}/{posneg[1]}_cluster_{hemisphere}_{param}_{cluster_threshold}.jpg'
 
             if not clobber:
                 if os.path.isfile(output):
                     logger.info(f'{output} already exists... Skipping')
                     continue
             
-            output_cluster_mask = f'{output.split(".pdf")[0]}_clusterMask.csv'
-            np.savetxt(output_cluster_mask, slm[hemisphere].P['clusid'][posneg[0]][0])
+            cluster_mask[posneg][hemisphere] = slm[hemisphere].P['clusid'][posneg[0]][0]
+            # output_cluster_mask = f'{output.split(".pdf")[0]}_clusterMask.csv'
+            # np.savetxt(output_cluster_mask, slm[hemisphere].P['clusid'][posneg[0]][0])
 
             cluster_mean_1 = data1[hemisphere][slm[hemisphere].P['clusid'][posneg[0]][0] == 1].mean().to_frame(name=param)
             cluster_mean_1['group'] = g1_name
@@ -52,6 +58,9 @@ def boxplot(data1, data2, slm, outdir, g1_name, g2_name, param, alpha=0.05, clob
             plt.tight_layout()
             plt.savefig(output)
             plt.clf()
+        
+        if cluster_mask[posneg]['left'] or cluster_mask[posneg]['left']:
+            plot_surface(cluster_mask[posneg], f'{outdir}/{posneg}_cluster_{param}_{cluster_threshold}.jpg', mask=cluster_mask[posneg], cbar_loc=None)
 
 
 def slope_plot(slm, data1, data2, categories, param_name, outdir, title=None, clobber=False, alpha=0.05, extra_lines=None, print_id=False):
