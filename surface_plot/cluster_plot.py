@@ -12,7 +12,7 @@ sns.set(style='whitegrid')
 from matplotlib.ticker import FuncFormatter
 import statsmodels.api as sm
 
-from plot_surface import plot_surface
+from .plot_surface import plot_surface
 
 logging.basicConfig(format='%(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
