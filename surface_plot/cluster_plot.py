@@ -21,7 +21,7 @@ def boxplot(data1, data2, slm, outdir, g1_name, g2_name, param, alpha=0.05, clob
 
     for hemisphere in ['left', 'right']:
         for posneg in [[0, 'pos'], [1, 'neg']]:
-            cluster_pval = slm[hemisphere].P['clus'][posneg[0]]['P'][0] if not slm[hemisphere].P['clus'][posneg[0]]['P'].empty else 1 # Get pval of largest cluster 
+            cluster_pval = slm[hemisphere].P['clus'][posneg[0]]['P'][0] if not slm[hemisphere].P['clus'][posneg[0]]['P'].empty else 1 # Get pval of cluster with smallest corrected p-value 
             if cluster_pval > alpha:
                 continue
 
@@ -46,8 +46,8 @@ def boxplot(data1, data2, slm, outdir, g1_name, g2_name, param, alpha=0.05, clob
             plot_data = pd.concat([cluster_mean_1, cluster_mean_2])
 
             plt.figure()
-            sns.swarmplot(y=param, x='group', data=plot_data, hue='group', edgecolor='black', linewidth=1.5, size=7, legend=False)
-            sns.boxplot(y=param, x='group', data=plot_data)
+            sns.swarmplot(y=param, x='group', data=plot_data, hue='group', edgecolor='black', linewidth=1, size=5, legend=False)
+            sns.boxplot(y=param, x='group', data=plot_data, hue='group')
             plt.title(title)
             plt.tight_layout()
             plt.savefig(output)
