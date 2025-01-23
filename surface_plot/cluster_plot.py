@@ -62,7 +62,7 @@ def boxplot(data1, data2, slm, outdir, g1_name, g2_name, param, alpha=0.05, clob
             plt.savefig(output)
             plt.clf()
         
-        if any(cluster_mask[posneg]['left']) or any(cluster_mask[posneg]['left']):
+        if any(cluster_mask[posneg]['left']) or any(cluster_mask[posneg]['right']):
             if posneg == 'neg':
                 cmap = 'Blues'
             else:
@@ -245,15 +245,13 @@ def correlation_plot(slm, indep_data, indep_name, subjects, outdir, hue=None, al
             major_formatter = FuncFormatter(__format_values)
             ax.yaxis.set_major_formatter(major_formatter)
 
-            # ax.grid(b=True, which='major', color='w', linewidth=1.0)
-            # ax.grid(b=True, which='minor', color='w', linewidth=0.5)
             ax.set_title(title)
             plt.tight_layout()
 
             plt.savefig(output, dpi=300)
             logger.info(f'{output} saved')
 
-        if any(cluster_mask[posneg]['left']) or any(cluster_mask[posneg]['left']):
+        if any(cluster_mask[posneg]['left']) or any(cluster_mask[posneg]['right']):
             if posneg == 'neg':
                 cmap = 'Blues'
             else:
