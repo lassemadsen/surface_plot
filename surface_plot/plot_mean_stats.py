@@ -12,7 +12,7 @@ from .surface_rendering import render_surface, combine_figures, append_images
 logging.basicConfig(format='%(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-def plot_mean_stats(mean_group1, mean_group2, tval, output, plot_tvalue=False, pval=None, t_threshold=2.5, df=None, p_threshold=0.01, cluster_mask=None, mask=None, vlim_mean=None, mean_titles=None, stats_titles=None, cb_mean_title='Mean', t_lim=None, second_threshold_mask=None, plot_discrete=False, expand_edge=True, views='compact', dpi=300, clobber=False):
+def plot_mean_stats(mean_group1, mean_group2, tval, output, surface=None, plot_tvalue=False, pval=None, t_threshold=2.5, df=None, p_threshold=0.01, cluster_mask=None, mask=None, vlim_mean=None, mean_titles=None, stats_titles=None, cb_mean_title='Mean', t_lim=None, second_threshold_mask=None, plot_discrete=False, expand_edge=True, views='compact', dpi=300, clobber=False):
     """Plot mean and statistics on surface
     Will plot mean of group 1 and mean of group 2 along with p-values or t-values.
     Will plot p-values below p_threshold with positive t-values and p-values below p_threshold with negative t-values.
@@ -29,6 +29,9 @@ def plot_mean_stats(mean_group1, mean_group2, tval, output, plot_tvalue=False, p
         Dictionary with keys "left" and "right", containing data array of t-values to plot for left and right hemisphere (without header, i.e. number of vertices)
     output : str
         Location to save output
+    surface : dict | None 
+        Dictionary with keys "left" and "right", containing location of left and right surface.
+        If None, it will look for a surface with correct number of vertices in surface_plot/surface_data (mni_icbm152_t1_tal_nlin_sym_09c_both_smooth.obj)
     plot_tvalue : Boolean | False
         If true, a map of the tvalues will be plottet. 
     pval : dict | None
@@ -110,11 +113,11 @@ def plot_mean_stats(mean_group1, mean_group2, tval, output, plot_tvalue=False, p
         cmap = 'turbo'
         # Plot mean group1
         tmp_mean1 = f'{tmp_dir}/mean1.png'
-        render_surface(mean_group1_, tmp_mean1, vlim=vlim_mean, clim=vlim_mean, mask=mask, cmap=cmap, dpi=dpi, views=views)
+        render_surface(mean_group1_, tmp_mean1, surface=surface, vlim=vlim_mean, clim=vlim_mean, mask=mask, cmap=cmap, dpi=dpi, views=views)
 
         # Plot mean group2
         tmp_mean2 = f'{tmp_dir}/mean2.png'
-        render_surface(mean_group2_, tmp_mean2, vlim=vlim_mean, clim=vlim_mean, mask=mask, cmap=cmap, dpi=dpi, views=views)
+        render_surface(mean_group2_, tmp_mean2, surface=surface, lim=vlim_mean, clim=vlim_mean, mask=mask, cmap=cmap, dpi=dpi, views=views)
 
         # Combine means with shared colorbar - Setup colorbar
         cbar_args = {'clim': vlim_mean, 'title': cb_mean_title, 'fz_title': 14, 'fz_ticks': 14, 'cmap': cmap, 'position': 'bottom'}

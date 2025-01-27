@@ -18,7 +18,7 @@ import warnings
 
 warnings.simplefilter(action='ignore', category=FutureWarning) # Ignore FutureWarnings 
 
-def plot_pval(pval, output, tval=None, p_threshold=0.01, mask=None, cbar_loc='left', titles=['Positive', 'Negative'], second_threshold_mask=None, expand_edge=True, views='compact', dpi=300, clobber=False):
+def plot_pval(pval, output, surface=None, tval=None, p_threshold=0.01, mask=None, cbar_loc='left', titles=['Positive', 'Negative'], second_threshold_mask=None, expand_edge=True, views='compact', dpi=300, clobber=False):
     """Plot pval statistics on surface
     If tval is given: it will plot p-values below p_threshold with positive t-values and p-values below p_threshold with negative t-values on seperate plots. 
 
@@ -28,6 +28,9 @@ def plot_pval(pval, output, tval=None, p_threshold=0.01, mask=None, cbar_loc='le
         Dictionary with keys "left" and "right", containing data array of p-values to plot for left and right hemisphere (without header, i.e. number of vertices)
     output : str
         Location to save output
+    surface : dict | None 
+        Dictionary with keys "left" and "right", containing location of left and right surface.
+        If None, it will look for a surface with correct number of vertices in surface_plot/surface_data (mni_icbm152_t1_tal_nlin_sym_09c_both_smooth.obj)
     tval : None or dict | None
         Dictionary with keys "left" and "right", containing data array of t-values to plot for left and right hemisphere (without header, i.e. number of vertices)
         If None, the p-values are plottet without information about positive or negative t-values
@@ -88,7 +91,7 @@ def plot_pval(pval, output, tval=None, p_threshold=0.01, mask=None, cbar_loc='le
 
         with TemporaryDirectory() as tmp_dir:
             tmp_file = f'{tmp_dir}/pval.png'
-            render_surface(pval_plot, tmp_file, vlim=vlim, clim=clim_plot, cmap=cmap, dpi=dpi, views=views)
+            render_surface(pval_plot, tmp_file, surface=surface, vlim=vlim, clim=clim_plot, cmap=cmap, dpi=dpi, views=views)
 
             # Add colorbar
             combine_figures(tmp_file, output, titles=titles, cbArgs=cbar_args, dpi=dpi, clobber=clobber, views=views)
@@ -117,7 +120,7 @@ def plot_pval(pval, output, tval=None, p_threshold=0.01, mask=None, cbar_loc='le
                 outfile_posneg = f'{tmp_dir}/{posneg}.png'
                 pval_files.append(outfile_posneg)
 
-                render_surface(posneg_pval[posneg], outfile_posneg, mask=mask, vlim=vlim, clim=clim_plot, cmap=cmap, dpi=dpi)
+                render_surface(posneg_pval[posneg], outfile_posneg, surface=surface, mask=mask, vlim=vlim, clim=clim_plot, cmap=cmap, dpi=dpi)
                 posneg_figs.append(outfile_posneg)
 
             # Combine pos and neg figure and add title and combined colorbar
@@ -127,7 +130,7 @@ def plot_pval(pval, output, tval=None, p_threshold=0.01, mask=None, cbar_loc='le
         logger.info(f'{output} saved.')
 
 
-def plot_tval(tval, output, t_lim=None, t_threshold=2.5, cluster_mask=None, mask=None, p_threshold=None, pval=None, df=None, title=None, cbar_loc='left', second_threshold_mask=None, expand_edge=False, plot_discrete=False, ticks='minmax', views='compact', dpi=300, clobber=False):
+def plot_tval(tval, output, surface=None, t_lim=None, t_threshold=2.5, cluster_mask=None, mask=None, p_threshold=None, pval=None, df=None, title=None, cbar_loc='left', second_threshold_mask=None, expand_edge=False, plot_discrete=False, ticks='minmax', views='compact', dpi=300, clobber=False):
     """Plot tval statistics on surface
     Will plot t-values between thresholds
     If p_threshold and df is set, the thresholds are calculated based on the corresponding p-value. 
@@ -138,6 +141,9 @@ def plot_tval(tval, output, t_lim=None, t_threshold=2.5, cluster_mask=None, mask
         Dictionary with keys "left" and "right", containing data array of t-values to plot for left and right hemisphere (without header, i.e. number of vertices)
     output : str
         Location to save output
+    surface : dict | None 
+        Dictionary with keys "left" and "right", containing location of left and right surface.
+        If None, it will look for a surface with correct number of vertices in surface_plot/surface_data (mni_icbm152_t1_tal_nlin_sym_09c_both_smooth.obj)
     t_lim : [float, float] | None
         Color lmits of tmap. If None, the min and max values are used (symmetrical around zero)
     t_threshold : float | 2.5
@@ -254,7 +260,7 @@ def plot_tval(tval, output, t_lim=None, t_threshold=2.5, cluster_mask=None, mask
 
     with TemporaryDirectory() as tmp_dir:
         tmp_file = f'{tmp_dir}/tval.png'
-        render_surface(tval_thresholded, tmp_file, mask=mask, vlim=vlim, clim=vlim, cmap=cmap, dpi=dpi, views=views)
+        render_surface(tval_thresholded, tmp_file, surface=surface, mask=mask, vlim=vlim, clim=vlim, cmap=cmap, dpi=dpi, views=views)
 
         if ticks == 'complete':
             ticks=np.array([vlim[0], -t_threshold, t_threshold, vlim[1]])
