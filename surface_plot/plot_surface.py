@@ -15,7 +15,7 @@ import warnings
 
 warnings.simplefilter(action='ignore', category=FutureWarning) # Ignore FutureWarnings 
 
-def plot_surface(data, output, vlim=None, mask=None, cbar_loc='left', cbar_title='Mean', title=None, cmap='turbo', views='compact', clobber=False, dpi=300, clip_data=True):
+def plot_surface(data, output, surface=None, vlim=None, mask=None, cbar_loc='left', cbar_title='Mean', title=None, cmap='turbo', views='compact', clobber=False, dpi=300, clip_data=True):
     """Plot data on surface
 
     Parameters
@@ -24,6 +24,9 @@ def plot_surface(data, output, vlim=None, mask=None, cbar_loc='left', cbar_title
         Dictionary with keys "left" and "right", containing data array of data to plot for left and right hemisphere (without header, i.e. number of vertices)
     output : str
         Location to save output
+    surface : dict | None 
+        Dictionary with keys "left" and "right", containing location of left and right surface.
+        If None, it will look for a surface with correct number of vertices in surface_plot/surface_data (mni_icbm152_t1_tal_nlin_sym_09c_both_smooth.obj)
     vlim : [min, max] | None
         Value limits on the plot.
         If None, the min and max values will be used
@@ -87,7 +90,7 @@ def plot_surface(data, output, vlim=None, mask=None, cbar_loc='left', cbar_title
 
     with TemporaryDirectory() as tmp_dir:
         tmp_file = f'{tmp_dir}/data.png'
-        render_surface(plot_data, tmp_file, mask=mask, vlim=vlim, clim=vlim, cmap=cmap, views=views, dpi=dpi)
+        render_surface(plot_data, tmp_file, surface=surface, mask=mask, vlim=vlim, clim=vlim, cmap=cmap, views=views, dpi=dpi)
 
         # Add colorbar
         combine_figures(tmp_file, output, titles=title, cbArgs=cbar_args, views=views, clobber=clobber, dpi=dpi)

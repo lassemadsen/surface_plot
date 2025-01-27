@@ -3,28 +3,32 @@ import gc
 import logging
 import os
 from tempfile import TemporaryDirectory
+import copy
 
 import numpy as np
 import pandas as pd
 from PIL import Image
 from visbrain.gui import Figure
 from visbrain.objects import BrainObj, SceneObj
-from .config import get_surface
 import matplotlib.pyplot as plt
+from .config import get_surface
 
 logging.basicConfig(format='%(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-def render_surface(data, outfile, mask=None, vlim=None, clim=None, cmap='turbo_r', views='compact', dpi=300, clobber=False):
+def render_surface(data, outfile, surface=None, mask=None, vlim=None, clim=None, cmap='turbo_r', views='compact', dpi=300, clobber=False):
     """Render surface with given input data
 
     Parameters
     ----------
     data : dict
-        Dictionary with keys "left" and "right", containing data array to plot for left and right hemisphere (without header, i.e. number of vertices)
+        Dictionary with keys "left" and "right", with data array to plot for left and right hemisphere (without header, i.e. number of vertices)
     outfile : string
         Location of output file
+    surface : dict | None 
+        Dictionary with keys "left" and "right", containing location of left and right surface.
+        If None, it will look for a surface with correct number of vertices in surface_plot/surface_data (mni_icbm152_t1_tal_nlin_sym_09c_both_smooth.obj)
     vlim : tuple [vmin, vmax] | None
         The threshold limits.
         Values under vmin is set to darkgrey
@@ -55,7 +59,17 @@ def render_surface(data, outfile, mask=None, vlim=None, clim=None, cmap='turbo_r
         logging.info(f'{outfile} exists... Use clobber=True to overwrite')
         return
 
-    surface = get_surface(len(data['left']), len(data['right']))
+    # Handle brainObject 
+    b_objects = {'left': [], 'right': [], 'both': []}
+    if surface is None: 
+        surface = get_surface(len(data['left']), len(data['right']))
+        for hemisphere in b_objects:
+            b_objects[hemisphere] = BrainObj(surface[hemisphere], hemisphere='both', translucent=False)
+    else:
+        for hemisphere in ['left', 'right']:
+            b_objects[hemisphere] = BrainObj(surface[hemisphere], hemisphere='both', translucent=False)
+        # Generate "both" surface
+        b_objects['both'] = BrainObj('both', vertices=np.concatenate([b_objects['left'].vertices, b_objects['right'].vertices]), faces=np.concatenate([b_objects['left'].faces, b_objects['right'].faces]), hemisphere='both', translucent=False)
     
     if vlim is None:
         vmin = np.round(np.min([np.min(data['left']), np.min(data['right'])]),2)
@@ -101,7 +115,7 @@ def render_surface(data, outfile, mask=None, vlim=None, clim=None, cmap='turbo_r
                 view = plot.split('_')[-1]
 
                 # Create Brain Object
-                b_obj = BrainObj(surface[hemisphere], hemisphere='both', translucent=False)
+                b_obj = BrainObj(hemisphere, b_objects[hemisphere].vertices, b_objects[hemisphere].faces, hemisphere='both', translucent=False)
 
                 # Add activation to Brain Object
                 b_obj.add_activation(data=plot_data[hemisphere], cmap=cmap, clim=clim, vmin=vlim[0],
