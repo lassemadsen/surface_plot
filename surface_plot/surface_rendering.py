@@ -69,7 +69,8 @@ def render_surface(data, outfile, surface=None, mask=None, vlim=None, clim=None,
         for hemisphere in ['left', 'right']:
             b_objects[hemisphere] = BrainObj(surface[hemisphere], hemisphere='both', translucent=False)
         # Generate "both" surface
-        b_objects['both'] = BrainObj('both', vertices=np.concatenate([b_objects['left'].vertices, b_objects['right'].vertices]), faces=np.concatenate([b_objects['left'].faces, b_objects['right'].faces]), hemisphere='both', translucent=False)
+        b_objects['both'] = BrainObj('both', vertices=np.concatenate([b_objects['left'].vertices, b_objects['right'].vertices]), 
+                                     faces=np.concatenate([b_objects['left'].faces, b_objects['right'].faces + b_objects['left'].vertices.shape[0]]), hemisphere='both', translucent=False)
     
     if vlim is None:
         vmin = np.round(np.min([np.min(data['left']), np.min(data['right'])]),2)
@@ -383,6 +384,20 @@ def combine_figures(files, outfile, direction='horizontal', cbArgs=None, titles=
                     pltmargin = -0.15
                     height = .4
                     width = .015
+                    cbArgs['position'] = 'bottom' # Set position to "correct" position identifiable by f.shared_colorbar 
+            if views == 'complete':
+                if cbArgs['position'] == 'left':
+                    pltmargin = -0.30
+                    height = .35
+                    width = .009
+                elif cbArgs['position'] == 'bottom': # Special scenario were tval is plottet alongside two mean images combined to one (e.g. baseline, followup, tval). Scale cbar accordingly
+                    pltmargin = 0.02
+                    height = .3
+                    width = .008
+                elif cbArgs['position'] == 'bottom_tval_scaled': # Special scenario were tval is plottet alongside two mean images combined to one (e.g. baseline, followup, tval). Scale cbar accordingly
+                    pltmargin = 0.02
+                    height = .3
+                    width = .008
                     cbArgs['position'] = 'bottom' # Set position to "correct" position identifiable by f.shared_colorbar 
         if n_fig == 2:
             if views == 'standard': 
