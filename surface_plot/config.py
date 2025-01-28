@@ -9,13 +9,6 @@ SURFACE_MNI = {'left': f'{pathlib.Path(__file__).parent.resolve()}/surface_data/
 N_VERTEX_MNI = {'left': 81349,
                 'right': 81233}
 
-SURFACE_FS = {'left': f'{pathlib.Path(__file__).parent.resolve()}/surface_data/lh.pial.gii',
-               'right': f'{pathlib.Path(__file__).parent.resolve()}/surface_data/rh.pial.gii',
-               'both': f'{pathlib.Path(__file__).parent.resolve()}/surface_data/both.pial.gii'}
-
-N_VERTEX_FS = {'left': 163842,
-                'right': 163842}
-
 def get_surface(nv_left, nv_right):
     """Return the surface template, that fits with the number of vertices in the left and right hemisphere
 
@@ -29,8 +22,6 @@ def get_surface(nv_left, nv_right):
 
     if nv_left == N_VERTEX_MNI['left'] and nv_right == N_VERTEX_MNI['right']:
         surface = SURFACE_MNI
-    elif nv_left == N_VERTEX_FS['left'] and nv_right == N_VERTEX_FS['right']:
-        surface = SURFACE_FS
     else:
         sys.exit('Error: Number of vertices do not match any surface...')
 
