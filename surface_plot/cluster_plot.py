@@ -45,7 +45,10 @@ def boxplot(data1, data2, slm, outdir, g1_name, g2_name, param, alpha=0.05, clob
                     logger.info(f'{output} already exists... Skipping')
                     continue
             
-            cluster_mask[posneg][hemisphere] = slm[hemisphere].P['clusid'][posneg_idx][0]
+            cluster_mask[posneg][hemisphere] = np.copy(slm[hemisphere].P['clusid'][posneg_idx][0])
+            # Ensure only surviving clusters are included
+            survived_cluster_idx = list(slm[hemisphere].P['clus'][posneg_idx].loc[slm[hemisphere].P['clus'][posneg_idx].P < 0.05, 'clusid'])
+            cluster_mask[posneg][hemisphere][~np.isin(cluster_mask[posneg][hemisphere], survived_cluster_idx)] = 0
 
             cluster_mean_1 = data1[hemisphere][cluster_mask[posneg][hemisphere] == 1].mean().to_frame(name=param)
             cluster_mean_1['group'] = g1_name
@@ -67,7 +70,8 @@ def boxplot(data1, data2, slm, outdir, g1_name, g2_name, param, alpha=0.05, clob
                 cmap = 'Blues'
             else:
                 cmap = 'Reds'
-            plot_surface(cluster_mask[posneg], f'{outdir}/{posneg}_cluster_{param}_{cluster_threshold}.jpg', clip_data=False, cbar_loc=None, cmap=cmap, vlim=[0.5, 1.5])
+            plot_surface(cluster_mask[posneg], f'{outdir}/{posneg}_cluster_{param}_{cluster_threshold}.jpg', 
+                         clip_data=False, cbar_loc=None, cmap=cmap, vlim=[0.5, 1.5], clobber=clobber)
 
 
 def slope_plot(slm, data1, data2, categories, param_name, outdir, title=None, clobber=False, alpha=0.05, extra_lines=None, print_id=False):
@@ -221,7 +225,10 @@ def correlation_plot(slm, indep_data, indep_name, subjects, outdir, hue=None, al
                     logger.info(f'{output} already exists... Skipping')
                     continue
 
-            cluster_mask[posneg][hemisphere] = slm[hemisphere].P['clusid'][posneg_idx][0]
+            cluster_mask[posneg][hemisphere] = np.copy(slm[hemisphere].P['clusid'][posneg_idx][0])
+            # Ensure only surviving clusters are included
+            survived_cluster_idx = list(slm[hemisphere].P['clus'][posneg_idx].loc[slm[hemisphere].P['clus'][posneg_idx].P < 0.05, 'clusid'])
+            cluster_mask[posneg][hemisphere][~np.isin(cluster_mask[posneg][hemisphere], survived_cluster_idx)] = 0
                     
             cluster_mean = indep_data[hemisphere][slm[hemisphere].P['clusid'][posneg_idx][0] == 1].mean()
 
@@ -256,7 +263,8 @@ def correlation_plot(slm, indep_data, indep_name, subjects, outdir, hue=None, al
                 cmap = 'Blues'
             else:
                 cmap = 'Reds'
-            plot_surface(cluster_mask[posneg], f'{outdir}/{posneg}_cluster_{indep_name}_{predictor_name}_{cluster_threshold}.jpg', clip_data=False, cbar_loc=None, cmap=cmap, vlim=[0.5, 1.5])
+            plot_surface(cluster_mask[posneg], f'{outdir}/{posneg}_cluster_{indep_name}_{predictor_name}_{cluster_threshold}.jpg', 
+                         clip_data=False, cbar_loc=None, cmap=cmap, vlim=[0.5, 1.5], clobber=clobber)
 
 
 # --- Helper functions ---
