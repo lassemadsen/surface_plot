@@ -13,7 +13,7 @@ logging.basicConfig(format='%(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 def plot_mean_stats(mean_group1, mean_group2, tval, output, surface=None, plot_tvalue=False, pval=None, t_threshold=2.5, 
-                    df=None, p_threshold=0.01, cluster_mask=None, mask=None, vlim_mean=None, mean_titles=None, stats_titles=None, 
+                    df=None, p_threshold=0.01, cluster_mask=None, mask=None, vlim=None, mean_titles=None, stats_titles=None, 
                     cb_mean_title='Mean', t_lim=None, second_threshold_mask=None, plot_discrete=False, expand_edge=True, 
                     views='compact', dpi=300, clobber=False):
     """Plot mean and statistics on surface
@@ -58,7 +58,7 @@ def plot_mean_stats(mean_group1, mean_group2, tval, output, surface=None, plot_t
     mask : dict
         Dictionary with keys "left" and "right", containing 1 inside mask and 0 outside mask
         Vertices outside mask will plottet as darkgrey
-    vlim_mean : tuple [min, max] | [0,1]
+    vlim : tuple [min, max] | [0,1]
         Limits of the mean plots 
     mean_titles : list | None
         Titles of the two mean plots : ['title1', 'title2']. If None, no title is added
@@ -118,11 +118,11 @@ def plot_mean_stats(mean_group1, mean_group2, tval, output, surface=None, plot_t
         cmap = 'turbo'
         # Plot mean group1
         tmp_mean1 = f'{tmp_dir}/mean1.png'
-        render_surface(mean_group1_, tmp_mean1, surface=surface, vlim=vlim_mean, clim=vlim_mean, mask=mask, cmap=cmap, dpi=dpi, views=views)
+        render_surface(mean_group1_, tmp_mean1, surface=surface, vlim=vlim, clim=vlim, mask=mask, cmap=cmap, dpi=dpi, views=views)
 
         # Plot mean group2
         tmp_mean2 = f'{tmp_dir}/mean2.png'
-        render_surface(mean_group2_, tmp_mean2, surface=surface, vlim=vlim_mean, clim=vlim_mean, mask=mask, cmap=cmap, dpi=dpi, views=views)
+        render_surface(mean_group2_, tmp_mean2, surface=surface, vlim=vlim, clim=vlim, mask=mask, cmap=cmap, dpi=dpi, views=views)
 
         # Combine means with shared colorbar - Setup colorbar
         cbar_args = {'clim': vlim_mean, 'title': cb_mean_title, 'fz_title': 14, 'fz_ticks': 14, 'cmap': cmap, 'position': 'bottom'}
