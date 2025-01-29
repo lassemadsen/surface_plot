@@ -103,16 +103,16 @@ def plot_mean_stats(mean_group1, mean_group2, tval, output, surface=None, plot_t
     else: 
         logger.warning('Titles not given for both mean and stats. Plot might look weird..')
     
-    if vlim_mean is None:
+    if vlim is None:
         mean_min = round(min(np.nanpercentile(mean_group1['left'], 0.5), np.nanpercentile(mean_group1['right'], 0.5), 
                              np.nanpercentile(mean_group2['left'], 0.5), np.nanpercentile(mean_group2['right'], 0.5)),2)
         mean_max = round(max(np.nanpercentile(mean_group1['left'], 99.5), np.nanpercentile(mean_group1['right'], 99.5), 
                              np.nanpercentile(mean_group2['left'], 99.5), np.nanpercentile(mean_group2['right'], 99.5)),2)
-        vlim_mean = [mean_min, mean_max]
+        vlim = [mean_min, mean_max]
 
     for hemisphere in ['left', 'right']:
-        mean_group1_[hemisphere] = np.clip(mean_group1_[hemisphere], vlim_mean[0]+1e-3, vlim_mean[1]-1e-3)
-        mean_group2_[hemisphere] = np.clip(mean_group2_[hemisphere], vlim_mean[0]+1e-3, vlim_mean[1]-1e-3)
+        mean_group1_[hemisphere] = np.clip(mean_group1_[hemisphere], vlim[0]+1e-3, vlim[1]-1e-3)
+        mean_group2_[hemisphere] = np.clip(mean_group2_[hemisphere], vlim[0]+1e-3, vlim[1]-1e-3)
 
     with TemporaryDirectory() as tmp_dir:
         cmap = 'turbo'
@@ -125,7 +125,7 @@ def plot_mean_stats(mean_group1, mean_group2, tval, output, surface=None, plot_t
         render_surface(mean_group2_, tmp_mean2, surface=surface, vlim=vlim, clim=vlim, mask=mask, cmap=cmap, dpi=dpi, views=views)
 
         # Combine means with shared colorbar - Setup colorbar
-        cbar_args = {'clim': vlim_mean, 'title': cb_mean_title, 'fz_title': 14, 'fz_ticks': 14, 'cmap': cmap, 'position': 'bottom'}
+        cbar_args = {'clim': vlim, 'title': cb_mean_title, 'fz_title': 14, 'fz_ticks': 14, 'cmap': cmap, 'position': 'bottom'}
 
         tmp_mean = f'{tmp_dir}/mean.png'
         combine_figures([tmp_mean1, tmp_mean2], tmp_mean, cbArgs=cbar_args, titles=mean_titles, dpi=dpi, views=views)
