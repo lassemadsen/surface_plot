@@ -58,14 +58,13 @@ def boxplot(data1, data2, slm, outdir, g1_name, g2_name, param, paired=False, al
             plot_data = pd.concat([cluster_mean_1, cluster_mean_2])
 
             plt.figure()
-            sns.boxplot(y=param, x='group', data=plot_data, hue='group')
+            sns.boxplot(x='group', y=param, data=plot_data, hue='group')
             if paired:
-                plot_data_melted = plot_data.melt(var_name='Group', value_name='Value')
-                for i in range(len(plot_data)):
-                    plt.plot([0, 1], [plot_data.iloc[i, 0], plot_data.iloc[i, 1]], color='gray', linestyle='--', linewidth=1)
-                sns.stripplot(x='Group', y='Value', data=plot_data_melted, jitter=False, color='black', size=5, dodge=True)
+                for i in range(len(cluster_mean_1)):
+                    plt.plot([0, 1], [cluster_mean_1.iloc[i, 0], cluster_mean_2.iloc[i, 0]], color='gray', linestyle='--', linewidth=1)
+                sns.stripplot(x='group', y=param, data=plot_data, jitter=False, color='black', size=5, dodge=True)
             else:
-                sns.swarmplot(y=param, x='group', data=plot_data, hue='group', edgecolor='black', linewidth=1, size=5, legend=False)
+                sns.swarmplot(x='group', y=param, data=plot_data, hue='group', edgecolor='black', linewidth=1, size=5, legend=False)
             plt.title(title)
             plt.tight_layout()
             plt.savefig(output)
@@ -78,6 +77,7 @@ def boxplot(data1, data2, slm, outdir, g1_name, g2_name, param, paired=False, al
                 cmap = 'Reds'
             plot_surface(cluster_mask[posneg], f'{outdir}/{posneg}_cluster_{param.replace(" ", "_")}_{cluster_threshold}.jpg', 
                          clip_data=False, cbar_loc=None, cmap=cmap, vlim=[0.5, 1.5], clobber=clobber)
+
 
 def correlation_plot(slm, indep_data, indep_name, subjects, outdir, hue=None, alpha=0.05, clobber=False):
     """
