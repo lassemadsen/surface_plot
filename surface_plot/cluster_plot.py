@@ -74,7 +74,7 @@ def boxplot(data1, data2, slm, outdir, g1_name, g2_name, param, alpha=0.05, clob
                          clip_data=False, cbar_loc=None, cmap=cmap, vlim=[0.5, 1.5], clobber=clobber)
 
 
-def slope_plot(data1, data2, slm, g1_name, g2_name, param, outdir, title=None, clobber=False, alpha=0.05, extra_lines=None, print_id=False):
+def slope_plot(data1, data2, slm, outdir, g1_name, g2_name, param, title=None, clobber=False, alpha=0.05, extra_lines=None, print_id=False):
     """
     
     Parameters
@@ -107,14 +107,14 @@ def slope_plot(data1, data2, slm, g1_name, g2_name, param, outdir, title=None, c
 
             cluster_threshold = slm[hemisphere].cluster_threshold # Get primary cluster threshold (used for output naming)
             cluster_size = slm[hemisphere].P['clus'][posneg[0]]['nverts'][0] # Get nverts for largest cluster 
-            output = f'{outdir}/{param.replace(" ", "_")}_{posneg[1]}_cluster_{hemisphere}_{g1_name.replace(" ", "_")}_{g2_name.replace(" ", "_")}_{cluster_threshold}.png'
+            output = f'{outdir}/{param.replace(" ", "_")}_{posneg[1]}_cluster_{hemisphere}_{g1_name.replace(" ", "_")}_{g2_name.replace(" ", "_")}_{cluster_threshold}.pdf'
 
             if not clobber:
                 if os.path.isfile(output):
                     logger.info(f'{output} already exists... Skipping')
                     continue
 
-            output_cluster_mask = f'{output.split(".png")[0]}_clusterMask.csv'
+            output_cluster_mask = f'{output.split(".pdf")[0]}_clusterMask.csv'
             np.savetxt(output_cluster_mask, slm[hemisphere].P['clusid'][posneg[0]][0])
                     
             cluster_mean1 = data1[hemisphere][slm[hemisphere].P['clusid'][posneg[0]][0] == 1].mean()
