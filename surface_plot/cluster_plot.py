@@ -63,7 +63,7 @@ def boxplot(data1, data2, slm, outdir, g1_name, g2_name, param, alpha=0.05, clob
             plt.title(title)
             plt.tight_layout()
             plt.savefig(output)
-            plt.clf()
+            plt.close()
         
         if any(cluster_mask[posneg]['left']) or any(cluster_mask[posneg]['right']):
             if posneg == 'neg':
