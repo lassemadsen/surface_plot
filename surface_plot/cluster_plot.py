@@ -70,7 +70,7 @@ def boxplot(data1, data2, slm, outdir, g1_name, g2_name, param, alpha=0.05, clob
                 cmap = 'Blues'
             else:
                 cmap = 'Reds'
-            plot_surface(cluster_mask[posneg], f'{outdir}/{posneg}_cluster_{param}_{cluster_threshold}.jpg', 
+            plot_surface(cluster_mask[posneg], f'{outdir}/{posneg}_cluster_{param.replace(" ", "_")}_{cluster_threshold}.jpg', 
                          clip_data=False, cbar_loc=None, cmap=cmap, vlim=[0.5, 1.5], clobber=clobber)
 
 
@@ -216,9 +216,9 @@ def correlation_plot(slm, indep_data, indep_name, subjects, outdir, hue=None, al
             predictor_name = slm[hemisphere].model.matrix.columns[1] # Get predictor name (second column name - first is intercept)
             if len(slm[hemisphere].model.matrix.columns) > 2:
                 covars = '+'.join(slm[hemisphere].model.matrix.columns[2:])
-                output = f'{outdir}/{posneg}_cluster_{hemisphere}_{indep_name}_{predictor_name}+{covars}_{cluster_threshold}.png'
+                output = f'{outdir}/{posneg}_cluster_{hemisphere}_{indep_name.replace(" ", "_")}_{predictor_name.replace(" ", "_")}+{covars}_{cluster_threshold}.png'
             else:
-                output = f'{outdir}/{posneg}_cluster_{hemisphere}_{indep_name}_{predictor_name}_{cluster_threshold}.png'
+                output = f'{outdir}/{posneg}_cluster_{hemisphere}_{indep_name.replace(" ", "_")}_{predictor_name.replace(" ", "_")}_{cluster_threshold}.png'
 
             if not clobber:
                 if os.path.isfile(output):
