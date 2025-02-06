@@ -31,7 +31,7 @@ def boxplot(data1, data2, slm, outdir, g1_name, g2_name, param, alpha=0.05, clob
             posneg_idx = 1
 
         for hemisphere in ['left', 'right']:
-            cluster_pval = slm[hemisphere].P['clus'][posneg_idx]['P'][0] if not slm[hemisphere].P['clus'][posneg_idx]['P'].empty else 1 # Get pval of cluster with smallest corrected p-value 
+            cluster_pval = slm[hemisphere].P['clus'][posneg_idx]['P'][0] if not slm[hemisphere].P['clus'][posneg_idx]['P'].empty and not all(np.isnan(slm[hemisphere].P['clus'][posneg_idx]['P'])) else 1 # Get pval of cluster with smallest corrected p-value 
             if cluster_pval > alpha:
                 continue
 
