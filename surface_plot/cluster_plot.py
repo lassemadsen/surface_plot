@@ -38,7 +38,7 @@ def boxplot(data1, data2, slm, outdir, g1_name, g2_name, param, alpha=0.05, clob
             cluster_threshold = slm[hemisphere].cluster_threshold # Get primary cluster threshold (used for output naming)
             cluster_size = slm[hemisphere].P['clus'][posneg_idx]['nverts'][0] # Get nverts for largest cluster 
             title = f'{param}, {g1_name} - {g2_name}, {hemisphere} hemisphere\nN vertices={cluster_size:.0f}, corrected cluster p-value={cluster_pval:.1e}'
-            output = f'{outdir}/{posneg}_cluster_{hemisphere}_{param}_{cluster_threshold}.pdf'
+            output = f'{outdir}/{posneg}_cluster_{hemisphere}_{param.replace(" ", "_")}_{cluster_threshold}.pdf'
 
             if not clobber:
                 if os.path.isfile(output):
