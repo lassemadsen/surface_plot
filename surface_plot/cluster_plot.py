@@ -74,7 +74,7 @@ def boxplot(data1, data2, slm, outdir, g1_name, g2_name, param, alpha=0.05, clob
                          clip_data=False, cbar_loc=None, cmap=cmap, vlim=[0.5, 1.5], clobber=clobber)
 
 
-def slope_plot(slm, data1, data2, categories, param_name, outdir, title=None, clobber=False, alpha=0.05, extra_lines=None, print_id=False):
+def slope_plot(data1, data2, slm, g1_name, g2_name, param, outdir, title=None, clobber=False, alpha=0.05, extra_lines=None, print_id=False):
     """
     
     Parameters
@@ -83,11 +83,12 @@ def slope_plot(slm, data1, data2, categories, param_name, outdir, title=None, cl
         Dataframe of first data
     data2 : pd.DataFrame
         Dataframe of second data
-    param_name : str
+    param : str
         Name of parameter - used for file naming 
-    categories : list of str
-        Names of [data1, data2] in correct order
-        I.e ['baseline', 'followup'] if paired t-test or ['pib_pos', 'control'] if independent t-test
+    g1_name : str 
+        Name of group1
+    g2_name : str
+        Name of group 2
     """
 
     Path(outdir).mkdir(parents=True, exist_ok=True)
@@ -106,7 +107,7 @@ def slope_plot(slm, data1, data2, categories, param_name, outdir, title=None, cl
 
             cluster_threshold = slm[hemisphere].cluster_threshold # Get primary cluster threshold (used for output naming)
             cluster_size = slm[hemisphere].P['clus'][posneg[0]]['nverts'][0] # Get nverts for largest cluster 
-            output = f'{outdir}/{param_name}_{posneg[1]}_cluster_{hemisphere}_{categories[0]}_{categories[1]}_{cluster_threshold}.png'
+            output = f'{outdir}/{param.replace(" ", "_")}_{posneg[1]}_cluster_{hemisphere}_{g1_name.replace(" ", "_")}_{g2_name.replace(" ", "_")}_{cluster_threshold}.png'
 
             if not clobber:
                 if os.path.isfile(output):
@@ -119,7 +120,7 @@ def slope_plot(slm, data1, data2, categories, param_name, outdir, title=None, cl
             cluster_mean1 = data1[hemisphere][slm[hemisphere].P['clusid'][posneg[0]][0] == 1].mean()
             cluster_mean2 = data2[hemisphere][slm[hemisphere].P['clusid'][posneg[0]][0] == 1].mean()
 
-            title = f'{param_name}: {categories[0]} - {categories[1]}, {hemisphere} hemisphere\nN vertices={cluster_size:.0f}, corrected cluster p-value={cluster_pval:.1e}'
+            title = f'{param}: {g1_name} - {g2_name}, {hemisphere} hemisphere\nN vertices={cluster_size:.0f}, corrected cluster p-value={cluster_pval:.1e}'
 
             _, ax = plt.subplots(1,1,figsize=(14,14), dpi=80)
 
@@ -156,7 +157,7 @@ def slope_plot(slm, data1, data2, categories, param_name, outdir, title=None, cl
             ax.set(xlim=(.9,2.1), ylim=(ymin,ymax))
             ax.set_ylabel('Mean', fontsize=18)
             ax.set_xticks([1,2])
-            ax.set_xticklabels([categories[0], categories[1]], fontdict={'size':20})
+            ax.set_xticklabels([g1_name, g2_name], fontdict={'size':20})
             plt.yticks(fontsize=18)
 
             # Lighten borders
@@ -166,7 +167,6 @@ def slope_plot(slm, data1, data2, categories, param_name, outdir, title=None, cl
             plt.gca().spines["left"].set_alpha(.0)
             plt.savefig(output, dpi=300)
             plt.close()
-            logger.info(f'{output} saved')
 
 def correlation_plot(slm, indep_data, indep_name, subjects, outdir, hue=None, alpha=0.05, clobber=False):
     """
