@@ -2,14 +2,14 @@ import logging
 import os
 from pathlib import Path
 
-import matplotlib.lines as mlines
+import matplotlib
 import matplotlib.pyplot as plt
+from matplotlib.colors import ListedColormap
 import numpy as np
 import pandas as pd
 import seaborn as sns
 sns.set(font_scale=1.2)
 sns.set(style='whitegrid')
-from matplotlib.ticker import FuncFormatter
 import statsmodels.api as sm
 
 from .plot_surface import plot_surface
@@ -17,13 +17,15 @@ from .plot_surface import plot_surface
 logging.basicConfig(format='%(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-def boxplot(data1, data2, slm, outdir, g1_name, g2_name, param, paired=False, alpha=0.05, clobber=False):
+def boxplot(data1, data2, slm, outdir, g1_name, g2_name, param, paired=False, alpha=0.05, cluster_summary=None, clobber=False):
 
+    outdir = f'{outdir}/cluster_details'
     Path(outdir).mkdir(parents=True, exist_ok=True)
 
-    cluster_mask = {'pos': {'left': np.zeros_like(data1['left'].iloc[:,0]), 'right': np.zeros_like(data1['right'].iloc[:,0])},
-                    'neg': {'left': np.zeros_like(data1['left'].iloc[:,0]), 'right': np.zeros_like(data1['right'].iloc[:,0])}}
-    
+    cluster_mask = {'pos': {'left': [], 'right': []},
+                    'neg': {'left': [], 'right': []}}
+    cluster_threshold = slm['left'].cluster_threshold # Get primary cluster threshold (used for output naming)
+
     for posneg in ['pos','neg']:
         if posneg == 'pos':
             posneg_idx = 0
@@ -31,52 +33,61 @@ def boxplot(data1, data2, slm, outdir, g1_name, g2_name, param, paired=False, al
             posneg_idx = 1
 
         for hemisphere in ['left', 'right']:
-            cluster_pval = slm[hemisphere].P['clus'][posneg_idx]['P'][0] if not slm[hemisphere].P['clus'][posneg_idx]['P'].empty and not all(np.isnan(slm[hemisphere].P['clus'][posneg_idx]['P'])) else 1 # Get pval of cluster with smallest corrected p-value 
-            if cluster_pval > alpha:
-                continue
+            clusids = list(slm[hemisphere].P['clus'][posneg_idx].loc[slm[hemisphere].P['clus'][posneg_idx].P < alpha, 'clusid'])
 
-            cluster_threshold = slm[hemisphere].cluster_threshold # Get primary cluster threshold (used for output naming)
-            cluster_size = slm[hemisphere].P['clus'][posneg_idx]['nverts'][0] # Get nverts for largest cluster 
-            title = f'{param}, {g1_name} - {g2_name}, {hemisphere} hemisphere\nN vertices={cluster_size:.0f}, corrected cluster p-value={cluster_pval:.1e}'
-            output = f'{outdir}/{posneg}_cluster_{hemisphere}_{param.replace(" ", "_")}_{cluster_threshold}.pdf'
+            for clusid in clusids:
+                cluster_pval = slm[hemisphere].P['clus'][posneg_idx].loc[slm[hemisphere].P['clus'][posneg_idx].clusid == clusid, 'P'].values[0]
+                
+                output = f'{outdir}/{posneg}_cluster{clusid}_{hemisphere}_{param.replace(" ", "_")}_{cluster_threshold}.pdf'
 
-            if not clobber:
-                if os.path.isfile(output):
-                    logger.info(f'{output} already exists... Skipping')
-                    continue
+                # Set title
+                if cluster_summary is None:
+                    cluster_size = slm[hemisphere].P['clus'][posneg_idx].loc[slm[hemisphere].P['clus'][posneg_idx].clusid == clusid, 'nverts'].values[0] # Get number of vertices in cluster
+                    title = f'{param}, {g1_name} - {g2_name}. Cluster {clusid}.\n{hemisphere} hemisphere, N vertices={cluster_size:.0f}, FWE p-value={cluster_pval:.1e}'
+                else:
+                    cluster_size = cluster_summary.loc[(cluster_summary.Hemisphere == hemisphere) & (cluster_summary.clusid == clusid), 'Cluster area (mm2)'].values[0]
+                    cluster_location = cluster_summary.loc[(cluster_summary.Hemisphere == hemisphere) & (cluster_summary.clusid == clusid), 'Anatomical location (peak)'].values[0]
+
+                    title = f'{param}, {g1_name} - {g2_name}. Cluster {clusid}.\n{cluster_location} - {hemisphere},' + rf' Size: {cluster_size} mm$^2$, FWE p-value={cluster_pval:.1e}'
+
+                if not clobber:
+                    if os.path.isfile(output):
+                        logger.info(f'{output} already exists... Skipping')
+                        continue
             
-            cluster_mask[posneg][hemisphere] = np.copy(slm[hemisphere].P['clusid'][posneg_idx][0])
-            # Ensure only surviving clusters are included
-            survived_cluster_idx = list(slm[hemisphere].P['clus'][posneg_idx].loc[slm[hemisphere].P['clus'][posneg_idx].P < 0.05, 'clusid'])
-            cluster_mask[posneg][hemisphere][~np.isin(cluster_mask[posneg][hemisphere], survived_cluster_idx)] = 0
+                # Get mean of cluster in each group
+                cluster_mean_g1 = data1[hemisphere][slm[hemisphere].P['clusid'][posneg_idx][0] == clusid].mean().to_frame(name=param)
+                cluster_mean_g1['group'] = g1_name
+                cluster_mean_g2 = data2[hemisphere][slm[hemisphere].P['clusid'][posneg_idx][0] == clusid].mean().to_frame(name=param)
+                cluster_mean_g2['group'] = g2_name
 
-            cluster_mean_1 = data1[hemisphere][cluster_mask[posneg][hemisphere] == 1].mean().to_frame(name=param)
-            cluster_mean_1['group'] = g1_name
-            cluster_mean_2 = data2[hemisphere][cluster_mask[posneg][hemisphere] == 1].mean().to_frame(name=param)
-            cluster_mean_2['group'] = g2_name
+                # Plot boxplot
+                plot_data = pd.concat([cluster_mean_g1, cluster_mean_g2])
 
-            plot_data = pd.concat([cluster_mean_1, cluster_mean_2])
+                plt.figure()
+                sns.boxplot(x='group', y=param, data=plot_data, hue='group')
+                if paired:
+                    for i in range(len(cluster_mean_g1)):
+                        plt.plot([0, 1], [cluster_mean_g1.iloc[i, 0], cluster_mean_g2.iloc[i, 0]], color='gray', linestyle='--', linewidth=1)
+                    sns.stripplot(x='group', y=param, data=plot_data, jitter=False, color='black', size=5, dodge=True)
+                else:
+                    sns.swarmplot(x='group', y=param, data=plot_data, hue='group', edgecolor='black', linewidth=1, size=5, legend=False)
+                plt.title(title)
+                plt.tight_layout()
+                plt.savefig(output)
+                plt.close()
 
-            plt.figure()
-            sns.boxplot(x='group', y=param, data=plot_data, hue='group')
-            if paired:
-                for i in range(len(cluster_mean_1)):
-                    plt.plot([0, 1], [cluster_mean_1.iloc[i, 0], cluster_mean_2.iloc[i, 0]], color='gray', linestyle='--', linewidth=1)
-                sns.stripplot(x='group', y=param, data=plot_data, jitter=False, color='black', size=5, dodge=True)
-            else:
-                sns.swarmplot(x='group', y=param, data=plot_data, hue='group', edgecolor='black', linewidth=1, size=5, legend=False)
-            plt.title(title)
-            plt.tight_layout()
-            plt.savefig(output)
-            plt.close()
+                # Assign clusid to mask
+                cluster_mask[posneg][hemisphere] = np.where(np.isin(slm[hemisphere].P['clusid'][posneg_idx][0], clusids), slm[hemisphere].P['clusid'][posneg_idx][0], 0)
         
         if any(cluster_mask[posneg]['left']) or any(cluster_mask[posneg]['right']):
-            if posneg == 'neg':
-                cmap = 'Blues'
-            else:
-                cmap = 'Reds'
+            tab10_colors = plt.cm.tab10.colors  # Get the base colors from tab10
+            custom_cmap = ListedColormap([tab10_colors[i - 1] for i in clusids])
+            matplotlib.colormaps.register(custom_cmap, name=f'custom_cmap_{posneg}')
+            cmap = f'custom_cmap_{posneg}'
+            
             plot_surface(cluster_mask[posneg], f'{outdir}/{posneg}_cluster_{param.replace(" ", "_")}_{cluster_threshold}.jpg', 
-                         clip_data=False, cbar_loc=None, cmap=cmap, vlim=[0.5, 1.5], clobber=clobber)
+                         clip_data=False, cbar_loc='left', cbar_title='Cluster ID', cmap=cmap, vlim=[1, np.max(clusids)], clobber=clobber)
 
 
 def correlation_plot(slm, indep_data, indep_name, subjects, outdir, hue=None, alpha=0.05, clobber=False):
