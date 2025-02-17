@@ -83,7 +83,7 @@ def boxplot(data1, data2, slm, outdir, g1_name, g2_name, param, paired=False, al
         if any(cluster_mask[posneg]['left']) or any(cluster_mask[posneg]['right']):
             tab10_colors = plt.cm.tab10.colors  # Get the base colors from tab10
             custom_cmap = ListedColormap([tab10_colors[i - 1] for i in clusids])
-            matplotlib.colormaps.register(custom_cmap, name=f'custom_cmap_{posneg}')
+            matplotlib.colormaps.register(custom_cmap, name=f'custom_cmap_{posneg}', force=True)
             cmap = f'custom_cmap_{posneg}'
 
             if np.max(clusids) == 1:
@@ -210,7 +210,7 @@ def correlation_plot(slm, indep_data, indep_name, subjects, outdir, hue=None, al
         if any(cluster_mask[posneg]['left']) or any(cluster_mask[posneg]['right']):
             tab10_colors = plt.cm.tab10.colors  # Get the base colors from tab10
             custom_cmap = ListedColormap([tab10_colors[i - 1] for i in clusids])
-            matplotlib.colormaps.register(custom_cmap, name=f'custom_cmap_{posneg}')
+            matplotlib.colormaps.register(custom_cmap, name=f'custom_cmap_{posneg}', force=True)
             cmap = f'custom_cmap_{posneg}'
 
             if np.max(clusids) == 1:
