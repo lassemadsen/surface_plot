@@ -15,7 +15,8 @@ import warnings
 
 warnings.simplefilter(action='ignore', category=FutureWarning) # Ignore FutureWarnings 
 
-def plot_surface(data, output, surface=None, vlim=None, mask=None, cbar_loc='left', cbar_title='Mean', title=None, cmap='turbo', views='compact', clobber=False, dpi=300, clip_data=True):
+def plot_surface(data, output, surface=None, vlim=None, mask=None, cbar_loc='left', cbar_title='Mean', 
+                 title=None, cmap='turbo', views='compact', clobber=False, dpi=300, clip_data=True):
     """Plot data on surface
 
     Parameters
