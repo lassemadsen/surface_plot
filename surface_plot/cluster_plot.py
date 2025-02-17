@@ -9,7 +9,7 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 sns.set(font_scale=1.2)
-sns.set(style='whitegrid')
+sns.set(style='white')
 import statsmodels.api as sm
 
 from .plot_surface import plot_surface
@@ -18,7 +18,37 @@ logging.basicConfig(format='%(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 def boxplot(data1, data2, slm, outdir, g1_name, g2_name, param, paired=False, alpha=0.05, cluster_summary=None, clobber=False):
+    """
+    Generates and saves boxplots for significant clusters in brain surface data.
 
+    Parameters
+    ----------
+    data1 : dict
+        Dictionary containing group 1 data with keys ('left', 'right').
+    data2 : dict
+        Dictionary containing group 2 data with keys ('left', 'right').
+    slm : dict
+        Statistical results from brainstat containing cluster information.
+    outdir : str
+        Output directory path for saving plots.
+    g1_name : str
+        Name of the first group.
+    g2_name : str
+        Name of the second group.
+    param : str
+        Name of the parameter being analyzed.
+    paired : bool (optional) | False
+        Whether the data is paired.
+    alpha : float | 0.05
+        Corrected p-value threshold on cluster-level (family wise error rate)
+    cluster_summary : DataFrame (optional) | None
+        DataFrame with cluster area and anatomical location details.
+    clobber : bool (optional) | False
+        If False, skips generating plots if they already exist.
+
+    Returns:
+    - Saves boxplot figures for each significant cluster.
+    """
     outdir = f'{outdir}/cluster_details'
     Path(outdir).mkdir(parents=True, exist_ok=True)
 
@@ -72,7 +102,7 @@ def boxplot(data1, data2, slm, outdir, g1_name, g2_name, param, paired=False, al
                     sns.stripplot(x='group', y=param, data=plot_data, jitter=False, color='black', size=5, dodge=True)
                 else:
                     sns.swarmplot(x='group', y=param, data=plot_data, hue='group', edgecolor='black', linewidth=1, size=5, legend=False)
-                plt.title(title)
+                plt.title(title, size=10)
                 plt.tight_layout()
                 plt.savefig(output)
                 plt.close()
@@ -124,7 +154,7 @@ def correlation_plot(slm, indep_data, indep_name, subjects, outdir, hue=None, al
     cluster_mask = {'pos': {'left': [], 'right': []},
                     'neg': {'left': [], 'right': []}}
     cluster_threshold = slm['left'].cluster_threshold # Get primary cluster threshold (used for output naming)
-    predictor_name = slm[hemisphere].model.matrix.columns[1] # Get predictor name (second column name - first is intercept)
+    predictor_name = slm['left'].model.matrix.columns[1] # Get predictor name (second column name - first is intercept)
 
     for posneg in ['pos','neg']:
         if posneg == 'pos':
@@ -137,41 +167,16 @@ def correlation_plot(slm, indep_data, indep_name, subjects, outdir, hue=None, al
             for clusid in clusids:
                 cluster_pval = slm[hemisphere].P['clus'][posneg_idx].loc[slm[hemisphere].P['clus'][posneg_idx].clusid == clusid, 'P'].values[0]
 
-            if len(slm[hemisphere].model.matrix.columns) > 2:
-                covars = '+'.join(slm[hemisphere].model.matrix.columns[2:])
-                output = f'{outdir}/{posneg}_cluster{clusid}_{hemisphere}_{indep_name.replace(" ", "_")}_{predictor_name.replace(" ", "_")}+{covars}_{cluster_threshold}.pdf'
-            else:
-                output = f'{outdir}/{posneg}_cluster{clusid}_{hemisphere}_{indep_name.replace(" ", "_")}_{predictor_name.replace(" ", "_")}_{cluster_threshold}.pdf'
+                if len(slm[hemisphere].model.matrix.columns) > 2:
+                    covars = '+'.join(slm[hemisphere].model.matrix.columns[2:])
+                    output = f'{outdir}/{posneg}_cluster{clusid}_{hemisphere}_{indep_name.replace(" ", "_")}_{predictor_name.replace(" ", "_")}+{covars}_{cluster_threshold}.pdf'
+                else:
+                    output = f'{outdir}/{posneg}_cluster{clusid}_{hemisphere}_{indep_name.replace(" ", "_")}_{predictor_name.replace(" ", "_")}_{cluster_threshold}.pdf'
 
-            if not clobber:
-                if os.path.isfile(output):
-                    logger.info(f'{output} already exists... Skipping')
-                    continue
-           
-
-            # cluster_pval = slm[hemisphere].P['clus'][posneg_idx]['P'][0] if not slm[hemisphere].P['clus'][posneg_idx]['P'].empty else 1 # Get pval of largest cluster 
-            # if cluster_pval > alpha:
-            #     print(f'No {posneg} clusters surviving on {hemisphere} hemisphere.')
-            #     continue
-
-            # cluster_threshold = slm[hemisphere].cluster_threshold # Get primary cluster threshold (used for output naming)
-            # cluster_size = slm[hemisphere].P['clus'][posneg_idx]['nverts'][0] # Get nverts for largest cluster 
-            # predictor_name = slm[hemisphere].model.matrix.columns[1] # Get predictor name (second column name - first is intercept)
-            # if len(slm[hemisphere].model.matrix.columns) > 2:
-            #     covars = '+'.join(slm[hemisphere].model.matrix.columns[2:])
-            #     output = f'{outdir}/{posneg}_cluster_{hemisphere}_{indep_name.replace(" ", "_")}_{predictor_name.replace(" ", "_")}+{covars}_{cluster_threshold}.png'
-            # else:
-            #     output = f'{outdir}/{posneg}_cluster_{hemisphere}_{indep_name.replace(" ", "_")}_{predictor_name.replace(" ", "_")}_{cluster_threshold}.png'
-
-            # if not clobber:
-            #     if os.path.isfile(output):
-            #         logger.info(f'{output} already exists... Skipping')
-            #         continue
-
-            # cluster_mask[posneg][hemisphere] = np.copy(slm[hemisphere].P['clusid'][posneg_idx][0])
-            # Ensure only surviving clusters are included
-            # survived_cluster_idx = list(slm[hemisphere].P['clus'][posneg_idx].loc[slm[hemisphere].P['clus'][posneg_idx].P < 0.05, 'clusid'])
-            # cluster_mask[posneg][hemisphere][~np.isin(cluster_mask[posneg][hemisphere], survived_cluster_idx)] = 0
+                if not clobber:
+                    if os.path.isfile(output):
+                        logger.info(f'{output} already exists... Skipping')
+                        continue
                     
                 cluster_mean = indep_data[hemisphere][slm[hemisphere].P['clusid'][posneg_idx][0] == 1].mean()
 
@@ -194,12 +199,12 @@ def correlation_plot(slm, indep_data, indep_name, subjects, outdir, hue=None, al
 
                 if hue is None:
                     ax = plt.subplots(figsize=(10, 6))
-                    ax = sns.regplot(x=predictor_name, y=indep_name, data=plot_data, ci=None, truncate=False, scatter_kws={'s':200}, line_kws={'linewidth':8})
+                    ax = sns.regplot(x=predictor_name, y=indep_name, data=plot_data, ci=None, truncate=False, scatter_kws={'s':100}, line_kws={'linewidth':5, 'alpha': 0.8})
                 else:
-                    ax = sns.lmplot(x=predictor_name, y=indep_name, hue=hue.columns[0], data=plot_data, ci=None, truncate=False, scatter_kws={'s':200}, fit_reg=False, height=10, aspect=1.4, facet_kws={'legend_out': False})
-                    ax = sns.regplot(x=predictor_name, y=indep_name, data=plot_data, scatter=False, ax=ax.axes[0, 0], ci=None, line_kws={'linewidth':8}, color='grey')
+                    ax = sns.lmplot(x=predictor_name, y=indep_name, hue=hue.columns[0], data=plot_data, ci=None, truncate=False, scatter_kws={'s':100}, fit_reg=False, height=10, aspect=1.4, facet_kws={'legend_out': False})
+                    ax = sns.regplot(x=predictor_name, y=indep_name, data=plot_data, scatter=False, ax=ax.axes[0, 0], ci=None, line_kws={'linewidth':5, 'alpha':0.8}, color='grey')
 
-                ax.set_title(title)
+                ax.set_title(title, size=10)
                 plt.tight_layout()
                 plt.savefig(output)
                 plt.close()
