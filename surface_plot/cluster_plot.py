@@ -64,7 +64,7 @@ def boxplot(data1, data2, slm, outdir, g1_name, g2_name, param, paired=False, al
         clusids_list = []
 
         for hemisphere in ['left', 'right']:
-            clusids = list(slm[hemisphere].P['clus'][posneg_idx].loc[slm[hemisphere].P['clus'][posneg_idx].P < alpha, 'clusid'])
+            clusids = list(slm[hemisphere].P['clus'][posneg_idx].loc[slm[hemisphere].P['clus'][posneg_idx].P < alpha, 'clusid'].astype(object))
 
             if clusids:
                 Path(outdir).mkdir(parents=True, exist_ok=True) # Only create folder if there are surviving clusters
@@ -173,7 +173,7 @@ def correlation_plot(slm, indep_data, indep_name, subjects, outdir, hue=None, al
         clusids_list = []
 
         for hemisphere in ['left', 'right']:
-            clusids = list(slm[hemisphere].P['clus'][posneg_idx].loc[slm[hemisphere].P['clus'][posneg_idx].P < alpha, 'clusid'])
+            clusids = list(slm[hemisphere].P['clus'][posneg_idx].loc[slm[hemisphere].P['clus'][posneg_idx].P < alpha, 'clusid'].astype(object))
 
             if clusids:
                 Path(outdir).mkdir(parents=True, exist_ok=True) # Only create folder if there are surviving clusters
