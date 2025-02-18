@@ -69,6 +69,8 @@ def boxplot(data1, data2, slm, outdir, g1_name, g2_name, param, paired=False, al
             if clusids:
                 Path(outdir).mkdir(parents=True, exist_ok=True) # Only create folder if there are surviving clusters
                 clusids_list.extend(clusids)
+            else:
+                cluster_mask[posneg][hemisphere] = np.zeros_like(slm[hemisphere].t[0]) # Initiate cluster mask in case of surviving clusters on opposite hemisphere 
 
             for clusid in clusids:
                 cluster_pval = slm[hemisphere].P['clus'][posneg_idx].loc[slm[hemisphere].P['clus'][posneg_idx].clusid == clusid, 'P'].values[0]
@@ -176,6 +178,8 @@ def correlation_plot(slm, indep_data, indep_name, subjects, outdir, hue=None, al
             if clusids:
                 Path(outdir).mkdir(parents=True, exist_ok=True) # Only create folder if there are surviving clusters
                 clusids_list.extend(clusids)
+            else:
+                cluster_mask[posneg][hemisphere] = np.zeros_like(slm[hemisphere].t[0]) # Initiate cluster mask in case of surviving clusters on opposite hemisphere 
 
             for clusid in clusids:
                 cluster_pval = slm[hemisphere].P['clus'][posneg_idx].loc[slm[hemisphere].P['clus'][posneg_idx].clusid == clusid, 'P'].values[0]
