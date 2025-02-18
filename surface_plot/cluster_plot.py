@@ -234,8 +234,7 @@ def correlation_plot(slm, indep_data, indep_name, subjects, outdir, hue=None, al
         if clusids_list:
             tab10_colors = plt.cm.tab10.colors  # Get the base colors from tab10
             custom_cmap = ListedColormap([tab10_colors[i - 1] for i in clusids_list])
-            matplotlib.colormaps.register(custom_cmap, name=f'custom_cmap_{posneg}', force=True)
-            cmap = f'custom_cmap_{posneg}'
+            matplotlib.colormaps.register(custom_cmap, name='custom_cmap')
 
             if np.max(clusids_list) == 1:
                 vlim = [0.9, 1.1]
@@ -243,7 +242,8 @@ def correlation_plot(slm, indep_data, indep_name, subjects, outdir, hue=None, al
                 vlim = [1, np.max(clusids_list)]
             
             plot_surface(cluster_mask[posneg], f'{outdir}/{posneg}_cluster_{indep_name.replace(" ", "_")}_{predictor_name.replace(" ", "_")}_{cluster_threshold}.jpg', 
-                         clip_data=False, cbar_loc='left', cbar_title='Cluster ID', cmap=cmap, vlim=vlim, clobber=clobber)
+                         clip_data=False, cbar_loc='left', cbar_title='Cluster ID', cmap='custom_cmap', vlim=vlim, clobber=clobber)
+            matplotlib.colormaps.unregister('custom_cmap')
 
 
 def _get_r2(x, y):
