@@ -75,7 +75,7 @@ def boxplot(data1, data2, slm, outdir, g1_name, g2_name, param, paired=False, al
             for clusid in clusids:
                 cluster_pval = slm[hemisphere].P['clus'][posneg_idx].loc[slm[hemisphere].P['clus'][posneg_idx].clusid == clusid, 'P'].values[0]
                 
-                output = f'{outdir}/{posneg}_cluster{clusid}_{hemisphere}_{param.replace(" ", "_")}_{cluster_threshold}.pdf'
+                output = f'{outdir}/{posneg}_cluster{clusid}_{hemisphere}_{param.replace(" ", "_")}_p{cluster_threshold}.pdf'
 
                 # Set title
                 if cluster_summary is None:
@@ -134,23 +134,26 @@ def boxplot(data1, data2, slm, outdir, g1_name, g2_name, param, paired=False, al
             matplotlib.colormaps.unregister('custom_cmap')
 
 
-def correlation_plot(slm, indep_data, indep_name, subjects, outdir, hue=None, alpha=0.05, cluster_summary=None, clobber=False):
+def correlation_plot(slm, indep_data, dep_data, dep_name, indep_name, outdir, 
+                     hue=None, alpha=0.05, cluster_summary=None, clobber=False):
     """
     
     Parameters
     ----------
     slm : dict['left', 'right']
         Dictionary with keys "left" and "right", containing results from brainstat SLM
-    indep_data : pd.DataFrame - dict{'left', 'right'}
+    dep_data : pd.DataFrame or dict{'left', 'right'}
+        If the independent variable is a "regular" variable (e.g. age, MMSE etc.) dep_data should be a 1D pd.Dataframe with dep_name as column name and ids as indices.
+        If the independent variable is another surface, it should be similar to indep_data, i.e.:
+        Dictionary with keys "left" and "right", containing surface data of the dependent variable for left and right hemisphere
+    indep_data : dict{'left': pd.DataFrame, 'right': pd.DataFrame}
         Dataframe of surface data
         Dictionary with keys "left" and "right", containing surface data of the independent variable for left and right hemisphere
     indep_name : str
         Name of independent surface data
-    subjects : list
-        List of subjects (same as indices in indep_data)
     outdir : str
         Location of ouputs
-    hue : dataframe
+    hue : dataframe | None
         Dataframe with subject ids as index and group as column
     alpha : float | 0.05
         Corrected p-value threshold on cluster-level (family wise error rate)
@@ -162,7 +165,6 @@ def correlation_plot(slm, indep_data, indep_name, subjects, outdir, hue=None, al
     cluster_mask = {'pos': {'left': [], 'right': []},
                     'neg': {'left': [], 'right': []}}
     cluster_threshold = slm['left'].cluster_threshold # Get primary cluster threshold (used for output naming)
-    predictor_name = slm['left'].model.matrix.columns[1] # Get predictor name (second column name - first is intercept)
 
     for posneg in ['pos','neg']:
         if posneg == 'pos':
@@ -186,40 +188,46 @@ def correlation_plot(slm, indep_data, indep_name, subjects, outdir, hue=None, al
 
                 if len(slm[hemisphere].model.matrix.columns) > 2:
                     covars = '+'.join(slm[hemisphere].model.matrix.columns[2:])
-                    output = f'{outdir}/{posneg}_cluster{clusid}_{hemisphere}_{indep_name.replace(" ", "_")}_{predictor_name.replace(" ", "_")}+{covars}_{cluster_threshold}.pdf'
+                    output = f'{outdir}/{posneg}_cluster{clusid}_{hemisphere}_{dep_name.replace(" ", "_")}_{indep_name.replace(" ", "_")}+{covars}_p{cluster_threshold}.pdf'
                 else:
-                    output = f'{outdir}/{posneg}_cluster{clusid}_{hemisphere}_{indep_name.replace(" ", "_")}_{predictor_name.replace(" ", "_")}_{cluster_threshold}.pdf'
+                    output = f'{outdir}/{posneg}_cluster{clusid}_{hemisphere}_{dep_name.replace(" ", "_")}_{indep_name.replace(" ", "_")}_p{cluster_threshold}.pdf'
 
                 if not clobber:
                     if os.path.isfile(output):
                         logger.info(f'{output} already exists... Skipping')
                         continue
-                    
-                cluster_mean = indep_data[hemisphere][slm[hemisphere].P['clusid'][posneg_idx][0] == clusid].mean()
+                
+                if isinstance(indep_data, dict): # If correlation was performed with another surface
+                    cluster_mean_indep_data = indep_data[hemisphere][slm[hemisphere].P['clusid'][posneg_idx][0] == clusid].mean().to_frame(name=indep_name)
+                elif isinstance(indep_data, pd.Series) or isinstance(indep_data, pd.DataFrame):
+                    cluster_mean_indep_data = indep_data
+                else:
+                    print('Error. Dep_data should be dict{"left", "right"} or pd.DataFrame')
+                    return
+
+                cluster_mean_dep_data = dep_data[hemisphere][slm[hemisphere].P['clusid'][posneg_idx][0] == clusid].mean().to_frame(name=dep_name)
                 
                 if hue is None:
-                    plot_data = pd.concat([cluster_mean[subjects].reset_index(drop=True), slm[hemisphere].model.matrix[predictor_name]], axis=1).dropna()
-                    plot_data.columns = [indep_name, predictor_name]
+                    plot_data = pd.concat([cluster_mean_dep_data, cluster_mean_indep_data], axis=1).dropna()
                 else:
-                    plot_data = pd.concat([cluster_mean[subjects].reset_index(drop=True), slm[hemisphere].model.matrix[predictor_name], hue.loc[subjects, hue.columns[0]].reset_index(drop=True)], axis=1).dropna()
-                    plot_data.columns = [indep_name, predictor_name, hue.columns[0]]
+                    plot_data = pd.concat([cluster_mean_dep_data, cluster_mean_indep_data, hue], axis=1).dropna()
 
-                r2 = _get_r2(plot_data[predictor_name], plot_data[indep_name])
+                r2 = _get_r2(plot_data[dep_name], plot_data[indep_name])
                 # Set title
                 if cluster_summary is None:
                     cluster_size = slm[hemisphere].P['clus'][posneg_idx].loc[slm[hemisphere].P['clus'][posneg_idx].clusid == clusid, 'nverts'].values[0] # Get number of vertices in cluster
-                    title = f'{indep_name} - {predictor_name}, {hemisphere} hemisphere\nN vertices={cluster_size:.0f}, corrected cluster p-value={cluster_pval:.1e}, $R^2$: {r2:.2f}'
+                    title = f'{dep_name} - {indep_name}, {hemisphere} hemisphere\nN vertices={cluster_size:.0f}, corrected cluster p-value={cluster_pval:.1e}, $R^2$: {r2:.2f}'
                 else:
                     cluster_size = cluster_summary.loc[(cluster_summary.Hemisphere == hemisphere) & (cluster_summary.clusid == clusid), 'Cluster area (mm2)'].values[0]
                     cluster_location = cluster_summary.loc[(cluster_summary.Hemisphere == hemisphere) & (cluster_summary.clusid == clusid), 'Anatomical location (peak)'].values[0]
-                    title = f'{indep_name} - {predictor_name}. Cluster {clusid}.\n{cluster_location} - {hemisphere},' + rf' Size: {cluster_size} mm$^2$, FWE p-value={cluster_pval:.1e}, $R^2$: {r2:.2f}'
+                    title = f'{dep_name} - {indep_name}. Cluster {clusid}.\n{cluster_location} - {hemisphere},' + rf' Size: {cluster_size} mm$^2$, FWE p-value={cluster_pval:.1e}, $R^2$: {r2:.2f}'
 
                 if hue is None:
                     ax = plt.subplots(figsize=(10, 6))
-                    ax = sns.regplot(x=predictor_name, y=indep_name, data=plot_data, ci=None, truncate=False, scatter_kws={'s':100}, line_kws={'linewidth':5, 'alpha': 0.8})
+                    ax = sns.regplot(x=indep_name, y=dep_name, data=plot_data, ci=None, truncate=False, scatter_kws={'s':100}, line_kws={'linewidth':5, 'alpha': 0.8})
                 else:
-                    ax = sns.lmplot(x=predictor_name, y=indep_name, hue=hue.columns[0], data=plot_data, ci=None, truncate=False, scatter_kws={'s':100}, fit_reg=False, height=10, aspect=1.4, facet_kws={'legend_out': False})
-                    ax = sns.regplot(x=predictor_name, y=indep_name, data=plot_data, scatter=False, ax=ax.axes[0, 0], ci=None, line_kws={'linewidth':5, 'alpha':0.8}, color='grey')
+                    ax = sns.lmplot(x=indep_name, y=dep_name, hue=hue.columns[0], data=plot_data, ci=None, truncate=False, scatter_kws={'s':100}, fit_reg=False, height=10, aspect=1.4, facet_kws={'legend_out': False})
+                    ax = sns.regplot(x=indep_name, y=dep_name, data=plot_data, scatter=False, ax=ax.axes[0, 0], ci=None, line_kws={'linewidth':5, 'alpha':0.8}, color='grey')
 
                 ax.set_title(title, size=10)
                 plt.tight_layout()
@@ -241,7 +249,7 @@ def correlation_plot(slm, indep_data, indep_name, subjects, outdir, hue=None, al
             else:
                 vlim = [1, np.max(clusids_list)]
             
-            plot_surface(cluster_mask[posneg], f'{outdir}/{posneg}_cluster_{indep_name.replace(" ", "_")}_{predictor_name.replace(" ", "_")}_{cluster_threshold}.jpg', 
+            plot_surface(cluster_mask[posneg], f'{outdir}/{posneg}_cluster_{dep_name.replace(" ", "_")}_{indep_name.replace(" ", "_")}_{cluster_threshold}.jpg', 
                          clip_data=False, cbar_loc='left', cbar_title='Cluster ID', cmap='custom_cmap', vlim=vlim, clobber=clobber)
             matplotlib.colormaps.unregister('custom_cmap')
 
