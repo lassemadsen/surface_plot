@@ -64,7 +64,7 @@ def boxplot(data1, data2, slm, outdir, g1_name, g2_name, param, paired=False, al
         clusids_list = []
 
         for hemisphere in ['left', 'right']:
-            clusids = list(slm[hemisphere].P['clus'][posneg_idx].loc[slm[hemisphere].P['clus'][posneg_idx].P < alpha, 'clusid'].astype(object))
+            clusids = slm[hemisphere].P['clus'][posneg_idx].loc[slm[hemisphere].P['clus'][posneg_idx].P < alpha, 'clusid'].astype(int).tolist()
 
             if clusids:
                 Path(outdir).mkdir(parents=True, exist_ok=True) # Only create folder if there are surviving clusters
@@ -173,7 +173,7 @@ def correlation_plot(slm, indep_data, indep_name, subjects, outdir, hue=None, al
         clusids_list = []
 
         for hemisphere in ['left', 'right']:
-            clusids = list(slm[hemisphere].P['clus'][posneg_idx].loc[slm[hemisphere].P['clus'][posneg_idx].P < alpha, 'clusid'].astype(object))
+            clusids = slm[hemisphere].P['clus'][posneg_idx].loc[slm[hemisphere].P['clus'][posneg_idx].P < alpha, 'clusid'].astype(int).tolist()
 
             if clusids:
                 Path(outdir).mkdir(parents=True, exist_ok=True) # Only create folder if there are surviving clusters
@@ -195,8 +195,8 @@ def correlation_plot(slm, indep_data, indep_name, subjects, outdir, hue=None, al
                         logger.info(f'{output} already exists... Skipping')
                         continue
                     
-                cluster_mean = indep_data[hemisphere][slm[hemisphere].P['clusid'][posneg_idx][0] == 1].mean()
-
+                cluster_mean = indep_data[hemisphere][slm[hemisphere].P['clusid'][posneg_idx][0] == clusid].mean()
+                
                 if hue is None:
                     plot_data = pd.concat([cluster_mean[subjects].reset_index(drop=True), slm[hemisphere].model.matrix[predictor_name]], axis=1).dropna()
                     plot_data.columns = [indep_name, predictor_name]
