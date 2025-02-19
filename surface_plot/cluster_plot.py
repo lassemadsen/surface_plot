@@ -119,8 +119,14 @@ def boxplot(data1, data2, slm, outdir, g1_name, g2_name, param, paired=False, al
         
         clusids_list = list(set(clusids_list)) # Make sure colormap is based on both hemispheres.
         if clusids_list:
-            tab10_colors = plt.cm.tab10.colors  # Get the base colors from tab10
-            custom_cmap = ListedColormap([tab10_colors[i - 1] for i in clusids_list])
+            num_clusters = len(clusids_list)
+            if num_clusters > 10:
+                custom_colors = [plt.cm.viridis(i / num_clusters) for i in range(num_clusters)]
+                custom_cmap = ListedColormap(custom_colors)
+            else:
+                tab10_colors = plt.cm.tab10.colors  # Get the base colors from tab10
+                custom_cmap = ListedColormap([tab10_colors[i - 1] for i in clusids_list])
+
             matplotlib.colormaps.register(custom_cmap, name='custom_cmap')
 
             if np.max(clusids_list) == 1:
@@ -134,7 +140,7 @@ def boxplot(data1, data2, slm, outdir, g1_name, g2_name, param, paired=False, al
             matplotlib.colormaps.unregister('custom_cmap')
 
 
-def correlation_plot(slm, indep_data, dep_data, dep_name, indep_name, outdir, 
+def correlation_plot(slm, dep_data, indep_data, dep_name, indep_name, outdir, 
                      hue=None, alpha=0.05, cluster_summary=None, clobber=False):
     """
     
@@ -240,8 +246,14 @@ def correlation_plot(slm, indep_data, dep_data, dep_name, indep_name, outdir,
         clusids_list = list(set(clusids_list)) # Make sure colormap is based on both hemispheres.
 
         if clusids_list:
-            tab10_colors = plt.cm.tab10.colors  # Get the base colors from tab10
-            custom_cmap = ListedColormap([tab10_colors[i - 1] for i in clusids_list])
+            num_clusters = len(clusids_list)
+            if num_clusters > 10:
+                custom_colors = [plt.cm.viridis(i / num_clusters) for i in range(num_clusters)]
+                custom_cmap = ListedColormap(custom_colors)
+            else:
+                tab10_colors = plt.cm.tab10.colors  # Get the base colors from tab10
+                custom_cmap = ListedColormap([tab10_colors[i - 1] for i in clusids_list])
+
             matplotlib.colormaps.register(custom_cmap, name='custom_cmap')
 
             if np.max(clusids_list) == 1:
