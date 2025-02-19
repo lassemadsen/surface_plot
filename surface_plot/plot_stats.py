@@ -18,7 +18,8 @@ import warnings
 
 warnings.simplefilter(action='ignore', category=FutureWarning) # Ignore FutureWarnings 
 
-def plot_pval(pval, output, surface=None, tval=None, p_threshold=0.01, mask=None, cbar_loc='left', titles=['Positive', 'Negative'], second_threshold_mask=None, expand_edge=True, views='compact', dpi=300, clobber=False):
+def plot_pval(pval, output, surface=None, tval=None, p_threshold=0.01, mask=None, cbar_loc='left', titles=['Positive', 'Negative'],
+              second_threshold_mask=None, expand_edge=True, views='compact', dpi=300, clobber=False):
     """Plot pval statistics on surface
     If tval is given: it will plot p-values below p_threshold with positive t-values and p-values below p_threshold with negative t-values on seperate plots. 
 
@@ -130,7 +131,9 @@ def plot_pval(pval, output, surface=None, tval=None, p_threshold=0.01, mask=None
         logger.info(f'{output} saved.')
 
 
-def plot_tval(tval, output, surface=None, t_lim=None, t_threshold=2.5, cluster_mask=None, mask=None, p_threshold=None, pval=None, df=None, title=None, cbar_loc='left', second_threshold_mask=None, expand_edge=False, plot_discrete=False, ticks='minmax', views='compact', dpi=300, clobber=False):
+def plot_tval(tval, output, surface=None, t_lim=None, t_threshold=2.5, cluster_mask=None, mask=None, p_threshold=None, 
+              pval=None, df=None, title=None, cbar_loc='left', second_threshold_mask=None, expand_edge=False, 
+              plot_discrete=False, ticks='minmax', views='compact', dpi=300, clobber=False):
     """Plot tval statistics on surface
     Will plot t-values between thresholds
     If p_threshold and df is set, the thresholds are calculated based on the corresponding p-value. 
