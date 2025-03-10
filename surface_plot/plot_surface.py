@@ -69,8 +69,8 @@ def plot_surface(data, output, surface=None, vlim=None, mask=None, cbar_loc='lef
     plot_data = copy.deepcopy(data)
 
     if vlim is None:
-        vmin = np.round(np.min([np.min(data['left']), np.min(data['right'])]),1)
-        vmax = np.round(np.max([np.max(data['left']), np.max(data['right'])]),1)
+        vmin = np.round(np.nanmin([np.nanmin(data['left']), np.nanmin(data['right'])]),1)
+        vmax = np.round(np.nanmax([np.nanmax(data['left']), np.nanmax(data['right'])]),1)
 
         vlim = [vmin, vmax]
 
