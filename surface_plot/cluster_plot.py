@@ -76,6 +76,7 @@ def boxplot(data1, data2, slm, outdir, g1_name, g2_name, param, paired=False, al
                 cluster_pval = slm[hemisphere].P['clus'][posneg_idx].loc[slm[hemisphere].P['clus'][posneg_idx].clusid == clusid, 'P'].values[0]
                 
                 output = f'{outdir}/{posneg}_cluster{clusid}_{hemisphere}_{param.replace(" ", "_")}_p{cluster_threshold}.pdf'
+                output_csv = f'{outdir}/{posneg}_cluster{clusid}_{hemisphere}_{param.replace(" ", "_")}_p{cluster_threshold}.csv'
 
                 # Set title
                 if cluster_summary is None:
@@ -100,6 +101,7 @@ def boxplot(data1, data2, slm, outdir, g1_name, g2_name, param, paired=False, al
 
                 # Plot boxplot
                 plot_data = pd.concat([cluster_mean_g1, cluster_mean_g2])
+                plot_data.to_csv(output_csv)
 
                 plt.figure()
                 sns.boxplot(x='group', y=param, data=plot_data, hue='group')
@@ -195,8 +197,10 @@ def correlation_plot(slm, dep_data, indep_data, dep_name, indep_name, outdir,
                 if len(slm[hemisphere].model.matrix.columns) > 2:
                     covars = '+'.join(slm[hemisphere].model.matrix.columns[2:])
                     output = f'{outdir}/{posneg}_cluster{clusid}_{hemisphere}_{dep_name.replace(" ", "_")}_{indep_name.replace(" ", "_")}+{covars}_p{cluster_threshold}.pdf'
+                    output_csv = f'{outdir}/{posneg}_cluster{clusid}_{hemisphere}_{dep_name.replace(" ", "_")}_{indep_name.replace(" ", "_")}+{covars}_p{cluster_threshold}.csv'
                 else:
                     output = f'{outdir}/{posneg}_cluster{clusid}_{hemisphere}_{dep_name.replace(" ", "_")}_{indep_name.replace(" ", "_")}_p{cluster_threshold}.pdf'
+                    output_csv = f'{outdir}/{posneg}_cluster{clusid}_{hemisphere}_{dep_name.replace(" ", "_")}_{indep_name.replace(" ", "_")}_p{cluster_threshold}.csv'
 
                 if not clobber:
                     if os.path.isfile(output):
@@ -217,6 +221,8 @@ def correlation_plot(slm, dep_data, indep_data, dep_name, indep_name, outdir,
                     plot_data = pd.concat([cluster_mean_dep_data, cluster_mean_indep_data], axis=1).dropna()
                 else:
                     plot_data = pd.concat([cluster_mean_dep_data, cluster_mean_indep_data, hue], axis=1).dropna()
+
+                plot_data.to_csv(output_csv)
 
                 r2 = _get_r2(plot_data[dep_name], plot_data[indep_name])
                 # Set title
