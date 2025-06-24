@@ -142,7 +142,7 @@ def boxplot(data1, data2, slm, outdir, g1_name, g2_name, param, paired=False, al
             matplotlib.colormaps.unregister('custom_cmap')
 
 
-def correlation_plot(slm, dep_data, indep_data, dep_name, indep_name, outdir, 
+def correlation_plot(slm, dep_data, indep_data, dep_name, indep_name, outdir, quadratic=False, 
                      hue=None, alpha=0.05, cluster_summary=None, clobber=False):
     """
     
@@ -173,6 +173,12 @@ def correlation_plot(slm, dep_data, indep_data, dep_name, indep_name, outdir,
     cluster_mask = {'pos': {'left': [], 'right': []},
                     'neg': {'left': [], 'right': []}}
     cluster_threshold = slm['left'].cluster_threshold # Get primary cluster threshold (used for output naming)
+
+    # Order of regplot
+    if quadratic:
+        order = 2
+    else:
+        order = 1
 
     for posneg in ['pos','neg']:
         if posneg == 'pos':
@@ -224,7 +230,7 @@ def correlation_plot(slm, dep_data, indep_data, dep_name, indep_name, outdir,
 
                 plot_data.to_csv(output_csv)
 
-                r2 = _get_r2(plot_data[dep_name], plot_data[indep_name])
+                r2 = _get_r2(plot_data[dep_name], plot_data[indep_name], quadratic=quadratic)
                 # Set title
                 if cluster_summary is None:
                     cluster_size = slm[hemisphere].P['clus'][posneg_idx].loc[slm[hemisphere].P['clus'][posneg_idx].clusid == clusid, 'nverts'].values[0] # Get number of vertices in cluster
@@ -236,10 +242,10 @@ def correlation_plot(slm, dep_data, indep_data, dep_name, indep_name, outdir,
 
                 if hue is None:
                     ax = plt.subplots(figsize=(10, 6))
-                    ax = sns.regplot(x=indep_name, y=dep_name, data=plot_data, ci=None, truncate=False, scatter_kws={'s':100}, line_kws={'linewidth':5, 'alpha': 0.8})
+                    ax = sns.regplot(x=indep_name, y=dep_name, data=plot_data, ci=None, truncate=False, scatter_kws={'s':100}, line_kws={'linewidth':5, 'alpha': 0.8}, order=order)
                 else:
                     ax = sns.lmplot(x=indep_name, y=dep_name, hue=hue.columns[0], data=plot_data, ci=None, truncate=False, scatter_kws={'s':100}, fit_reg=False, height=10, aspect=1.4, facet_kws={'legend_out': False})
-                    ax = sns.regplot(x=indep_name, y=dep_name, data=plot_data, scatter=False, ax=ax.axes[0, 0], ci=None, line_kws={'linewidth':5, 'alpha':0.8}, color='grey')
+                    ax = sns.regplot(x=indep_name, y=dep_name, data=plot_data, scatter=False, ax=ax.axes[0, 0], ci=None, line_kws={'linewidth':5, 'alpha':0.8}, color='grey', order=order)
 
                 ax.set_title(title, size=10)
                 plt.tight_layout()
@@ -272,15 +278,33 @@ def correlation_plot(slm, dep_data, indep_data, dep_name, indep_name, outdir,
             matplotlib.colormaps.unregister('custom_cmap')
 
 
-def _get_r2(x, y):
-    """Calculate r squared
-
-    Return
-    ------
-    r2 : R squared value
+def _get_r2(x, y, quadratic=False):
     """
-    X = sm.add_constant(x)
-    result = sm.OLS(y, X).fit()
-    r2 = result.rsquared
+    Calculate R squared.
 
-    return r2
+    Parameters
+    ----------
+    x : array-like, shape (n_samples,)
+        Predictor variable.
+    y : array-like, shape (n_samples,)
+        Response variable.
+    quadratic : bool, default=False
+        If True, include x^2 term in the model.
+
+    Returns
+    -------
+    r2 : float
+        R squared value.
+    """
+    x = np.asarray(x)
+    y = np.asarray(y)
+
+    if quadratic:
+        x_quad = x ** 2
+        X = np.column_stack((x, x_quad))
+    else:
+        X = x
+
+    X = sm.add_constant(X)
+    result = sm.OLS(y, X).fit()
+    return result.rsquared
