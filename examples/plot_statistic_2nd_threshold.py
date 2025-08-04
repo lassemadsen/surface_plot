@@ -24,8 +24,8 @@ second_level_right = np.loadtxt('https://www.dropbox.com/s/wgp0j0gp35oe41g/secon
 tval = {'left': tval_left,
         'right': tval_right}
 
-second_level = {'left': second_level_left,
-                'right': second_level_right}
+second_level = {'left': second_level_left.astype(bool),
+                'right': second_level_right.astype(bool)}
 
 t_lim = [-5, 5]
 
@@ -33,5 +33,7 @@ mask['left'] = ~np.isnan(tval['left'])
 mask['right'] = ~np.isnan(tval['right'])
 
 output = f'{outdir}/second_level.pdf'
-
 plot_stats.plot_tval(tval, output, mask=mask, t_lim=t_lim, second_threshold_mask=second_level, expand_edge=True, clobber=clobber)
+
+output = f'{outdir}/second_level_descrete.pdf'
+plot_stats.plot_tval(tval, output, mask=mask, t_lim=t_lim, second_threshold_mask=second_level, plot_discrete=True, clobber=clobber)
